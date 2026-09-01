@@ -1,0 +1,35 @@
+{
+  "name": "eduflow",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:backend": "npm --prefix backend run dev",
+    "start:backend": "npm --prefix backend run start",
+    "seed:demo": "npm --prefix backend run seed:demo",
+    "test": "npm --prefix backend test",
+    "test:backend": "npm --prefix backend run test",
+    "test:adversarial": "npm --prefix backend run test:adversarial",
+    "test:all": "npm --prefix backend run test:all",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "i18next": "^26.4.1",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.12",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.18.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "vite": "^6.0.1"
+  }
+}
