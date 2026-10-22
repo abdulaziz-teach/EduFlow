@@ -1,0 +1,1 @@
+import{b as e}from"./index-DJsfIW3M.js";const t=()=>e.get("/knowledge/summary"),g=()=>e.get("/knowledge/subjects"),n=()=>e.get("/knowledge/recommendations"),s=o=>e.get(`/knowledge/topics/${o}`),m={getSummary:t,getSubjects:g,getRecommendations:n,getTopic:s};export{m as k};

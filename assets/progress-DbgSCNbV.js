@@ -1,0 +1,1 @@
+import{b as e}from"./index-DJsfIW3M.js";const s=()=>e.get("/progress/summary"),t=()=>e.get("/progress/subjects"),r=()=>e.get("/progress/activity"),g=()=>e.get("/progress/weekly-digest"),c={getProgressSummary:s,getSubjectProgress:t,getActivity:r,getWeeklyDigest:g};export{c as p};
