@@ -63,7 +63,7 @@ export const generateQuestions = async (req, res, next) => {
  */
 export const createSession = async (req, res, next) => {
   try {
-    const { subject, topic, difficulty, count } = req.body;
+    const { subject, topic, difficulty, count, language } = req.body;
     const userId = req.user._id;
 
     if (!subject || !topic) {
@@ -91,7 +91,7 @@ export const createSession = async (req, res, next) => {
         topic,
         difficulty: diff,
         count: questionCount,
-        language: req.user.preferredLanguage || 'en',
+        language: language || req.user?.preferredLanguage || 'uz',
       });
     } catch (err) {
       return res.status(500).json({

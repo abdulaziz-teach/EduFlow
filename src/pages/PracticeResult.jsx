@@ -57,13 +57,13 @@ function PracticeResult() {
   }
 
   // Calculate statistics
-  const total = session.totalQuestions;
-  const correct = session.correctAnswers;
+  const total = session.totalQuestions || (session.questions ? session.questions.length : 0);
+  const correct = session.correctAnswers ?? session.score ?? 0;
   const incorrect = total - correct;
   const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
 
   // Filter incorrect questions
-  const incorrectQuestions = session.questions.filter((q) => q.isAnswered && !q.isCorrect);
+  const incorrectQuestions = (session.questions || []).filter((q) => q.isCorrect === false);
 
   const handleReviewWithMentor = () => {
     navigate('/mentor', {

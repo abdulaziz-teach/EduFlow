@@ -11,7 +11,8 @@ import PracticeHistory from '../components/practice/PracticeHistory';
 
 function Practice() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const currentLang = ['uz', 'ru', 'en'].includes(i18n.language) ? i18n.language : 'uz';
   const [searchParams] = useSearchParams();
   const preSubject = searchParams.get('subject') || '';
   const preTopic = searchParams.get('topic') || '';
@@ -54,7 +55,10 @@ function Practice() {
     setLoadingSession(true);
     setError('');
     try {
-      const data = await practiceService.createSession(config);
+      const data = await practiceService.createSession({
+        ...config,
+        language: config.language || currentLang,
+      });
       setActiveSession(data.session);
       setCurrentQuestionIndex(0);
       setAnswerFeedback(null);
