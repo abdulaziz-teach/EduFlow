@@ -1,1 +1,0 @@
-import{b as o}from"./index-DJsfIW3M.js";const e=(s,t)=>o.post("/study-sessions/start",{planId:s,taskId:t}),i=()=>o.get("/study-sessions/active"),n=s=>o.patch(`/study-sessions/${s}/complete`,{}),c=(s,t)=>o.post("/study-sessions/log-focus",{durationMinutes:s,subject:t}),p={startSession:e,getActiveSession:i,completeSession:n,logFocusSession:c};export{c as l,p as s};
