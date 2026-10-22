@@ -40,6 +40,12 @@ const practiceQuestionSchema = new mongoose.Schema(
       default: 'medium',
       index: true,
     },
+    language: {
+      type: String,
+      enum: ['en', 'ru', 'uz'],
+      default: 'en',
+      index: true,
+    },
     createdBy: {
       type: String,
       enum: ['ai', 'system'],
@@ -52,7 +58,7 @@ const practiceQuestionSchema = new mongoose.Schema(
 );
 
 // Compound index to speed up question selection and prevent duplicates
-practiceQuestionSchema.index({ subject: 1, topic: 1, difficulty: 1 });
+practiceQuestionSchema.index({ subject: 1, topic: 1, difficulty: 1, language: 1 });
 
 const PracticeQuestion = mongoose.model('PracticeQuestion', practiceQuestionSchema);
 

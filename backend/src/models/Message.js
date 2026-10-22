@@ -16,15 +16,18 @@ const messageSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ['user', 'assistant'],
+      enum: ['user', 'assistant', 'system'],
     },
     content: {
       type: String,
       required: true,
     },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
   },
   {
-    // Only createdAt is needed for message ordering
     timestamps: { createdAt: true, updatedAt: false },
   }
 );

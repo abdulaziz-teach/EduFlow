@@ -1,119 +1,122 @@
-# EduFlow — AI-Powered Personal Study Assistant
+# EduFlow — Production-Ready Educational Platform & MongoDB Database Architecture
 
-EduFlow is an intelligent, modern study companion designed to help students organize learning, practice what they are studying, detect topics needing review, and get personalized step-by-step guidance.
-
----
-
-## 🌟 Core Features
-
-- **Authentication & Onboarding**: Secure JWT-based registration, profile setup, and customizable learning preferences.
-- **Personalized AI Study Plans**: Dynamic, daily-scheduled roadmaps adapted to user exam dates, available daily minutes, and subject priorities.
-- **Adaptive Study Engine**: Automatic detection of overdue items with non-destructive, capacity-aware schedule rebalancing.
-- **Smart Practice & AI Quiz Engine**: Adaptive practice generator offering multiple-choice, true/false, and short-answer questions with instant feedback and answer security.
-- **Knowledge Tracking & Heuristic Map**: Heuristic-based understanding metrics (New, Learning, Needs Review, Strong) with spaced repetition review triggers.
-- **Interactive AI Mentor**: Socratic study assistant that explains difficult concepts, breaks down problems, and references user goals.
-- **Daily Learning Coach**: Proactive daily motivational guidance and priority task recommendations.
-- **Progress Analytics & Streaks**: Comprehensive statistics tracking study time, task completion, practice accuracy, and consecutive day streaks.
-- **Notification Center & Preferences**: Granular notifications for task reminders, streak milestones, achievement unlocks, and review alerts.
+EduFlow is an intelligent, modern educational study companion and learning management platform. It combines adaptive study plans, spaced repetition flashcards, course delivery, secure quizzes, virtual currency economies, and AI mentoring into a scalable, production-hardened MongoDB backend.
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## 🌟 Complete Architecture & Capabilities
 
-### Frontend
-- **Framework**: React 18 with Vite
-- **Routing**: React Router DOM (v6) with lazy-loaded route splitting
-- **Styling**: Tailwind CSS & Lucide Icons
-- **Resilience**: Global React ErrorBoundary & responsive UI for mobile, tablet, and desktop
-
-### Backend
-- **Runtime**: Node.js (ES Modules)
-- **Framework**: Express.js
-- **Database**: MongoDB with Mongoose ODM
-- **Security**: Helmet security headers, CORS origin whitelisting, bcryptjs password hashing, JWT authentication, and Express Rate Limiting
-- **AI Integration**: OpenAI SDK with server-side validation and fallback resilience
+### Core Modules & Collections (21 Collections)
+1. **users**: User profiles, normalized emails, secure password hashes, roles (`user`, `admin`), account statuses (`active`, `suspended`, `deleted`), and soft-delete (`deletedAt`).
+2. **sessions**: Hashed refresh tokens (`tokenHash`), TTL indexes on `expiresAt`, client context tracking (`userAgent`, `ipHash`), and token rotation with reuse detection.
+3. **courses**: Catalog of courses with unique slugs, categories, levels, instructor references, statuses (`draft`, `published`, `archived`), and soft-delete.
+4. **lessons**: Ordered lessons belonging to a single course with compound unique constraints (`courseId + order`, `courseId + slug`).
+5. **enrollments**: User course registrations with compound unique index (`userId + courseId`) preventing duplicate active enrollments.
+6. **progress**: Atomic lesson progress with compound unique index (`userId + lessonId`), watch time, and completion tracking.
+7. **quizzes**: Embedded question sets with passing scores and DTO serializers stripping `correctAnswer` and `explanation` from student payloads.
+8. **quizAttempts**: Server-calculated scores, percentages, and pass/fail states with verified answer evaluations.
+9. **flashcards**: Normalized flashcards belonging to decks with hints and difficulties.
+10. **flashcardProgress**: Server-side SuperMemo-2 (SM-2) spaced repetition engine calculating `easeFactor`, `interval`, `repetitions`, and `dueAt`.
+11. **achievements**: Configurable system achievements with conditions and virtual currency rewards.
+12. **userAchievements**: Unlocked achievement records with compound unique index (`userId + achievementId`) and atomic reward granting.
+13. **leaderboardEntries**: Pre-aggregated, indexed rankings across time periods (`daily`, `weekly`, `monthly`, `allTime`) optimized for low memory usage.
+14. **wallets**: User balance accounts storing virtual currencies (`coins`, `gems`, `tickets`) with non-negative constraints.
+15. **walletTransactions**: Auditable ledger tracking all balance modifications (`earn`, `spend`, `refund`, `purchase`, `reward`) with idempotency keys.
+16. **shopItems**: Virtual items with currency types, active statuses, and stock tracking.
+17. **inventories**: User items with compound unique index (`userId + itemId`) and quantity tracking.
+18. **notifications**: Cursor-paginated notification center with compound index (`userId + read + createdAt`).
+19. **aiConversations**: AI Mentor conversation threads.
+20. **aiMessages**: Chronologically ordered messages in conversation threads with role enforcement (`user`, `assistant`, `system`).
+21. **auditLogs**: Tamper-evident admin action audit trails (`adminUserId`, `action`, `targetType`, `targetId`, `metadata`).
 
 ---
 
-## 📁 Project Structure
+## 🏛️ Entity Relationship Diagram
 
 ```text
-EduFlow/
-├── .env.example               # Frontend environment template
-├── package.json               # Frontend dependencies and build scripts
-├── vite.config.js             # Vite configuration
-├── src/
-│   ├── components/            # Reusable UI components & ErrorBoundary
-│   │   ├── achievements/      # Achievement badges & showcases
-│   │   ├── knowledge/         # Knowledge map & review cards
-│   │   ├── landing/           # Landing page sections
-│   │   ├── notifications/     # Notification drawer & badge
-│   │   ├── practice/          # Quiz player, progress, and history
-│   │   ├── study-plan/        # Plan views & adaptation modal
-│   │   └── ui/                # Button, modal, loading screens
-│   ├── context/               # AuthContext & global state
-│   ├── layouts/               # MainLayout with responsive navbar & footer
-│   ├── pages/                 # Dashboard, StudyPlan, Mentor, Practice, Progress, etc.
-│   └── services/              # Client API connectors
-│
-└── backend/
-    ├── .env.example           # Backend environment template
-    ├── package.json           # Backend dependencies and test scripts
-    ├── src/
-    │   ├── app.js             # Express app setup, security & middleware
-    │   ├── server.js          # DB connection & server initialization
-    │   ├── config/            # Database configuration
-    │   ├── controllers/       # Route controllers (Auth, Study, Practice, Knowledge, etc.)
-    │   ├── middleware/        # JWT auth, input validation, centralized error handler
-    │   ├── models/            # Mongoose schemas with compound indexes
-    │   ├── routes/            # Express route definitions
-    │   ├── seed/              # Demo account seeder
-    │   └── services/          # Business logic, AI engine, heuristics, notifications
-    └── tests/
-        └── api.test.js        # Automated integration test suite
+USER
+ │
+ ├── Session (hashed refresh tokens, TTL, ipHash, userAgent)
+ │
+ ├── Enrollment ─────────────── Course
+ │                                │
+ │                                └── Lesson
+ │                                     │
+ │                                     ├── Quiz
+ │                                     │    └── QuizAttempt (server-calculated)
+ │                                     │
+ │                                     └── Flashcard
+ │                                          └── FlashcardProgress (server SM-2)
+ │
+ ├── Progress (watchTime, position, completion)
+ │
+ ├── Wallet (coins, gems, tickets, atomic updates)
+ │    └── WalletTransaction (idempotent, audit trail)
+ │
+ ├── Inventory ─────────────── ShopItem (active, stock, price, currency)
+ │
+ ├── UserAchievement ───────── Achievement (conditionType, conditionValue, reward)
+ │
+ ├── LeaderboardEntry (daily, weekly, monthly, allTime)
+ │
+ ├── Notification (cursor paginated, readAt)
+ │
+ ├── AIConversation
+ │    └── AIMessage (paginated, role: user|assistant|system)
+ │
+ └── AuditLog (admin actions, target, sanitized metadata)
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## ⚙️ Environment Configuration
 
-### Backend Configuration (`backend/.env`)
-
-Create `backend/.env` based on `backend/.env.example`:
+### Backend Environment Variables (`backend/.env`)
 
 ```env
+# Server Port
 PORT=5000
+
+# Environment Mode (development | production | test)
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/eduflow
-JWT_SECRET=your_super_secret_jwt_key_here
-CLIENT_URL=http://localhost:5173
-AI_API_KEY=your_openai_api_key_here
+
+# MongoDB Atlas Production Connection URI
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/eduflow?retryWrites=true&w=majority
+MONGODB_DB_NAME=eduflow
+
+# Connection Pool Settings
+MONGODB_MAX_POOL_SIZE=50
+MONGODB_MIN_POOL_SIZE=5
+
+# High-Entropy JWT Secrets (min 32 characters, e.g. `openssl rand -hex 32`)
+JWT_ACCESS_SECRET=your_production_high_entropy_access_secret_min_32_characters_here
+JWT_REFRESH_SECRET=your_production_high_entropy_refresh_secret_min_32_characters_here
+
+# Allowed Frontend Client Origin(s) (comma-separated)
+CLIENT_URL=http://localhost:5173,http://localhost:5174
+
+# OpenAI API Key (server-side only)
+AI_API_KEY=sk-your-openai-api-key-here
 AI_MODEL=gpt-4o-mini
 ```
 
-### Frontend Configuration (`.env`)
-
-Create `.env` in the project root:
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
+*(Note: Legacy variable names `MONGO_URI` and `JWT_SECRET` are also supported as automated fallbacks).*
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation & Local Database Setup
 
 ### 1. Prerequisites
-- Node.js (v18 or higher)
-- MongoDB running locally or a MongoDB Atlas URI
+- **Node.js**: v18+ or v20+
+- **MongoDB**: Local MongoDB instance (`mongodb://localhost:27017/eduflow`) or MongoDB Atlas cluster.
 
 ### 2. Backend Setup
 ```bash
 cd backend
 npm install
-npm run start
+cp .env.example .env
+# Edit .env with your MongoDB Atlas or local URI
 ```
-*The backend API will start on `http://localhost:5000`.*
 
 ### 3. Frontend Setup
 ```bash
@@ -121,66 +124,69 @@ npm run start
 npm install
 npm run dev
 ```
-*The frontend client will open on `http://localhost:5173`.*
+
+---
+
+## 💾 Seed & Migration Commands
+
+### Seed Production Development Data
+Generates admin and student accounts, courses, lessons, quizzes, flashcards, achievements, and shop items idempotently:
+```bash
+cd backend
+npm run seed:production
+```
+
+**Seeded Test Credentials**:
+- **Admin**: `admin@eduflow.test` / `Password123!` (Role: `admin`)
+- **Student**: `student@eduflow.test` / `Password123!` (Role: `user`)
+
+### Data Migration
+Non-destructive backfill for existing production records (provisions missing wallets and user display names):
+```bash
+cd backend
+npm run migrate
+```
 
 ---
 
 ## 🧪 Testing & Verification
 
-### Running Automated Test Suite
+The test suite runs against the native Node.js test runner (`node --test`):
+
 ```bash
-# Run 38 Integration Tests from root:
+cd backend
+
+# Run the complete test suite (88 automated integration tests):
+npm run test:all
+
+# Run standard API integration tests (38 tests):
 npm test
 
-# Run 19 Adversarial Security Tests from root:
+# Run adversarial penetration & security tests (19 tests):
 npm run test:adversarial
 
-# Run All Tests combined:
-npm run test:all
+# Run production MongoDB architecture test suite (31 tests):
+npm run test:production
 ```
-*Executes the 57 comprehensive automated test cases covering authentication, authorization, IDOR isolation, quiz engine atomic locks, knowledge tracking, AI timeouts, and adversarial penetration vectors.*
 
-### Running Frontend Build
+### Frontend Build
 ```bash
 npm run build
 ```
 
 ---
 
-## 💼 Investor Demo Mode & Seeding
+## 🔒 Security Hardening & Concurrency Architecture
 
-To quickly populate a rich, fully populated demo account for presentations:
-
-```bash
-cd backend
-npm run seed:demo
-```
-
-### Demo Credentials
-- **Email**: `demo@eduflow.app`
-- **Password**: `DemoPassword123!`
-
-### Demo Highlights
-1. **Dashboard**: Daily greeting, active streak, daily coach recommendation, today's schedule.
-2. **Study Plan**: 14-day interactive plan with past completed tasks and upcoming revisions.
-3. **Practice**: Cached questions across CS and Mathematics with instant feedback.
-4. **Knowledge Map**: Visual mastery levels (Strong, Needs Review, Learning) with review triggers.
-5. **AI Mentor**: Context-aware educational assistant with previous chat history.
-6. **Notifications & Achievements**: Badges unlocked and realistic digest reminders.
-
----
-
-## 🔒 Security & Reliability Measures
-
-- **No Secret Leaks**: All AI API keys and JWT signing secrets remain server-side.
-- **Answer Security**: Practice questions never expose `correctAnswer` or `explanation` in initial payloads.
-- **Resource Ownership**: All user documents are strictly scoped to the authenticated `req.user._id`.
-- **Centralized Error Handling**: Sanitized 500 error messages in production with zero leaked stack traces or DB internals.
-- **MongoDB Hardening**: Mass assignment whitelisting and structured query parameters prevent NoSQL injection.
-- **Rate Limiting**: Auth endpoints and AI generators are protected against brute-force and high-frequency abuse.
-- **UI Error Boundary**: Prevents blank screens during unexpected rendering faults with intuitive recovery.
+1. **Answer Leakage Prevention**: Student quiz payloads strictly omit `correctAnswer` and `explanation`. Scores, percentages, and passing statuses are evaluated entirely on the server.
+2. **Atomic Multi-Document Transactions**: Shop purchases, achievement unlocks, and balance transfers execute inside MongoDB transactions with automated standalone fallback and compensation logic.
+3. **Race Condition Prevention**: Spending and economy operations use atomic preconditions (`$inc: { [currency]: -amount }` with `{ [currency]: { $gte: amount } }`). Balances can never fall below zero under concurrent load.
+4. **Idempotency Protection**: Sensitive financial operations support unique idempotency keys (`idempotencyKey`), preventing double-charging on network retries.
+5. **Session Management & Refresh Rotation**: Refresh tokens are stored as SHA-256 hashes in MongoDB and transmitted exclusively via `httpOnly`, `secure`, `SameSite` cookies. Token reuse triggers immediate revocation across all user sessions.
+6. **Server-Side RBAC**: Admin-only routes (`POST /api/courses`, `POST /api/quizzes`, `POST /api/shop/items`, `POST /api/wallet/adjust`) are protected by `requireRole('admin')` middleware.
+7. **Health Monitoring**: `GET /health` and `GET /health/db` provide granular operational metrics without exposing sensitive connection strings or database credentials.
 
 ---
 
 ## 📄 License
-MIT License. Built for students and lifelong learners.
+MIT License. Built for scalable, production-grade educational technology.

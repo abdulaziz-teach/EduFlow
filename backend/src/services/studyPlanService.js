@@ -1,89 +1,67 @@
 import StudyPlan from '../models/StudyPlan.js';
-import { generateStudyPlanAI } from './aiService.js';
 import * as knowledgeService from './knowledgeService.js';
-import KnowledgeTopic from '../models/KnowledgeTopic.js';
 import * as achievementService from './achievementService.js';
 
-const VALID_TASK_TYPES = ['learning', 'practice', 'revision', 'quiz'];
+const PLAN_COPY = {
+  en: {
+    title: 'Rule-based study plan',
+    summary: (goal, level, minutes, session, breakMinutes, time) =>
+      `A practical ${level} plan for ${goal}. It schedules up to ${minutes} focused minutes per ${time} study day in sessions of no more than ${session} minutes, with a suggested ${breakMinutes}-minute break between sessions. Breaks are additional to focused study time. This is a transparent, rule-based suggestion, not a guarantee of results.`,
+    focus: (subject, topic) => `${subject}: ${topic}`,
+    task: {
+      learning: (topic, level) => `Review ${topic} with ${level}-level explanations`,
+      practice: (topic) => `Practice ${topic} with a short set of problems`,
+      revision: (topic) => `Recall key ideas from ${topic}`,
+      quiz: (topic) => `Check your understanding of ${topic}`,
+    },
+    level: { beginner: 'beginner', intermediate: 'intermediate', advanced: 'advanced', revision: 'revision' },
+    times: { morning: 'morning', afternoon: 'afternoon', evening: 'evening', anytime: 'flexible' },
+  },
+  ru: {
+    title: 'Учебный план по правилам',
+    summary: (goal, level, minutes, session, breakMinutes, time) =>
+      `Практичный план уровня «${level}» для цели «${goal}». В ${time} запланировано не более ${minutes} минут занятий блоками до ${session} минут с рекомендуемым перерывом ${breakMinutes} минут между блоками. Перерывы не входят во время занятий. Это прозрачная рекомендация по правилам, а не гарантия результата.`,
+    focus: (subject, topic) => `${subject}: ${topic}`,
+    task: {
+      learning: (topic, level) => `Повторите тему «${topic}» с объяснениями уровня «${level}»`,
+      practice: (topic) => `Решите несколько заданий по теме «${topic}»`,
+      revision: (topic) => `Вспомните основные идеи темы «${topic}»`,
+      quiz: (topic) => `Проверьте понимание темы «${topic}»`,
+    },
+    level: { beginner: 'начальный', intermediate: 'средний', advanced: 'продвинутый', revision: 'повторение' },
+    times: { morning: 'утром', afternoon: 'днём', evening: 'вечером', anytime: 'в удобное время' },
+  },
+  uz: {
+    title: 'Qoidalarga asoslangan o‘quv rejasi',
+    summary: (goal, level, minutes, session, breakMinutes, time) =>
+      `“${goal}” maqsadi uchun ${level} darajasiga mos amaliy reja. ${time} o‘qish kunida ${minutes} daqiqagacha, har biri ${session} daqiqadan oshmaydigan mashg‘ulotlar rejalashtiriladi; ular orasida ${breakMinutes} daqiqalik tanaffus tavsiya etiladi. Tanaffus o‘qish vaqtiga kirmaydi. Bu shaffof, qoidalarga asoslangan tavsiya bo‘lib, natijani kafolatlamaydi.`,
+    focus: (subject, topic) => `${subject}: ${topic}`,
+    task: {
+      learning: (topic, level) => `“${topic}” mavzusini ${level} darajadagi tushuntirish bilan takrorlang`,
+      practice: (topic) => `“${topic}” bo‘yicha bir nechta mashq bajaring`,
+      revision: (topic) => `“${topic}” mavzusining asosiy g‘oyalarini eslang`,
+      quiz: (topic) => `“${topic}” mavzusini qanchalik tushunganingizni tekshiring`,
+    },
+    level: { beginner: 'boshlang‘ich', intermediate: 'o‘rta', advanced: 'ilg‘or', revision: 'takrorlash' },
+    times: { morning: 'ertalab', afternoon: 'kunduzi', evening: 'kechqurun', anytime: 'qulay vaqtda' },
+  },
+};
 
-/**
- * Validate the AI-generated plan structure before saving.
- * Returns { valid: true } or { valid: false, reason }.
- */
-function validateAIPlan(plan, { subjects, totalDays, dailyMinutes }) {
-  if (!plan || typeof plan !== 'object') {
-    return { valid: false, reason: 'AI response is not a valid object' };
+export function buildRuleBasedPlan(user, options = {}) {
+  const subjects = Array.isArray(user?.subjects)
+    ? user.subjects.filter((subject) => typeof subject === 'string' && subject.trim())
+    : [];
+  if (!user || subjects.length === 0 ||
+      !Number.isInteger(user.dailyStudyMinutes) || user.dailyStudyMinutes < 1) {
+    throw new Error('STUDY_PROFILE_INCOMPLETE');
+  }
+  if (user.age !== undefined && user.age !== null &&
+      (!Number.isInteger(user.age) || user.age < 5 || user.age > 100)) {
+    throw new Error('INVALID_AGE');
   }
 
-  if (!plan.title || typeof plan.title !== 'string') {
-    return { valid: false, reason: 'Missing or invalid title' };
-  }
-
-  if (!plan.summary || typeof plan.summary !== 'string') {
-    return { valid: false, reason: 'Missing or invalid summary' };
-  }
-
-  if (!Array.isArray(plan.days) || plan.days.length === 0) {
-    return { valid: false, reason: 'Missing or empty days array' };
-  }
-
-  // Validate each day
-  for (const day of plan.days) {
-    if (day.dayNumber === undefined || typeof day.dayNumber !== 'number') {
-      return { valid: false, reason: `Day has missing or invalid dayNumber` };
-    }
-
-    if (!day.focus || typeof day.focus !== 'string') {
-      return { valid: false, reason: `Day ${day.dayNumber} missing or invalid focus` };
-    }
-
-    if (!Array.isArray(day.tasks) || day.tasks.length === 0) {
-      return { valid: false, reason: `Day ${day.dayNumber} has no tasks` };
-    }
-
-    let dayDuration = 0;
-
-    for (const task of day.tasks) {
-      if (!task.title || typeof task.title !== 'string') {
-        return { valid: false, reason: `Invalid task title in day ${day.dayNumber}` };
-      }
-
-      if (!task.subject || typeof task.subject !== 'string') {
-        return { valid: false, reason: `Invalid task subject in day ${day.dayNumber}` };
-      }
-
-      if (typeof task.duration !== 'number' || task.duration <= 0) {
-        return { valid: false, reason: `Invalid task duration in day ${day.dayNumber}` };
-      }
-
-      if (!VALID_TASK_TYPES.includes(task.type)) {
-        return { valid: false, reason: `Invalid task type "${task.type}" in day ${day.dayNumber}` };
-      }
-
-      dayDuration += task.duration;
-    }
-
-    // Daily workload check: sum(task.duration) must NOT significantly exceed user.dailyStudyMinutes
-    // Allow up to 10% over daily limit
-    if (dayDuration > dailyMinutes * 1.1) {
-      return {
-        valid: false,
-        reason: `Day ${day.dayNumber} workload (${dayDuration} min) exceeds daily limit of ${dailyMinutes} min`,
-      };
-    }
-  }
-
-  return { valid: true };
-}
-
-/**
- * Generate a study plan for the given user.
- * Returns the saved StudyPlan document.
- */
-export async function generatePlan(user, options = {}) {
   const goalDescription = user.goal?.description || '';
   const goalType = user.goal?.type || 'General study';
-
   let startDate = new Date();
   if (options.startDate) {
     const parsedDate = new Date(options.startDate);
@@ -107,95 +85,113 @@ export async function generatePlan(user, options = {}) {
     endDate.setDate(endDate.getDate() + 13);
   }
 
-  const totalDays = Math.max(
-    1,
+  const availableDays = Math.max(1, Math.min(30,
     Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
-  );
+  ));
+  const age = Number.isInteger(user.age) ? user.age : null;
+  const ageSessionLimit = age === null ? 40 : age < 13 ? 15 : age < 18 ? 25 : 45;
+  const maxSessionMinutes = user.level === 'beginner'
+    ? Math.min(ageSessionLimit, age !== null && age < 18 ? ageSessionLimit : 30)
+    : ageSessionLimit;
+  const breakMinutes = age !== null && age < 13 ? 5 : 10;
+  const dailyLimit = age !== null && age < 13 ? 60 : age !== null && age < 18 ? 120 : 180;
+  const plannedMinutes = Math.min(user.dailyStudyMinutes || 0, dailyLimit, maxSessionMinutes * 4);
+  const locale = PLAN_COPY[user.preferredLanguage] ? user.preferredLanguage : 'en';
+  const copy = PLAN_COPY[locale];
+  const timePreference = copy.times[user.studySchedule?.preferredTime] || copy.times.anytime;
+  const level = ['beginner', 'intermediate', 'advanced', 'revision'].includes(user.level)
+    ? user.level
+    : 'intermediate';
+  const levelLabel = copy.level[level];
+  const weakTopics = Array.isArray(user.weakTopics) ? user.weakTopics.filter(Boolean) : [];
+  const preferredDays = user.studySchedule?.preferredDays || [];
+  const topicFor = (index) => (weakTopics.length
+    ? weakTopics[index % weakTopics.length]
+    : subjects[index % subjects.length]);
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const planDays = [];
+  for (let offset = 0; offset < availableDays; offset += 1) {
+    const date = new Date(startDate);
+    date.setUTCDate(date.getUTCDate() + offset);
+    const dayName = dayNames[date.getUTCDay()];
+    if (preferredDays.length && !preferredDays.includes(dayName)) continue;
 
-  // Cap at 30 days for MVP to keep AI output manageable
-  const cappedDays = Math.min(totalDays, 30);
-
-  // Get knowledge context for personalization
-  let knowledgeContext = null;
-  try {
-    const recs = await knowledgeService.getRecommendations(user._id);
-    const strongTopics = await KnowledgeTopic.find({ userId: user._id, status: 'strong' });
-
-    if (recs.length > 0 || strongTopics.length > 0) {
-      knowledgeContext = {
-        needsReview: recs.map((r) => r.topic),
-        strong: strongTopics.map((s) => s.topic),
-      };
-    }
-  } catch (err) {
-    console.error('Failed to get knowledge context for study plan generation:', err.message);
-  }
-
-  const aiInput = {
-    goal: goalDescription || goalType,
-    subjects: user.subjects,
-    dailyMinutes: user.dailyStudyMinutes,
-    totalDays: cappedDays,
-    startDate,
-    knowledgeContext,
-  };
-
-  // Call AI
-  let aiPlan;
-  try {
-    aiPlan = await generateStudyPlanAI(aiInput);
-  } catch (err) {
-    console.error('AI generation failed:', err.message);
-    throw new Error('AI_GENERATION_FAILED');
-  }
-
-  // Validate AI output
-  const validation = validateAIPlan(aiPlan, {
-    subjects: user.subjects,
-    totalDays: cappedDays,
-    dailyMinutes: user.dailyStudyMinutes,
-  });
-
-  if (!validation.valid) {
-    console.error('AI validation failed:', validation.reason);
-    throw new Error('AI_VALIDATION_FAILED');
-  }
-
-  // Map AI days to proper dates and add completed: false to all tasks
-  const days = aiPlan.days.map((day, i) => {
-    const dayDate = new Date(startDate);
-    dayDate.setDate(dayDate.getDate() + i);
-
-    return {
-      dayNumber: day.dayNumber || i + 1,
-      date: dayDate,
-      focus: day.focus,
-      tasks: day.tasks.map((task) => ({
-        title: task.title,
-        subject: task.subject,
-        duration: task.duration,
-        type: task.type,
+    const subject = subjects[planDays.length % subjects.length];
+    const topic = topicFor(planDays.length);
+    const tasks = [];
+    let remaining = plannedMinutes;
+    let session = 0;
+    while (remaining > 0) {
+      const duration = Math.min(maxSessionMinutes, remaining);
+      const types = level === 'revision'
+        ? ['revision', 'quiz']
+        : user.learningStyle === 'practice'
+          ? ['practice', 'quiz']
+          : user.learningStyle === 'theory'
+            ? ['learning', 'revision']
+            : user.learningStyle === 'flashcards'
+              ? ['revision', 'quiz']
+              : level === 'beginner'
+                ? ['learning', 'practice']
+                : ['learning', 'practice', 'quiz'];
+      const type = types[session % types.length];
+      tasks.push({
+        title: copy.task[type](topic, levelLabel),
+        subject,
+        duration,
+        type,
         completed: false,
-      })),
-    };
-  });
+      });
+      remaining -= duration;
+      session += 1;
+    }
 
-  // Save to DB
-  const studyPlan = await StudyPlan.create({
-    userId: user._id,
-    title: aiPlan.title,
-    summary: aiPlan.summary,
+    planDays.push({
+      dayNumber: planDays.length + 1,
+      date,
+      focus: copy.focus(subject, topic),
+      tasks,
+    });
+  }
+  if (!planDays.length && subjects.length && plannedMinutes > 0) {
+    const subject = subjects[0];
+    const topic = topicFor(0);
+    planDays.push({
+      dayNumber: 1,
+      date: startDate,
+      focus: copy.focus(subject, topic),
+      tasks: [{
+        title: copy.task[level === 'revision' ? 'revision' : 'learning'](topic, levelLabel),
+        subject,
+        duration: plannedMinutes,
+        type: level === 'revision' ? 'revision' : 'learning',
+        completed: false,
+      }],
+    });
+  }
+  const goal = goalDescription || goalType;
+
+  return {
+    title: copy.title,
+    summary: copy.summary(goal, levelLabel, plannedMinutes, maxSessionMinutes, breakMinutes, timePreference),
     goal: {
       type: goalType,
       description: goalDescription,
     },
-    dailyMinutes: user.dailyStudyMinutes,
+    dailyMinutes: plannedMinutes,
     startDate,
-    endDate: days[days.length - 1].date,
-    days,
-  });
+    endDate: planDays[planDays.length - 1]?.date || startDate,
+    days: planDays,
+    breakMinutes,
+  };
+}
 
-  return studyPlan;
+/**
+ * Generate and persist a transparent, rule-based plan for the authenticated user.
+ */
+export async function generatePlan(user, options = {}) {
+  const plan = buildRuleBasedPlan(user, options);
+  return StudyPlan.create({ userId: user._id, ...plan });
 }
 
 /**

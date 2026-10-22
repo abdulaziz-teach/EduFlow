@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Loader2, Map } from 'lucide-react';
 import knowledgeService from '../services/knowledge';
 import KnowledgeSummary from '../components/knowledge/KnowledgeSummary';
@@ -8,6 +9,7 @@ import ReviewRecommendation from '../components/knowledge/ReviewRecommendation';
 
 function Knowledge() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [topics, setTopics] = useState([]);
@@ -77,7 +79,7 @@ function Knowledge() {
       <div className="pt-24 pb-16 min-h-screen bg-[#0B0F19] text-text flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-          <p className="text-sm text-muted">Drawing your learning map...</p>
+          <p className="text-sm text-muted">{t('knowledge.loading')}</p>
         </div>
       </div>
     );
@@ -87,7 +89,7 @@ function Knowledge() {
 
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-[#0B0F19] min-h-screen text-text">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6 min-w-0">
         
         {/* Back Link */}
         <button
@@ -95,13 +97,13 @@ function Knowledge() {
           className="flex items-center gap-1.5 text-sm text-muted hover:text-text transition-colors cursor-pointer select-none"
         >
           <ArrowLeft className="w-4 h-4" />
-          Dashboard
+          {t('nav.dashboard')}
         </button>
 
         {/* Header Title */}
         <div className="mb-6 select-none">
-          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">Your Learning Map</h1>
-          <p className="text-sm text-muted">See what you&apos;ve been practicing and where more review may help.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">{t('knowledge.title')}</h1>
+          <p className="text-sm text-muted">{t('knowledge.subtitle')}</p>
         </div>
 
         {error && (
@@ -112,19 +114,19 @@ function Knowledge() {
 
         {!hasTopics ? (
           /* Empty map state */
-          <div className="rounded-2xl border border-white/5 bg-[#111827] p-8 text-center max-w-md mx-auto select-none">
+          <div className="rounded-2xl border border-white/5 bg-[#111827] p-6 sm:p-8 text-center max-w-md mx-auto select-none">
             <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
               <Map className="w-8 h-8 text-indigo-400" />
             </div>
-            <h2 className="text-xl font-bold text-text mb-3">Your Learning Map is empty</h2>
+            <h2 className="text-xl font-bold text-text mb-3">{t('knowledge.emptyTitle')}</h2>
             <p className="text-muted text-sm leading-relaxed mb-6">
-              Start studying and EduFlow will gradually build a picture of the topics you&apos;re practicing.
+              {t('knowledge.emptyDesc')}
             </p>
             <Link
               to="/dashboard"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all shadow-lg shadow-primary/20 cursor-pointer"
             >
-              Go to Dashboard
+              {t('knowledge.goToDashboard')}
             </Link>
           </div>
         ) : (
@@ -136,11 +138,11 @@ function Knowledge() {
             {/* Split layout: recommendations on side/bottom */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2 space-y-4">
-                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted select-none">Subjects Breakdown</h3>
+                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted select-none">{t('knowledge.subjectsBreakdown')}</h3>
                 <SubjectKnowledge subjects={subjects} topics={allTopics} />
               </div>
               <div className="space-y-4">
-                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted select-none">Next Action</h3>
+                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted select-none">{t('knowledge.nextAction')}</h3>
                 <ReviewRecommendation recommendations={recs} />
               </div>
             </div>

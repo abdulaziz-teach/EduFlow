@@ -4,15 +4,30 @@
     "howItWorks": "How it works",
     "mentor": "AI Mentor",
     "progress": "Progress",
+    "primary": "Primary navigation",
     "dashboard": "Dashboard",
     "studyPlan": "Study Plan",
     "practice": "Practice",
     "knowledge": "Knowledge",
     "profile": "Profile",
     "notifications": "Notifications",
+    "flashcards": "Flashcards",
+    "focusRoom": "Focus Room",
+    "smartNotes": "Smart Notes",
+    "leaderboard": "Leaderboard",
     "login": "Login",
     "logout": "Logout",
-    "startLearning": "Start Learning"
+    "startLearning": "Start Learning",
+    "changeLanguage": "Change language",
+    "search": "Search",
+    "searchPlaceholder": "Search...",
+    "discover": "Discover",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "billing": "Billing",
+    "admin": "Admin",
+    "billingSubscriptions": "Billing & subscriptions",
+    "adminOperations": "Admin & operations"
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -50,7 +65,162 @@
     "minutesPerDay": "minutes / day",
     "continue": "Continue",
     "back": "Back",
-    "finish": "Finish & Generate Plan"
+    "finish": "Complete onboarding",
+    "questionCount": "Question {{current}} of {{total}}",
+    "ageTitle": "How old are you?",
+    "ageSubtitle": "We use your age only to suggest comfortable study-session lengths. Your age stays private to your account.",
+    "ageLabel": "Age",
+    "ageHelp": "Enter a whole number from 5 to 100.",
+    "ageInvalid": "Enter a whole number from 5 to 100.",
+    "steps": {
+      "goal": "Goal",
+      "subjects": "Subjects",
+      "level": "Level",
+      "focus": "Focus",
+      "time": "Time",
+      "schedule": "Schedule",
+      "language": "Language",
+      "age": "Age"
+    },
+    "goalQuestionTitle": "What is your primary learning goal?",
+    "goalQuestionSubtitle": "Your goal helps shape the topics and pacing in your study plan.",
+    "goals": {
+      "exam": {
+        "label": "Prepare for an exam",
+        "description": "Plan a focused path toward an upcoming test or certification."
+      },
+      "grades": {
+        "label": "Improve my grades",
+        "description": "Strengthen challenging topics and support your coursework."
+      },
+      "learn": {
+        "label": "Learn a new subject or skill",
+        "description": "Build knowledge step by step, starting from the foundations."
+      },
+      "habit": {
+        "label": "Build a daily study habit",
+        "description": "Create a consistent routine with manageable study sessions."
+      }
+    },
+    "subjectsQuestionTitle": "Which subjects do you want to study?",
+    "subjectsQuestionSubtitle": "Choose one or more subjects for your personalized plan.",
+    "subjectNames": {
+      "mathematics": "Mathematics",
+      "english": "English",
+      "computerScience": "Computer Science",
+      "physics": "Physics",
+      "biology": "Biology",
+      "chemistry": "Chemistry",
+      "history": "History",
+      "economics": "Economics",
+      "psychology": "Psychology",
+      "other": "Other"
+    },
+    "levelQuestionTitle": "What is your current knowledge level?",
+    "levelQuestionSubtitle": "Choose the level that best describes your experience, not your age.",
+    "levels": {
+      "beginner": {
+        "label": "Beginner",
+        "description": "Start with fundamentals and clear, step-by-step tasks.",
+        "badge": "Level 1"
+      },
+      "intermediate": {
+        "label": "Intermediate",
+        "description": "Build on the basics with more involved practice.",
+        "badge": "Level 2"
+      },
+      "advanced": {
+        "label": "Advanced",
+        "description": "Work on challenging problems and deeper understanding.",
+        "badge": "Level 3"
+      },
+      "revision": {
+        "label": "Revision",
+        "description": "Review key ideas and practice recalling what you know.",
+        "badge": "Level 4"
+      }
+    },
+    "focusQuestionTitle": "Which subjects or topics feel challenging?",
+    "focusQuestionSubtitle": "Optional. Add up to 20 topics, separated by commas, to prioritize in your plan.",
+    "focusLabel": "Topics to focus on",
+    "focusPlaceholder": "For example: algebra, essay writing, chemical reactions",
+    "timeQuestionTitle": "How much daily study time fits your schedule?",
+    "timeQuestionSubtitle": "The plan will stay within this focused study-time limit.",
+    "timeOptions": {
+      "20": {
+        "label": "15–20 minutes",
+        "description": "A light, consistent daily pace"
+      },
+      "45": {
+        "label": "30–45 minutes",
+        "description": "A balanced daily study session"
+      },
+      "60": {
+        "label": "1 hour",
+        "description": "More room for concepts and practice"
+      },
+      "120": {
+        "label": "2+ hours",
+        "description": "Longer preparation, split into shorter sessions"
+      }
+    },
+    "scheduleQuestionTitle": "When and how do you prefer to study?",
+    "scheduleQuestionSubtitle": "Choose the days and time that fit your routine.",
+    "preferredDays": "Preferred study days",
+    "preferredTime": "Preferred time",
+    "weekdays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "times": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "anytime": "Flexible"
+    },
+    "learningStyleTitle": "How do you learn best?",
+    "styles": {
+      "practice": {
+        "label": "Practice first",
+        "description": "Learn through problems and short quizzes."
+      },
+      "theory": {
+        "label": "Concepts first",
+        "description": "Begin with clear explanations and examples."
+      },
+      "flashcards": {
+        "label": "Flashcards and review",
+        "description": "Use recall practice to revisit key facts."
+      },
+      "mixed": {
+        "label": "A balanced mix",
+        "description": "Combine concepts, practice, and review."
+      }
+    },
+    "examName": "Exam or test name",
+    "goalName": "Specific goal",
+    "examPlaceholder": "For example: SAT Math, IELTS, or a midterm",
+    "goalPlaceholder": "For example: learn web development",
+    "targetDate": "Target date or deadline",
+    "optional": "Optional",
+    "languageQuestionTitle": "Which language do you prefer?",
+    "languageQuestionSubtitle": "We will save this choice with your learning profile.",
+    "languageNames": {
+      "en": "English",
+      "ru": "Русский",
+      "uz": "O‘zbekcha"
+    },
+    "profilePreview": "Your profile: {{subjects}} · {{minutes}} min/day",
+    "chooseSubjects": "Choose subjects",
+    "chooseStudyTime": "Choose study time",
+    "saving": "Saving your learning profile...",
+    "saveError": "We could not save your profile. Your answers are still available to try again.",
+    "draftSyncError": "Your answers are saved on this device. They will sync when the connection returns."
   },
   "dashboard": {
     "welcome": "Welcome back",
@@ -66,11 +236,88 @@
     "viewAll": "View All",
     "minutesStudied": "Minutes Studied",
     "tasksCompleted": "Tasks Completed",
-    "practiceAccuracy": "Practice Accuracy"
+    "practiceAccuracy": "Practice Accuracy",
+    "loadingGoals": "Reviewing your saved goals",
+    "loadingSessions": "Setting up study sessions",
+    "balancingWorkload": "Balancing your daily workload",
+    "greetingMorning": "Good morning, {{name}} 👋",
+    "greetingAfternoon": "Good afternoon, {{name}} 👋",
+    "greetingEvening": "Good evening, {{name}} 👋",
+    "profileReady": "Your learning profile is ready.",
+    "goal": "Goal",
+    "dailyStudyTime": "Daily study time",
+    "subjects": "Subjects",
+    "target": "Target",
+    "currentLevel": "Current level",
+    "focusTopics": "Focus topics",
+    "noFocusTopics": "No focus topics added",
+    "studySchedule": "Study schedule",
+    "flexibleDays": "Flexible days",
+    "learningLanguage": "Learning language",
+    "editProfile": "Edit learning profile",
+    "notSet": "Not set",
+    "reviewPastMistakes": "Review Past Mistakes",
+    "todayLearning": "Today's Learning",
+    "minStudied": "{{count}} min studied",
+    "tasksCompletedCount": "{{count}} tasks completed today",
+    "streak": "Streak",
+    "dayStreak": "{{count}} day streak",
+    "notStartedToday": "You haven't started studying today.",
+    "startFirstTask": "Start today's first task →",
+    "studyFocus": "Study focus",
+    "loadingPlan": "Loading your study plan...",
+    "viewStudyPlan": "View study plan",
+    "noPlanFocus": "Create a study plan to see a daily focus based on your schedule and progress.",
+    "unfinishedTasks": "You have unfinished tasks",
+    "unfinishedTasksDesc": "{{count}} task(s) from previous days are still incomplete. Let's catch up!",
+    "studyNow": "Study now",
+    "learningMap": "Learning Map",
+    "topicsTracked": "{{count}} topics tracked",
+    "viewLearningMap": "View Learning Map",
+    "topicsNeedReview": "⚠️ {{count}} topic(s) may need review",
+    "smartPractice": "Smart Practice",
+    "recommendedTopic": "Recommended Topic",
+    "startPractice": "Start Practice",
+    "noPracticeRec": "No specific practice recommendation yet. Choose a topic from your study plan.",
+    "lastPractice": "Last practice:",
+    "accuracyValue": "{{accuracy}}% accuracy",
+    "recentUpdates": "Recent Updates",
+    "allCaughtUp": "You're all caught up. No recent updates.",
+    "todayTasks": "Today's Tasks",
+    "startStudying": "Start studying",
+    "noTasksScheduled": "You're all caught up 🎉 No study tasks scheduled for today.",
+    "journeyStartsHere": "Your learning journey starts here. Create your personalized study plan.",
+    "createPlan": "Create Study Plan",
+    "yourPlan": "Your study plan",
+    "daysCount": "{{count}} days",
+    "minPerDay": "{{count}} min/day",
+    "openPlan": "Open study plan",
+    "personalizedPlan": "Your personalized study plan",
+    "createPlanDesc": "Create a plan based on your goals, subjects and available study time.",
+    "createMyPlan": "Create my study plan",
+    "toolkit": {
+      "title": "Smart Study Toolkit",
+      "subtitle": "Supercharge your learning",
+      "spacedRepetition": "Spaced Repetition",
+      "pomodoro": "Pomodoro & Lo-Fi",
+      "aiSummarizer": "AI Summarizer",
+      "rankings": "Rankings & XP"
+    },
+    "mentorCard": {
+      "title": "AI Mentor",
+      "desc": "Need help understanding something? Ask your personal AI Mentor about today's study topics.",
+      "ask": "Ask AI Mentor →"
+    },
+    "goals": {
+      "grades": "Improve my grades",
+      "exam": "Prepare for an exam",
+      "learn": "Learn a new subject",
+      "habit": "Build a study habit"
+    }
   },
   "studyPlan": {
     "title": "Study Roadmap",
-    "subtitle": "Your AI-powered adaptive study plan tailored to your timeline and goals.",
+    "subtitle": "A transparent, rule-based plan tailored to your profile and schedule.",
     "adaptPlan": "Adapt Schedule",
     "generating": "Generating your optimal plan...",
     "day": "Day {{number}}",
@@ -80,11 +327,26 @@
     "markDone": "Mark as Done",
     "startTask": "Start Task",
     "noPlan": "No active study plan found.",
-    "createPlan": "Create Study Plan"
+    "createPlan": "Create Study Plan",
+    "noPlanTitle": "No study plan yet",
+    "noPlanSubtitle": "Create a practical roadmap using your saved learning goals, subjects, level, and schedule.",
+    "ruleBased": "Rule-based recommendation — not AI-generated",
+    "personalizedRoadmap": "Your personalized roadmap",
+    "creatingPlan": "Creating your personalized plan...",
+    "exportCalendar": "Export calendar",
+    "planProgress": "Plan progress",
+    "tasksCompletedCount": "{{completed}} / {{total}} tasks completed",
+    "takeBreak": "Suggested break: {{minutes}} minutes between study sessions",
+    "dailySchedule": "{{minutes}} focused minutes per study day",
+    "lastAdjusted": "Last adjusted: {{date}}",
+    "adaptation": {
+      "bannerTitle": "Your study pace has changed",
+      "adaptButton": "Adapt Study Plan"
+    }
   },
   "practice": {
     "title": "Smart Practice & Quizzes",
-    "subtitle": "Reinforce concepts with active recall and AI-generated practice questions.",
+    "subtitle": "Practice each subject with focused questions in your selected language.",
     "selectSubject": "Select Subject",
     "selectTopic": "Select Topic",
     "questionCount": "Number of Questions",
@@ -99,7 +361,42 @@
     "resultsTitle": "Practice Results",
     "score": "Your Score: {{score}}%",
     "retry": "Try Again",
-    "backToPractice": "Back to Practice"
+    "backToPractice": "Back to Practice",
+    "recommended": "Recommended practice",
+    "recommendationReason": "A topic from your learning profile that may benefit from more practice.",
+    "noTopicsTitle": "No study topics yet",
+    "noTopicsDescription": "Create a study plan or add a subject to your learning profile to start practicing.",
+    "configureTitle": "Set up a practice session",
+    "subjectLabel": "Subject",
+    "topicLabel": "Topic",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "questionSuffix": "questions",
+    "startSession": "Start practice",
+    "loadingSubjects": "Loading your study subjects...",
+    "generalTopic": "Foundations",
+    "recentHistory": "Recent practice history",
+    "historyEmptyTitle": "No practice history yet",
+    "historyEmptyDescription": "You have not completed a practice session. Choose a subject and begin.",
+    "accuracy": "Accuracy",
+    "correctOfTotal": "{{correct}} of {{total}} correct",
+    "sessionProgress": "Session progress",
+    "quitPractice": "Quit practice",
+    "confirmQuit": "Quit this practice session? Your progress will not be saved.",
+    "dashboard": "Dashboard",
+    "building": "Preparing your practice questions...",
+    "generateFailed": "Could not create practice questions. Please try again.",
+    "startFailed": "Could not start the practice session. Please try again.",
+    "submitFailed": "Could not submit your answer. Please try again.",
+    "completeFailed": "Could not finish the practice session. Opening the results page.",
+    "answerPlaceholder": "Type your answer here...",
+    "correctAnswer": "Correct answer:",
+    "correctFeedback": "Correct!",
+    "incorrectFeedback": "Not quite.",
+    "finishPractice": "Finish practice",
+    "nextQuestion": "Next question"
   },
   "mentor": {
     "title": "AI Study Mentor",
@@ -108,7 +405,29 @@
     "send": "Send",
     "thinking": "Mentor is thinking...",
     "clearChat": "Clear Conversation",
-    "suggestionsTitle": "Try asking about:"
+    "suggestionsTitle": "Try asking about:",
+    "chats": "Chats",
+    "newChat": "New Chat",
+    "learnerProfile": "Learner Profile",
+    "weakness": "Weakness: {{topic}}",
+    "noChats": "No recent chats",
+    "deleteChat": "Delete Chat",
+    "explain": "Explain",
+    "socratic": "Socratic",
+    "socraticTutor": "Socratic Tutor",
+    "directExplanation": "Direct Explanation",
+    "socraticActive": "Socratic Tutor Active",
+    "explainActive": "Direct Explanation Active",
+    "socraticDesc": "Mentor will guide you step-by-step with hints and questions rather than handing you the final answer.",
+    "explainDesc": "Mentor will provide structured explanations with foundational reasoning and examples.",
+    "groundingAll": "Grounding: All Subjects",
+    "practiceQuiz": "Practice Quiz",
+    "generatingQuiz": "Generating AI Practice Quiz...",
+    "practiceQuestions": "AI Practice Questions",
+    "socraticPlaceholder": "Ask a question or reply to the mentor’s hint...",
+    "explainPlaceholder": "Ask your mentor anything...",
+    "formulatingHint": "Mentor is formulating a hint...",
+    "groundedIn": "Grounded: {{course}}"
   },
   "knowledge": {
     "title": "Knowledge Map",
@@ -119,7 +438,21 @@
     "new": "New",
     "confidence": "Confidence",
     "lastPracticed": "Last practiced",
-    "reviewNow": "Review Now"
+    "reviewNow": "Review Now",
+    "loading": "Drawing your learning map...",
+    "emptyTitle": "Your Learning Map is empty",
+    "emptyDesc": "Start studying and EduFlow will gradually build a picture of the topics you're practicing.",
+    "goToDashboard": "Go to Dashboard",
+    "subjectsBreakdown": "Subjects Breakdown",
+    "nextAction": "Next Action",
+    "totalTopics": "Total Topics",
+    "strongTopics": "Strong Topics",
+    "needsReviewTopics": "Needs Review",
+    "newTopics": "New Topics",
+    "reviewRecommended": "Recommended for Review",
+    "practiceNow": "Practice Now",
+    "noReviewNeeded": "All caught up! No urgent review needed.",
+    "noTopicsSubject": "No topics practiced in this subject yet."
   },
   "progress": {
     "title": "Progress & Analytics",
@@ -129,13 +462,72 @@
     "masteryScore": "Average Mastery",
     "achievements": "Achievements",
     "unlocked": "Unlocked",
-    "locked": "Locked"
+    "locked": "Locked",
+    "loading": "Calculating learning statistics...",
+    "loadError": "Failed to load learning analytics. Please try again.",
+    "noActivity": "No study activity yet",
+    "startFirstSession": "Start your first study session to see your progress here.",
+    "goToPlan": "Go to Study Plan",
+    "createPlanFirst": "Create a Study Plan first",
+    "digestTitle": "7-Day Digest",
+    "weekMinutesStudied": "{{minutes}} minutes studied this week",
+    "noWeekSessions": "No study sessions recorded yet this week",
+    "topFocus": "Top focus: {{subject}} ({{minutes}} mins)",
+    "weeklyAccuracy": "Weekly Quiz Accuracy",
+    "studyTime": "Study Time",
+    "tasksDone": "Tasks Done",
+    "streak": "Streak",
+    "sessions": "Sessions",
+    "practiceSessions": "Practice Sessions",
+    "questionsAnswered": "Questions Answered",
+    "recentAccuracy": "Recent Accuracy",
+    "planProgress": "Study Plan Progress",
+    "tasksCompletedRatio": "{{completed}} of {{total}} tasks completed",
+    "noActivePlan": "No active study plan",
+    "createPlanToTrack": "Create a study plan first to track your learning journey.",
+    "subjectFocus": "Subject Focus",
+    "mostStudied": "Most studied",
+    "timeStudied": "{{time}} studied",
+    "learningConsistency": "Learning Consistency",
+    "activityRatio": "Activity Ratio",
+    "daysActiveRatio": "{{active}} of {{total}} days active",
+    "studyBySubject": "Study by Subject",
+    "noSubjectActivity": "No subject activity recorded yet.",
+    "tasksDoneCount": "{{count}} done",
+    "learningAreas": "Learning Areas",
+    "viewMap": "View map →",
+    "topicsTracked": "{{count}} topics tracked",
+    "needsReview": "needs review",
+    "studyActivity": "Study Activity",
+    "daysAgo30": "30 days ago",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "less": "Less",
+    "more": "More",
+    "recentActivity": "Recent Activity",
+    "noRecentSessions": "No recent study sessions recorded.",
+    "minStudied": "{{minutes}} min studied"
   },
   "notifications": {
     "title": "Notifications",
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications yet",
-    "viewAll": "View all notifications"
+    "viewAll": "View all notifications",
+    "clearAll": "Clear all",
+    "preferences": "Preferences",
+    "prefsTitle": "Notification Preferences",
+    "savePrefs": "Save Preferences",
+    "unreadOnly": "Only show unread",
+    "filters": {
+      "all": "All",
+      "dailyplan": "Daily Plans",
+      "streaks": "Streaks",
+      "quizzes": "Quizzes & Tasks",
+      "flashcards": "Flashcards",
+      "achievements": "Achievements",
+      "recommendations": "Recommendations",
+      "system": "System"
+    }
   },
   "profile": {
     "title": "Your Profile",
@@ -145,7 +537,63 @@
     "language": "Language",
     "saveChanges": "Save Changes",
     "savedSuccess": "Profile updated successfully!",
-    "dangerZone": "Danger Zone"
+    "dangerZone": "Danger Zone",
+    "age": "Age",
+    "ageInvalid": "Enter a whole number from 5 to 100.",
+    "notProvided": "Not provided",
+    "edit": "Edit profile",
+    "planPreferencesChanged": "Your learning preferences were updated. Review your study plan to adapt it to the new settings.",
+    "goalPlaceholder": "e.g. Prepare for a mathematics exam",
+    "languageOptions": "Uzbek, Russian, English",
+    "minutesValue": "{{count}} minutes",
+    "timeOptions": {
+      "30Minutes": "30 minutes",
+      "1Hour": "1 hour",
+      "2Hours": "2 hours",
+      "3PlusHours": "3+ hours"
+    },
+    "notifications": {
+      "description": "Choose which notifications and updates you want to receive.",
+      "enabled": "Allow notifications",
+      "enabledDescription": "Turn all notifications on or off.",
+      "studyReminders": "Study reminders",
+      "studyRemindersDescription": "Get reminders about upcoming and overdue study tasks.",
+      "reviewRecommendations": "Review recommendations",
+      "reviewRecommendationsDescription": "Get alerts when topics may need more review.",
+      "practiceSuggestions": "Practice suggestions",
+      "practiceSuggestionsDescription": "Get suggestions for short practice sessions on your topics.",
+      "streakNotifications": "Streak notifications",
+      "streakNotificationsDescription": "Get notified when you complete your daily study goal.",
+      "achievementAlerts": "Achievement alerts",
+      "achievementAlertsDescription": "Get notified when you unlock a new achievement.",
+      "studyPlanUpdates": "Study plan updates",
+      "studyPlanUpdatesDescription": "Get notified when your study plan is adjusted.",
+      "saveError": "Could not save your notification preference."
+    },
+    "achievements": {
+      "title": "Learning achievements",
+      "unlocked": "Unlocked on {{date}}",
+      "first_study_session": {
+        "title": "First study session",
+        "description": "Take the first step and complete a study session."
+      },
+      "first_practice": {
+        "title": "First practice",
+        "description": "Test your skills with your first practice quiz."
+      },
+      "10_practice_questions": {
+        "title": "10 practice questions",
+        "description": "Answer 10 practice questions on any topic."
+      },
+      "5_completed_tasks": {
+        "title": "5 completed tasks",
+        "description": "Complete 5 goals from your personalized study plan."
+      },
+      "7_day_streak": {
+        "title": "7-day study streak",
+        "description": "Study consistently for 7 days in a row."
+      }
+    }
   },
   "landing": {
     "heroBadge": "Next-Gen AI Learning Companion",
@@ -158,11 +606,110 @@
     "featuresSubtitle": "Designed for students who want high-efficiency learning with minimal stress.",
     "ctaTitle": "Ready to transform your study habits?",
     "ctaSubtitle": "Join EduFlow today and achieve your learning goals faster with AI-powered coaching.",
-    "ctaButton": "Start Learning for Free"
+    "ctaButton": "Start Learning for Free",
+    "features": {
+      "planTitle": "AI Study Plans",
+      "planDesc": "Get a personalized plan based on your goals, subjects, available time, and deadline.",
+      "mentorTitle": "AI Mentor",
+      "mentorDesc": "Ask questions, get explanations, and learn step by step instead of simply receiving answers.",
+      "progressTitle": "Progress Tracking",
+      "progressDesc": "See what you've completed, where you're improving, and which subjects need more attention."
+    },
+    "howItWorks": {
+      "title": "How EduFlow Works",
+      "subtitle": "Three simple steps to transform your study routine",
+      "step1Title": "Set your learning goals",
+      "step1Desc": "Tell us what you want to learn, your target exam or deadline, and how much time you have each day.",
+      "step2Title": "Follow your daily plan",
+      "step2Desc": "Get a balanced schedule every day with manageable study sessions that keep you consistent.",
+      "step3Title": "Master topics with your AI Mentor",
+      "step3Desc": "Ask questions, test your knowledge with quizzes, and understand concepts deeply step by step."
+    },
+    "mentorShowcase": {
+      "title": "Step-by-step guidance, not just answers",
+      "subtitle": "EduFlow's AI Mentor coaches you through problems, helping you understand the underlying concepts so you truly learn.",
+      "tryAsking": "Try asking a question",
+      "askMentor": "Ask AI Mentor"
+    },
+    "progressShowcase": {
+      "title": "Clear visibility into your growth",
+      "subtitle": "Track your study streaks, view completed tasks, and watch your mastery grow across every subject."
+    },
+    "trust": {
+      "title": "Built for serious learners",
+      "subtitle": "Proven study techniques backed by cognitive science",
+      "spacedRepetition": "Spaced Repetition",
+      "activeRecall": "Active Recall",
+      "adaptiveDifficulty": "Adaptive Difficulty",
+      "microlearning": "Microlearning"
+    }
   },
   "footer": {
     "tagline": "AI-powered personal study assistant for students worldwide.",
     "rights": "All rights reserved."
+  },
+  "flashcards": {
+    "title": "Flashcards & Spaced Repetition",
+    "subtitle": "Master subjects with the SuperMemo-2 algorithm for long-term memory retention.",
+    "createDeck": "New Deck",
+    "generateAI": "Generate with AI",
+    "dueReview": "Due for Review",
+    "cardsCount": "{{count}} cards",
+    "studyNow": "Study Now",
+    "editDeck": "Edit Deck",
+    "deleteDeck": "Delete Deck",
+    "noDecks": "No flashcard decks created yet.",
+    "flipCard": "Flip Card",
+    "again": "Again (1 day)",
+    "hard": "Hard (3 days)",
+    "good": "Good (7 days)",
+    "easy": "Easy (14+ days)",
+    "completedTitle": "Deck Completed! 🎉",
+    "completedSubtitle": "You've reviewed all scheduled flashcards for today.",
+    "backToDecks": "Back to Decks"
+  },
+  "focusRoom": {
+    "title": "Focus Room & Pomodoro",
+    "subtitle": "Eliminate distractions, focus deeply, and track every productive minute.",
+    "pomodoro": "Pomodoro (25m)",
+    "deepFocus": "Deep Focus (50m)",
+    "shortBreak": "Short Break (5m)",
+    "longBreak": "Long Break (15m)",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "ambientSounds": "Ambient Sounds & Atmosphere",
+    "lofi": "Lo-Fi Beats",
+    "rain": "Gentle Rain",
+    "cafe": "Cozy Cafe",
+    "whitenoise": "White Noise (Zen)",
+    "sessionCompleted": "Session completed! +{{minutes}} mins added to your profile."
+  },
+  "smartNotes": {
+    "title": "Smart Notes & AI Summarizer",
+    "subtitle": "Paste notes or textbook content — AI extracts key insights, generates quizzes, and builds flashcards.",
+    "inputPlaceholder": "Paste your study notes, lectures, or book excerpts here (at least 20 chars)...",
+    "subjectLabel": "Subject / Topic",
+    "titleLabel": "Notes Title",
+    "summarizeBtn": "Analyze with AI",
+    "summaryTitle": "Summary & Core Insights",
+    "keyTakeaways": "Key Takeaways",
+    "formulas": "Formulas & Rules",
+    "practiceQuestions": "Self-Test Questions",
+    "flashcards": "Generated Flashcards",
+    "saveAsDeck": "Save as Flashcard Deck",
+    "printCheatsheet": "Cheatsheet (Print / PDF)"
+  },
+  "leaderboard": {
+    "title": "Student Leaderboard",
+    "subtitle": "Top learners ranked by study time, quizzes, and streak consistency.",
+    "rank": "Rank",
+    "student": "Student",
+    "xp": "XP Score",
+    "streak": "Streak",
+    "studyTime": "Study Time",
+    "quizzes": "Quizzes",
+    "yourRank": "Your Standing: Rank #{{rank}} ({{xp}} XP)"
   },
   "common": {
     "loading": "Loading...",
@@ -172,8 +719,63 @@
     "delete": "Delete",
     "close": "Close",
     "back": "Back",
+    "languageSaveError": "The language changed here but could not be saved to your account.",
+    "saving": "Saving...",
     "notFoundTitle": "Page Not Found",
     "notFoundDesc": "The page you are looking for does not exist.",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "retry": "Retry",
+    "dismiss": "Dismiss",
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try again",
+    "notSet": "Not set"
+  },
+  "practiceResult": {
+    "loading": "Calculating your practice result...",
+    "unavailable": "This practice session is unavailable",
+    "backToPractice": "Back to Practice",
+    "complete": "Practice Session Complete",
+    "accuracy": "Accuracy",
+    "correct": "Correct Answers",
+    "incorrect": "Incorrect Answers",
+    "timeSpent": "Time Spent",
+    "breakdown": "Question Breakdown",
+    "anotherSession": "Start Another Session",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "search": {
+    "placeholder": "Search topics, courses, flashcards...",
+    "all": "All",
+    "courses": "Courses",
+    "flashcards": "Flashcards",
+    "quizzes": "Quizzes",
+    "filter": "Filter",
+    "noResults": "No results found",
+    "discoverTitle": "Discover Topics & Materials",
+    "trending": "Trending Searches",
+    "recommended": "Recommended for You"
+  },
+  "billing": {
+    "title": "Billing & Subscriptions",
+    "subtitle": "Manage your plan, payment methods, and billing history.",
+    "currentPlan": "Current Plan",
+    "upgrade": "Upgrade",
+    "freePlan": "Free Plan",
+    "proPlan": "Pro Plan",
+    "history": "Billing History",
+    "noHistory": "No billing transactions yet."
+  },
+  "admin": {
+    "title": "Admin Operations",
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "content": "Content",
+      "reports": "Reports",
+      "flags": "Feature Flags",
+      "health": "System Health",
+      "incidents": "Incidents",
+      "logs": "Audit Logs"
+    }
   }
 }

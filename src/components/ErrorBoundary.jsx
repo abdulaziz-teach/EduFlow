@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import i18n from '../i18n/i18n';
 import Button from './ui/Button';
 
 class ErrorBoundary extends React.Component {
@@ -14,11 +15,21 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('EduFlow UI Runtime Error caught by ErrorBoundary:', error, errorInfo);
+    // Auto-recover from dynamic module import caching issues after build updates
+    const isChunkError =
+      error?.name === 'ChunkLoadError' ||
+      /loading chunk|failed to fetch dynamically imported module/i.test(error?.message || '');
+
+    if (isChunkError && !sessionStorage.getItem('eduflow_chunk_reloaded')) {
+      sessionStorage.setItem('eduflow_chunk_reloaded', '1');
+      window.location.reload();
+    }
   }
 
   handleReset = () => {
+    sessionStorage.removeItem('eduflow_chunk_reloaded');
     this.setState({ hasError: false, error: null });
-    window.location.reload();
+    window.location.href = '/';
   };
 
   render() {
@@ -30,9 +41,11 @@ class ErrorBoundary extends React.Component {
               <AlertTriangle className="w-7 h-7" />
             </div>
 
-            <h1 className="text-2xl font-bold text-text mb-2">Something went wrong</h1>
+            <h1 className="text-2xl font-bold text-text mb-2">
+              {i18n.t('common.somethingWentWrong')}
+            </h1>
             <p className="text-sm text-muted mb-6 leading-relaxed">
-              EduFlow encountered an unexpected UI issue. You can try refreshing the page or navigating back to safety.
+              {i18n.t('common.error')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -41,7 +54,7 @@ class ErrorBoundary extends React.Component {
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors cursor-pointer shadow-sm"
               >
                 <RefreshCw className="w-4 h-4" />
-                Try again
+                {i18n.t('common.tryAgain')}
               </button>
 
               <a
@@ -49,7 +62,7 @@ class ErrorBoundary extends React.Component {
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-text font-medium text-sm border border-subtle transition-colors"
               >
                 <Home className="w-4 h-4" />
-                Go to Home
+                {i18n.t('common.backHome')}
               </a>
             </div>
           </div>

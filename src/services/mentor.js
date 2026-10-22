@@ -1,7 +1,10 @@
 import api from './api.js';
 
-export const sendMessage = (conversationId, message, subject) =>
-  api.post('/mentor/chat', { conversationId, message, subject });
+export const sendMessage = (conversationId, message, subject, mode = 'explain', courseId = null, lessonId = null) =>
+  api.post('/mentor/chat', { conversationId, message, subject, mode, courseId, lessonId });
+
+export const submitFeedback = (messageId, helpful, reason = null, comment = '') =>
+  api.post('/mentor/feedback', { messageId, helpful, reason, comment });
 
 export const getConversations = () =>
   api.get('/mentor/conversations');
@@ -14,6 +17,7 @@ export const deleteConversation = (id) =>
 
 const mentorService = {
   sendMessage,
+  submitFeedback,
   getConversations,
   getConversation,
   deleteConversation,

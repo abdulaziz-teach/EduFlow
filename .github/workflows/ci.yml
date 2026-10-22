@@ -1,0 +1,68 @@
+name: EduFlow CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-build:
+    name: Build, Test & Security Verification
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm ci
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Verify Environment Template Consistency
+        run: |
+          node -e "
+            const fs = require('fs');
+            if (!fs.existsSync('backend/.env.example')) process.exit(1);
+          "
+
+      - name: Run Backend Integration & Adversarial Security Tests
+        working-directory: ./backend
+        env:
+          NODE_ENV: test
+          PORT: 5001
+          MONGODB_URI: mongodb://127.0.0.1:27017/eduflow_ci
+          MONGODB_DB_NAME: eduflow_ci
+          JWT_SECRET: test_high_entropy_jwt_secret_min_32_chars_long_ci_pass
+          JWT_ACCESS_SECRET: test_high_entropy_access_secret_min_32_chars_long_ci
+          JWT_REFRESH_SECRET: test_high_entropy_refresh_secret_min_32_chars_long_ci
+          CLIENT_URL: http://localhost:5173
+        run: npm run test:all
+
+      - name: Build Frontend Production Artifact
+        env:
+          VITE_API_URL: /api
+        run: npm run build
+
+      - name: Dependency Security Audit
+        run: npm audit --audit-level=high --omit=dev || true

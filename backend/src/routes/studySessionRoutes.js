@@ -4,6 +4,7 @@ import {
   startSession,
   completeSession,
   getActiveSession,
+  logFocusSession,
 } from '../controllers/studySessionController.js';
 
 const router = Router();
@@ -13,6 +14,7 @@ router.use(protect);
 
 router.post('/start', startSession);
 router.get('/active', getActiveSession);
+router.post('/log-focus', logFocusSession);
 router.patch('/:id/complete', completeSession);
 
 export default router;

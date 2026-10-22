@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 
 function QuestionCard({ question, currentNumber, totalQuestions, submitting, onSubmit, isAnswered }) {
+  const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState('');
   const [shortAnswerText, setShortAnswerText] = useState('');
 
@@ -35,8 +37,12 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
       
       {/* Progress header indicator */}
       <div className="flex justify-between items-center text-xs text-muted">
-        <span className="font-semibold uppercase tracking-wider text-primary">Question {currentNumber} of {totalQuestions}</span>
-        <span className="capitalize px-2 py-0.5 rounded bg-white/[0.04] border border-white/5">{question.difficulty}</span>
+        <span className="font-semibold uppercase tracking-wider text-primary">
+          {t('practice.question', { current: currentNumber, total: totalQuestions })}
+        </span>
+        <span className="capitalize px-2 py-0.5 rounded bg-white/[0.04] border border-white/5">
+          {t(`practice.${question.difficulty}`, { defaultValue: question.difficulty })}
+        </span>
       </div>
 
       {/* Question Text */}
@@ -69,7 +75,7 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
 
         {question.type === 'true_false' && (
           <div className="grid grid-cols-2 gap-3">
-            {['True', 'False'].map((opt) => (
+            {question.options.map((opt) => (
               <button
                 key={opt}
                 type="button"
@@ -94,7 +100,7 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
               disabled={isAnswered}
               value={shortAnswerText}
               onChange={(e) => setShortAnswerText(e.target.value)}
-              placeholder="Type your answer here..."
+              placeholder={t('practice.answerPlaceholder')}
               className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/5 text-text text-sm focus:border-primary/50 focus:outline-none transition-colors"
             />
           </div>
@@ -109,7 +115,7 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
               className="inline-flex items-center gap-1.5 px-4.5 py-2 text-xs font-semibold rounded-lg bg-primary hover:bg-primary-hover text-white transition-all shadow-md shadow-primary/10 cursor-pointer disabled:opacity-50"
             >
               {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              Submit Answer
+              {t('practice.submit')}
             </button>
           </div>
         )}

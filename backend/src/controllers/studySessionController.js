@@ -226,3 +226,54 @@ export const getActiveSession = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Log completed focus room / pomodoro session directly
+ * @route   POST /api/study-sessions/log-focus
+ * @access  Private
+ */
+export const logFocusSession = async (req, res, next) => {
+  try {
+    const { durationMinutes, subject } = req.body;
+    const userId = req.user._id;
+
+    const minutes = Math.max(1, Math.min(Number(durationMinutes) || 25, 300));
+    const subj = subject || (req.user.subjects && req.user.subjects[0]) || 'General Study';
+
+    const session = await StudySession.create({
+      userId,
+      subject: subj,
+      durationMinutes: minutes,
+      startedAt: new Date(Date.now() - minutes * 60 * 1000),
+      completedAt: new Date(),
+    });
+
+    req.user.lastStudyDate = new Date();
+    await req.user.save();
+
+    // Trigger achievements and streaks
+    try {
+      await achievementService.checkAndUnlock(userId, 'first_study_session');
+      const streaks = await progressService.calculateStreaks(userId);
+      if (streaks && streaks.currentStreak >= 7) {
+        await achievementService.checkAndUnlock(userId, '7_day_streak');
+      }
+    } catch (err) {
+      console.error('Focus session achievement error:', err.message);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Focus session recorded successfully!',
+      session: {
+        id: session._id,
+        durationMinutes: session.durationMinutes,
+        subject: session.subject,
+        completedAt: session.completedAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

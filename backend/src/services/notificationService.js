@@ -1,5 +1,6 @@
 import Notification from '../models/Notification.js';
 import NotificationPreference from '../models/NotificationPreference.js';
+import { dispatchNotification, normalizeCategory } from './notificationEngine.js';
 
 /**
  * Helper to resolve user notification preferences or create default
@@ -13,61 +14,33 @@ async function resolvePreferences(userId) {
 }
 
 /**
- * Create a new notification for a student. Enforces preferences and cooldowns.
+ * Create a new notification for a student. Enforces preferences, deduplication, and cooldowns.
  */
-export async function createNotification(userId, { type, title, message, link, metadata = {} }) {
+export async function createNotification(userId, { type, title, message, link, metadata = {}, data = {}, priority = 'normal', channel = 'in_app', deduplicationKey, scheduledAt, expiresAt, force = false }) {
   try {
-    const prefs = await resolvePreferences(userId);
+    const effectiveDedupKey = deduplicationKey || metadata?.uniqueKey || data?.uniqueKey;
 
-    // 1. Check global toggle
-    if (!prefs.enabled) return null;
-
-    // 2. Check individual notification type switches
-    const typeMapping = {
-      task_reminder: prefs.taskReminders,
-      task_due: prefs.taskReminders,
-      review_recommendation: prefs.reviewRecommendations,
-      practice_recommendation: prefs.practiceRecommendations,
-      streak: prefs.streakNotifications,
-      achievement: prefs.achievementNotifications,
-      study_plan: prefs.studyPlanNotifications,
-      system: true, // System notifications are always enabled
-    };
-
-    if (typeMapping[type] === false) {
-      console.log(`Notification skipped. Type "${type}" is toggled OFF for user ${userId}`);
-      return null;
-    }
-
-    // 3. Prevent duplicate notifications using 24h cooldown on metadata.uniqueKey
-    if (metadata && metadata.uniqueKey) {
-      const oneDayAgo = new Date();
-      oneDayAgo.setHours(oneDayAgo.getHours() - 24);
-
-      const duplicate = await Notification.findOne({
-        userId,
-        'metadata.uniqueKey': metadata.uniqueKey,
-        createdAt: { $gte: oneDayAgo },
-      });
-
-      if (duplicate) {
-        console.log(`Duplicate notification skipped. uniqueKey: "${metadata.uniqueKey}" in cooldown.`);
-        return null;
-      }
-    }
-
-    // 4. Write to DB
-    const notification = await Notification.create({
+    const result = await dispatchNotification({
       userId,
       type,
       title,
       message,
-      link: link || '',
-      metadata,
-      read: false,
+      link,
+      data: { ...metadata, ...data },
+      metadata: { ...metadata, ...data },
+      priority,
+      channel,
+      scheduledAt,
+      expiresAt,
+      deduplicationKey: effectiveDedupKey,
+      force,
     });
 
-    return notification;
+    if (result.skipped) {
+      return null;
+    }
+
+    return result.notification || null;
   } catch (err) {
     console.error('Failed to create notification:', err.message);
     return null;
@@ -75,12 +48,59 @@ export async function createNotification(userId, { type, title, message, link, m
 }
 
 /**
- * Fetch latest 30 notifications for a user
+ * Fetch notifications for a user with optional pagination and filters
  */
-export async function getNotifications(userId) {
-  return Notification.find({ userId })
-    .sort({ createdAt: -1 })
-    .limit(30);
+export async function getNotifications(userId, options = {}) {
+  const page = Math.max(1, parseInt(options.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(options.limit, 10) || 30));
+  const skip = (page - 1) * limit;
+
+  const query = { userId };
+
+  if (options.unreadOnly === true || options.unreadOnly === 'true') {
+    query.read = false;
+  }
+
+  if (options.type) {
+    query.type = options.type;
+  } else if (options.category) {
+    const cat = String(options.category).toLowerCase();
+    // Map category to matching types
+    const catTypeMap = {
+      dailyplan: ['study_plan', 'DAILY_PLAN'],
+      streaks: ['streak', 'STREAK_REMINDER', 'STREAK_MILESTONE'],
+      quizzes: ['task_due', 'task_reminder', 'QUIZ_REMINDER'],
+      flashcards: ['FLASHCARD_REVIEW'],
+      achievements: ['achievement', 'ACHIEVEMENT_UNLOCKED', 'wallet_reward'],
+      recommendations: ['review_recommendation', 'practice_recommendation', 'RECOMMENDATION'],
+      aiinsights: ['AI_INSIGHT'],
+      system: ['system', 'SYSTEM', 'SECURITY'],
+    };
+    if (catTypeMap[cat]) {
+      query.type = { $in: catTypeMap[cat] };
+    }
+  }
+
+  const queryChain = Notification.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+  if (options.paginate) {
+    const [notifications, total, unreadCount] = await Promise.all([
+      queryChain.exec(),
+      Notification.countDocuments(query),
+      Notification.countDocuments({ userId, read: false }),
+    ]);
+
+    return {
+      notifications,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      unreadCount,
+    };
+  }
+
+  return queryChain.exec();
 }
 
 /**

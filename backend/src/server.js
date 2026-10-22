@@ -9,8 +9,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 import { validateEnv } from './config/envValidation.js';
-import connectDB from './config/db.js';
+import connectDB, { disconnectDB } from './config/db.js';
 import app from './app.js';
+import notificationSchedulerService from './services/notificationSchedulerService.js';
 
 // Validate environment configurations
 validateEnv();
@@ -29,14 +30,24 @@ const handleGracefulShutdown = (signal) => {
 
   console.log(`\nReceived ${signal}. Initiating graceful shutdown...`);
 
+  // Stop background worker schedulers immediately
+  try {
+    notificationSchedulerService.stopScheduler();
+    console.log('Background schedulers halted.');
+  } catch (err) {
+    console.error('Error stopping background schedulers:', err.message);
+  }
+
   if (server) {
+    // Terminate idle keep-alive connections to allow active requests to finish draining
+    if (typeof server.closeIdleConnections === 'function') {
+      server.closeIdleConnections();
+    }
+
     server.close(async () => {
-      console.log('HTTP server closed.');
+      console.log('HTTP server closed. Draining completed.');
       try {
-        if (mongoose.connection.readyState !== 0) {
-          await mongoose.connection.close(false);
-          console.log('MongoDB connection closed.');
-        }
+        await disconnectDB();
       } catch (err) {
         console.error('Error during MongoDB connection closure:', err.message);
       } finally {

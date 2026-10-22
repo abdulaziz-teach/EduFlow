@@ -17,7 +17,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'uz', // default to Uzbek or detected language
+    fallbackLng: 'en',
+    debug: import.meta.env.DEV,
+    returnNull: false,
     supportedLngs: ['uz', 'en', 'ru'],
     interpolation: {
       escapeValue: false, // React already safes from XSS
@@ -28,5 +30,10 @@ i18n
       lookupLocalStorage: 'eduflow_language',
     },
   });
+
+document.documentElement.lang = i18n.resolvedLanguage || i18n.language || 'en';
+i18n.on('languageChanged', (language) => {
+  document.documentElement.lang = language;
+});
 
 export default i18n;

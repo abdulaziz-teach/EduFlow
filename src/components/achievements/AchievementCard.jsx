@@ -1,4 +1,5 @@
 import { Award, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ACHIEVEMENTS_LIST = [
   {
@@ -34,12 +35,19 @@ const ACHIEVEMENTS_LIST = [
 ];
 
 function AchievementCard({ unlocked = [] }) {
+  const { t, i18n } = useTranslation();
+  const locale = {
+    en: 'en-US',
+    ru: 'ru-RU',
+    uz: 'uz-UZ',
+  }[i18n.resolvedLanguage] || 'en-US';
+
   const getUnlockDetails = (key) => {
     return unlocked.find((item) => item.achievementKey === key);
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -49,7 +57,7 @@ function AchievementCard({ unlocked = [] }) {
   return (
     <div className="space-y-4 font-sans select-none">
       <h3 className="text-sm font-bold text-text uppercase tracking-wider text-muted flex items-center gap-2">
-        🏆 Learning Achievements
+        🏆 {t('profile.achievements.title')}
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -75,14 +83,14 @@ function AchievementCard({ unlocked = [] }) {
               {/* Card info */}
               <div className="space-y-1 min-w-0">
                 <h4 className={`text-sm font-bold ${unlock ? 'text-text' : 'text-muted'}`}>
-                  {ach.title}
+                  {t(`profile.achievements.${ach.key}.title`)}
                 </h4>
                 <p className="text-xs text-muted text-left leading-relaxed">
-                  {ach.desc}
+                  {t(`profile.achievements.${ach.key}.description`)}
                 </p>
                 {unlock && (
                   <span className="text-[10px] text-emerald-400 font-semibold block mt-1">
-                    Unlocked {formatDate(unlock.unlockedAt)}
+                    {t('profile.achievements.unlocked', { date: formatDate(unlock.unlockedAt) })}
                   </span>
                 )}
               </div>

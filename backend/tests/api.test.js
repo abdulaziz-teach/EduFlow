@@ -138,17 +138,42 @@ describe('EduFlow Complete MVP Test Suite', () => {
           name: 'Test Student A',
           email: testEmailA,
           password: 'Password1234!',
+          preferredLanguage: 'uz',
         },
       });
 
       assert.equal(res.status, 201);
       assert.equal(res.data.success, true);
       assert.ok(res.data.token);
+      assert.equal(res.data.refreshToken, undefined);
       assert.equal(res.data.user.email, testEmailA);
       assert.equal(res.data.user.password, undefined); // Password never leaked
+      assert.equal(res.data.user.onboardingComplete, false);
+      assert.equal(res.data.user.preferredLanguage, 'uz');
 
       userAToken = res.data.token;
       userAData = res.data.user;
+
+      const storedUser = await User.findById(userAData.id).select('+password +passwordHash');
+      assert.ok(storedUser.passwordHash);
+      assert.notEqual(storedUser.passwordHash, 'Password1234!');
+      assert.equal(await storedUser.comparePassword('Password1234!'), true);
+      assert.equal(storedUser.preferredLanguage, 'uz');
+    });
+
+    it('POST /api/auth/register should reject unsupported language preferences', async () => {
+      const res = await apiRequest('/api/auth/register', {
+        method: 'POST',
+        body: {
+          name: 'Invalid Language Student',
+          email: `invalid_language_${Date.now()}@eduflow.test`,
+          password: 'Password1234!',
+          preferredLanguage: 'fr',
+        },
+      });
+
+      assert.equal(res.status, 400);
+      assert.equal(res.data.success, false);
     });
 
     it('POST /api/auth/register should reject duplicate email with 409', async () => {
@@ -177,7 +202,9 @@ describe('EduFlow Complete MVP Test Suite', () => {
       assert.equal(res.status, 200);
       assert.equal(res.data.success, true);
       assert.ok(res.data.token);
+      assert.equal(res.data.refreshToken, undefined);
       assert.equal(res.data.user.password, undefined);
+      assert.equal(res.data.user.onboardingComplete, false);
     });
 
     it('POST /api/auth/login should reject invalid password with 401', async () => {
@@ -213,6 +240,106 @@ describe('EduFlow Complete MVP Test Suite', () => {
       assert.equal(res.data.success, false);
     });
 
+    it('onboarding draft and completion endpoints require authentication', async () => {
+      const draft = await apiRequest('/api/users/me/onboarding-draft', {
+        method: 'PATCH',
+        body: { step: 1 },
+      });
+      const complete = await apiRequest('/api/users/me/onboarding', {
+        method: 'POST',
+        body: {},
+      });
+      assert.equal(draft.status, 401);
+      assert.equal(complete.status, 401);
+    });
+
+    it('saves onboarding drafts to the authenticated user and completes onboarding persistently', async () => {
+      const draftRes = await apiRequest('/api/users/me/onboarding-draft', {
+        method: 'PATCH',
+        token: userAToken,
+        body: {
+          step: 2,
+          age: 17,
+          goalType: 'exam',
+          subjects: ['Mathematics'],
+          weakTopics: ['Algebra'],
+        },
+      });
+      assert.equal(draftRes.status, 200);
+
+      const savedDraftUser = await User.findById(userAData.id).lean();
+      assert.equal(savedDraftUser.onboardingDraft.step, 2);
+      assert.equal(savedDraftUser.onboardingDraft.age, 17);
+      assert.deepEqual(savedDraftUser.onboardingDraft.subjects, ['Mathematics']);
+      const profileWithDraft = await apiRequest('/api/users/me', { token: userAToken });
+      assert.deepEqual(profileWithDraft.data.user.onboardingDraft.weakTopics, ['Algebra']);
+      const incompleteLogin = await apiRequest('/api/auth/login', {
+        method: 'POST',
+        body: { email: testEmailA, password: 'Password1234!' },
+      });
+      assert.equal(incompleteLogin.data.user.onboardingComplete, false);
+      assert.equal(incompleteLogin.data.user.onboardingDraft.step, 2);
+      assert.deepEqual(incompleteLogin.data.user.onboardingDraft.subjects, ['Mathematics']);
+
+      const invalid = await apiRequest('/api/users/me/onboarding', {
+        method: 'POST',
+        token: userAToken,
+        body: { goalType: 'invalid' },
+      });
+      assert.equal(invalid.status, 400);
+      const storedAfterInvalid = await User.findById(userAData.id).lean();
+      assert.equal(storedAfterInvalid.onboardingComplete, false);
+
+      const invalidAge = await apiRequest('/api/users/me/onboarding', {
+        method: 'POST',
+        token: userAToken,
+        body: { age: 4 },
+      });
+      assert.equal(invalidAge.status, 400);
+      assert.match(invalidAge.data.message, /age must be a whole number between 5 and 100/i);
+
+      const completion = await apiRequest('/api/users/me/onboarding', {
+        method: 'POST',
+        token: userAToken,
+        body: {
+          goalType: 'exam',
+          goalDescription: 'Prepare for finals',
+          subjects: ['Mathematics', 'Physics'],
+          level: 'intermediate',
+          weakTopics: ['Algebra'],
+          dailyStudyMinutes: 45,
+          learningStyle: 'practice',
+          targetDate: '',
+          preferredDays: ['monday', 'wednesday'],
+          preferredTime: 'evening',
+          preferredLanguage: 'en',
+          age: 17,
+          _id: '675849302194857261548392',
+        },
+      });
+      assert.equal(completion.status, 200);
+      assert.equal(completion.data.user.onboardingComplete, true);
+      assert.equal(completion.data.user.age, 17);
+      assert.deepEqual(completion.data.user.subjects, ['Mathematics', 'Physics']);
+      assert.deepEqual(completion.data.user.studySchedule.preferredDays, ['monday', 'wednesday']);
+      assert.equal(completion.data.user.onboardingDraft, null);
+
+      const storedCompletedUser = await User.findById(userAData.id).lean();
+      assert.equal(storedCompletedUser.onboardingComplete, true);
+      assert.equal(storedCompletedUser.age, 17);
+      assert.deepEqual(storedCompletedUser.weakTopics, ['Algebra']);
+      assert.equal(storedCompletedUser.preferredLanguage, 'en');
+      assert.equal(storedCompletedUser._id.toString(), userAData.id);
+
+      const login = await apiRequest('/api/auth/login', {
+        method: 'POST',
+        body: { email: testEmailA, password: 'Password1234!' },
+      });
+      assert.equal(login.status, 200);
+      assert.equal(login.data.user.onboardingComplete, true);
+      assert.deepEqual(login.data.user.subjects, ['Mathematics', 'Physics']);
+    });
+
     it('PATCH /api/users/me should update profile fields and enforce mass assignment protection', async () => {
       const res = await apiRequest('/api/users/me', {
         method: 'PATCH',
@@ -226,6 +353,7 @@ describe('EduFlow Complete MVP Test Suite', () => {
             targetDate: new Date(Date.now() + 14 * 86400000).toISOString(),
           },
           dailyStudyMinutes: 60,
+          age: 28,
           // Malicious fields attempting mass assignment
           _id: '675849302194857261548392',
           streak: 999,
@@ -237,6 +365,7 @@ describe('EduFlow Complete MVP Test Suite', () => {
       assert.equal(res.data.user.name, 'Alex Student');
       assert.deepEqual(res.data.user.subjects, ['Mathematics', 'Computer Science']);
       assert.equal(res.data.user.dailyStudyMinutes, 60);
+      assert.equal(res.data.user.age, 28);
       assert.notEqual(res.data.user.streak, 999); // streak preserved
       assert.notEqual(res.data.user.id, '675849302194857261548392'); // _id not overwritten
     });
@@ -256,16 +385,6 @@ describe('EduFlow Complete MVP Test Suite', () => {
       userBToken = res.data.token;
       userBData = res.data.user;
 
-      // Set User B profile
-      await apiRequest('/api/users/me', {
-        method: 'PATCH',
-        token: userBToken,
-        body: {
-          subjects: ['Biology'],
-          goal: { type: 'general', description: 'General learning' },
-          dailyStudyMinutes: 45,
-        },
-      });
     });
 
     it('User B cannot access or modify User A resources', async () => {
@@ -296,6 +415,56 @@ describe('EduFlow Complete MVP Test Suite', () => {
         token: userBToken,
       });
       assert.equal(exportRes.status, 404);
+    });
+
+    it('onboarding profile writes are scoped to the authenticated user', async () => {
+      const res = await apiRequest('/api/users/me/onboarding-draft', {
+        method: 'PATCH',
+        token: userBToken,
+        body: {
+          _id: userAData.id,
+          userId: userAData.id,
+          step: 1,
+          subjects: ['Biology'],
+        },
+      });
+      assert.equal(res.status, 200);
+
+      const [userA, userB] = await Promise.all([
+        User.findById(userAData.id).lean(),
+        User.findById(userBData.id).lean(),
+      ]);
+      assert.deepEqual(userA.subjects, ['Mathematics', 'Computer Science']);
+      assert.equal(userA.onboardingDraft, null);
+      assert.deepEqual(userB.onboardingDraft.subjects, ['Biology']);
+
+      const userBProfile = await apiRequest('/api/users/me', { token: userBToken });
+      assert.equal(userBProfile.data.user.id, userBData.id);
+      assert.deepEqual(userBProfile.data.user.subjects, []);
+      assert.deepEqual(userBProfile.data.user.weakTopics, []);
+      assert.equal(userBProfile.data.user.age, null);
+    });
+
+    it('creates an exam study plan when the optional target date is omitted', async () => {
+      const profile = await apiRequest('/api/users/me', {
+        method: 'PATCH',
+        token: userBToken,
+        body: {
+          subjects: ['Biology'],
+          goal: { type: 'exam', description: 'Biology exam preparation' },
+          dailyStudyMinutes: 45,
+        },
+      });
+      assert.equal(profile.status, 200);
+
+      const response = await apiRequest('/api/study-plans/generate', {
+        method: 'POST',
+        token: userBToken,
+        body: {},
+      });
+      assert.equal(response.status, 201);
+      assert.ok(response.data.plan.days.length > 0);
+      assert.ok(new Date(response.data.plan.endDate) >= new Date(response.data.plan.startDate));
     });
   });
 
@@ -426,6 +595,14 @@ describe('EduFlow Complete MVP Test Suite', () => {
     });
 
     it('POST /api/practice/generate should generate and cache questions safely', async () => {
+      const profileUpdate = await apiRequest('/api/users/me', {
+        method: 'PATCH',
+        token: userAToken,
+        body: { preferredLanguage: 'ru' },
+      });
+      assert.equal(profileUpdate.status, 200);
+      assert.equal(profileUpdate.data.user.preferredLanguage, 'ru');
+
       const res = await apiRequest('/api/practice/generate', {
         method: 'POST',
         token: userAToken,
@@ -434,11 +611,19 @@ describe('EduFlow Complete MVP Test Suite', () => {
           topic: 'Calculus Fundamentals',
           difficulty: 'medium',
           count: 5,
+          language: 'en',
         },
       });
 
       assert.equal(res.status, 200);
       assert.equal(res.data.success, true);
+      const cachedQuestions = await PracticeQuestion.find({
+        subject: 'Mathematics',
+        topic: 'Calculus Fundamentals',
+        language: 'ru',
+      });
+      assert.equal(cachedQuestions.length, 5);
+      assert.ok(cachedQuestions.every((question) => /[А-Яа-яЁё]/.test(question.question)));
     });
 
     it('POST /api/practice/sessions should create a session without leaking correct answers', async () => {
@@ -450,6 +635,7 @@ describe('EduFlow Complete MVP Test Suite', () => {
           topic: 'Calculus Fundamentals',
           difficulty: 'medium',
           count: 3,
+          language: 'en',
         },
       });
 
@@ -457,6 +643,10 @@ describe('EduFlow Complete MVP Test Suite', () => {
       assert.equal(res.data.success, true);
       assert.ok(res.data.session.id);
       assert.ok(res.data.session.questions.length > 0);
+      const savedQuestions = await PracticeQuestion.find({
+        _id: { $in: res.data.session.questions.map((question) => question.id) },
+      });
+      assert.ok(savedQuestions.every((question) => question.language === 'ru'));
 
       // SECURITY AUDIT: Verify correctAnswer and explanation are NOT returned in initial payload
       for (const q of res.data.session.questions) {

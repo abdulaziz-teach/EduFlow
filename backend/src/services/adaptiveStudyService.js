@@ -7,6 +7,7 @@ import StudySession from '../models/StudySession.js';
 import * as dailyStudyService from './dailyStudyService.js';
 import * as progressService from './progressService.js';
 import { createNotification } from './notificationService.js';
+import { shouldUseMockAI } from '../utils/aiConfig.js';
 
 // Lazy-init: the server should start even if no key is configured yet.
 let _openai;
@@ -207,7 +208,7 @@ export async function generateDailyCoach(user, dateStr) {
 
   // 5. Generate with OpenAI
   const apiKey = getApiKey();
-  if (!apiKey || apiKey.startsWith('your_openai_api_key') || apiKey.startsWith('change_this')) {
+  if (shouldUseMockAI(apiKey)) {
     console.log('Using fallback coach response (AI key placeholder or missing)...');
     // Save fallback to cache
     await DailyCoachCache.create({
@@ -583,7 +584,7 @@ Return ONLY the short text explanation.`;
   const fallback = `We reorganized your plan to fit your unfinished tasks into your daily ${dailyMinutes}-minute study target.`;
 
   const apiKey = getApiKey();
-  if (!apiKey || apiKey.startsWith('your_openai_api_key') || apiKey.startsWith('change_this')) {
+  if (shouldUseMockAI(apiKey)) {
     return fallback;
   }
 

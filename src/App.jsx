@@ -4,10 +4,10 @@ import { AuthProvider } from './context/AuthContext';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Lazy-loaded pages for code splitting and fast initial page load
-const Landing = lazy(() => import('./pages/Landing'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
+// Core public pages imported directly for instant load and resilience
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Register from './pages/Register';
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const StudyPlan = lazy(() => import('./pages/StudyPlan'));
@@ -18,6 +18,14 @@ const Knowledge = lazy(() => import('./pages/Knowledge'));
 const Practice = lazy(() => import('./pages/Practice'));
 const PracticeResult = lazy(() => import('./pages/PracticeResult'));
 const Notifications = lazy(() => import('./pages/Notifications'));
+const Flashcards = lazy(() => import('./pages/Flashcards'));
+const FlashcardStudy = lazy(() => import('./pages/FlashcardStudy'));
+const FocusRoom = lazy(() => import('./pages/FocusRoom'));
+const SmartNotes = lazy(() => import('./pages/SmartNotes'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const SearchPage = lazy(() => import('./pages/Search'));
+const Billing = lazy(() => import('./pages/Billing'));
+const Admin = lazy(() => import('./pages/Admin'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function PageLoader() {
@@ -38,12 +46,14 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/discover" element={<SearchPage />} />
 
           {/* Protected routes */}
           <Route
             path="/onboarding"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute onboardingOnly>
                 <Onboarding />
               </ProtectedRoute>
             }
@@ -125,6 +135,62 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcards"
+            element={
+              <ProtectedRoute>
+                <Flashcards />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcards/:id"
+            element={
+              <ProtectedRoute>
+                <FlashcardStudy />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/focus"
+            element={
+              <ProtectedRoute>
+                <FocusRoom />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/smart-notes"
+            element={
+              <ProtectedRoute>
+                <SmartNotes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/billing"
+            element={
+              <ProtectedRoute>
+                <Billing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             }
           />

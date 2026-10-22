@@ -15,9 +15,13 @@ const subscriptionSchema = new mongoose.Schema(
     },
     plan: {
       type: String,
-      enum: ['free', 'premium'],
+      enum: ['free', 'premium', 'pro_monthly', 'pro_annual'],
       default: 'free',
       required: true,
+    },
+    planId: {
+      type: String,
+      default: 'free',
     },
     status: {
       type: String,
@@ -28,7 +32,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     provider: {
       type: String,
-      enum: ['stripe', 'lemonsqueezy', 'payme', 'click', 'internal', 'none'],
+      enum: ['stripe', 'lemonsqueezy', 'payme', 'click', 'internal', 'mock', 'none'],
       default: 'none',
     },
     providerCustomerId: {
@@ -52,14 +56,38 @@ const subscriptionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    canceledAt: {
+      type: Date,
+      default: null,
+    },
+    gracePeriodEnd: {
+      type: Date,
+      default: null,
+    },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Compound index for active subscription lookups
+// Compound indexes for active subscription and period lookups
 subscriptionSchema.index({ userId: 1, status: 1 });
+subscriptionSchema.index({ status: 1, currentPeriodEnd: 1 });
+
+// Pre-save sync between plan & planId
+subscriptionSchema.pre('save', function (next) {
+  if (this.planId && this.planId !== 'free' && (!this.plan || this.plan === 'free')) {
+    this.plan = this.planId;
+  }
+  if (this.plan && !this.planId) {
+    this.planId = this.plan;
+  }
+  next();
+});
 
 const Subscription = mongoose.model('Subscription', subscriptionSchema);
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarDays,
   Clock,
@@ -23,15 +24,12 @@ const TYPE_COLORS = {
   quiz: 'bg-orange-500/10 text-orange-400',
 };
 
-const LOADING_STEPS = [
-  'Analyzing your goals',
-  'Planning your study sessions',
-  'Balancing your workload',
-];
+const LOADING_STEP_KEYS = ['dashboard.loadingGoals', 'dashboard.loadingSessions', 'dashboard.balancingWorkload'];
 
 function StudyPlan() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -80,7 +78,7 @@ function StudyPlan() {
   useEffect(() => {
     if (!generating) return;
     const interval = setInterval(() => {
-      setGenStep((prev) => (prev + 1) % LOADING_STEPS.length);
+      setGenStep((prev) => (prev + 1) % LOADING_STEP_KEYS.length);
     }, 2000);
     return () => clearInterval(interval);
   }, [generating]);
@@ -240,14 +238,14 @@ function StudyPlan() {
   // Empty state
   if (!plan && !generating) {
     return (
-      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-w-0">
         <div className="max-w-md mx-auto text-center">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <BookOpen className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-text mb-3">No study plan yet</h1>
+          <h1 className="text-2xl font-bold text-text mb-3">{t('studyPlan.noPlanTitle')}</h1>
           <p className="text-muted mb-8 leading-relaxed">
-            Create your personalized roadmap based on your learning goals.
+            {t('studyPlan.noPlanSubtitle')}
           </p>
 
           {error && (
@@ -261,7 +259,7 @@ function StudyPlan() {
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all cursor-pointer shadow-lg shadow-primary/20"
           >
             <Sparkles className="w-4 h-4" />
-            Create my study plan
+            {t('studyPlan.createPlan')}
           </button>
         </div>
       </div>
@@ -271,16 +269,16 @@ function StudyPlan() {
   // Generating state
   if (generating) {
     return (
-      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-w-0">
         <div className="max-w-md mx-auto text-center">
           <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <Sparkles className="w-7 h-7 text-primary animate-pulse" />
           </div>
-          <h2 className="text-lg font-semibold text-text mb-2">Creating your personalized plan...</h2>
+          <h2 className="text-lg font-semibold text-text mb-2">{t('studyPlan.creatingPlan')}</h2>
           <div className="space-y-2 mt-6 max-w-xs mx-auto">
-            {LOADING_STEPS.map((step, i) => (
+            {LOADING_STEP_KEYS.map((key, i) => (
               <div
-                key={step}
+                key={key}
                 className={`flex items-center gap-2.5 px-4 py-2 rounded-lg transition-all duration-500 ${
                   i === genStep ? 'bg-primary/5 border border-primary/20' : i < genStep ? 'opacity-50' : 'opacity-30'
                 }`}
@@ -292,7 +290,7 @@ function StudyPlan() {
                 ) : (
                   <div className="w-4 h-4 rounded-full border border-subtle shrink-0" />
                 )}
-                <span className="text-sm text-muted">{step}</span>
+                <span className="text-sm text-muted">{t(key)}</span>
               </div>
             ))}
           </div>
@@ -311,18 +309,19 @@ function StudyPlan() {
           className="flex items-center gap-1.5 text-sm text-muted hover:text-text transition-colors mb-6 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          Dashboard
+          {t('nav.dashboard')}
         </button>
 
         {/* Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
+        <div className="mb-8 flex min-w-0 flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="min-w-0">
             <h1 className="text-2xl md:text-3xl font-bold text-text mb-1">{plan.title}</h1>
-            <p className="text-sm font-medium text-primary mb-3">Your personalized roadmap</p>
+            <p className="text-sm font-medium text-primary mb-1">{t('studyPlan.personalizedRoadmap')}</p>
+            <p className="text-xs text-muted mb-3">{t('studyPlan.ruleBased')}</p>
             <div className="flex flex-wrap items-center gap-3 text-sm text-muted mb-4">
               <span className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4" />
-                {plan.dailyMinutes} min/day
+                {t('studyPlan.dailySchedule', { minutes: plan.dailyMinutes })}
               </span>
               <span className="flex items-center gap-1.5">
                 <CalendarDays className="w-4 h-4" />
@@ -330,20 +329,20 @@ function StudyPlan() {
               </span>
               {plan.adaptation?.lastAdaptedAt && (
                 <span className="text-xs text-muted font-medium">
-                  Last adjusted: {new Date(plan.adaptation.lastAdaptedAt).toLocaleDateString()}
+                  {t('studyPlan.lastAdjusted', { date: new Date(plan.adaptation.lastAdaptedAt).toLocaleDateString(i18n.resolvedLanguage) })}
                 </span>
               )}
             </div>
             <p className="text-sm text-muted leading-relaxed">{plan.summary}</p>
           </div>
-          <div className="shrink-0 pt-1 flex items-center gap-2">
+          <div className="w-full min-w-0 pt-1 flex flex-wrap items-center gap-2 md:w-auto md:shrink-0">
             <button
               onClick={handleExportICS}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border border-subtle bg-white/[0.03] hover:bg-white/[0.06] text-muted hover:text-text transition-colors cursor-pointer"
-              title="Export study tasks to Apple/Google/Outlook Calendar (.ics)"
+              title={t('studyPlan.exportCalendar')}
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Export .ics</span>
+              <span>{t('studyPlan.exportCalendar')}</span>
             </button>
             <AdaptPlanButton
               planId={plan._id}
@@ -357,7 +356,7 @@ function StudyPlan() {
 
         {/* Progress bar */}
         <div className="rounded-xl border border-subtle bg-card p-4 md:p-5 mb-8">
-          <h3 className="text-sm font-medium text-text mb-3">Plan progress</h3>
+          <h3 className="text-sm font-medium text-text mb-3">{t('studyPlan.planProgress')}</h3>
           <div className="flex items-center gap-4 mb-2">
             <div className="flex-1 h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
               <div
@@ -367,11 +366,14 @@ function StudyPlan() {
             </div>
             <span className="text-sm font-semibold text-text shrink-0">{progressPct}%</span>
           </div>
-          <p className="text-xs text-muted">{completedTasks} / {totalTasks} tasks completed</p>
+          <p className="text-xs text-muted">{t('studyPlan.tasksCompletedCount', { completed: completedTasks, total: totalTasks })}</p>
+          {plan.breakMinutes > 0 && (
+            <p className="text-xs text-muted mt-2">{t('studyPlan.takeBreak', { minutes: plan.breakMinutes })}</p>
+          )}
         </div>
 
         {/* Category Filters Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-white/[0.04] scrollbar-none select-none">
+        <div className="flex w-full min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-white/[0.04] scrollbar-none select-none">
           {['All', 'Today', 'Upcoming', 'Completed', 'Overdue'].map((tab) => {
             const count = tab === 'All'
               ? totalTasks

@@ -1,35 +1,13 @@
 import { CalendarDays, Brain, TrendingUp, CheckCircle2, Clock, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SectionHeading from '../ui/SectionHeading';
 
-const features = [
-  {
-    icon: CalendarDays,
-    title: 'AI Study Plans',
-    description:
-      'Get a personalized plan based on your goals, subjects, available time, and deadline.',
-    preview: StudyPlanPreview,
-  },
-  {
-    icon: Brain,
-    title: 'AI Mentor',
-    description:
-      'Ask questions, get explanations, and learn step by step instead of simply receiving answers.',
-    preview: MentorMiniPreview,
-  },
-  {
-    icon: TrendingUp,
-    title: 'Progress Tracking',
-    description:
-      'See what you\'ve completed, where you\'re improving, and which subjects need more attention.',
-    preview: ProgressMiniPreview,
-  },
-];
-
 function StudyPlanPreview() {
+  const { t } = useTranslation();
   const items = [
     { time: '09:00', task: 'Quadratic Equations', subject: 'Math', done: true },
     { time: '10:30', task: 'Essay Writing', subject: 'English', done: true },
-    { time: '13:00', task: 'Newton\'s Laws', subject: 'Physics', done: false },
+    { time: '13:00', task: "Newton's Laws", subject: 'Physics', done: false },
     { time: '15:00', task: 'Review & Practice', subject: 'All', done: false },
   ];
 
@@ -118,13 +96,36 @@ function ProgressMiniPreview() {
 }
 
 function FeaturesSection() {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: CalendarDays,
+      title: t('landing.features.planTitle'),
+      description: t('landing.features.planDesc'),
+      preview: StudyPlanPreview,
+    },
+    {
+      icon: Brain,
+      title: t('landing.features.mentorTitle'),
+      description: t('landing.features.mentorDesc'),
+      preview: MentorMiniPreview,
+    },
+    {
+      icon: TrendingUp,
+      title: t('landing.features.progressTitle'),
+      description: t('landing.features.progressDesc'),
+      preview: ProgressMiniPreview,
+    },
+  ];
+
   return (
     <section id="features" className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          label="Features"
-          title="Built around the way you learn."
-          description="Every feature is designed to help you study more effectively, not just more."
+          label={t('common.features') || 'Features'}
+          title={t('landing.featuresTitle')}
+          description={t('landing.featuresSubtitle')}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">

@@ -5,7 +5,7 @@ import { GraduationCap, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -16,7 +16,7 @@ function Login() {
 
   // If already authenticated, redirect to dashboard
   if (!authLoading && isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={user?.onboardingComplete ? '/dashboard' : '/onboarding'} replace />;
   }
 
   const handleChange = (e) => {
@@ -36,10 +36,12 @@ function Login() {
 
     setLoading(true);
     try {
-      await login({ email: form.email.trim(), password: form.password });
-      navigate('/dashboard', { replace: true });
+      const data = await login({ email: form.email.trim(), password: form.password });
+      navigate(data.user?.onboardingComplete ? '/dashboard' : '/onboarding', { replace: true });
     } catch (err) {
-      setError(err.message || t('auth.invalidCredentials'));
+      setError(err instanceof TypeError || err.message === 'Failed to fetch'
+        ? t('auth.serverError')
+        : err.message || t('auth.invalidCredentials'));
     } finally {
       setLoading(false);
     }

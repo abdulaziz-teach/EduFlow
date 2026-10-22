@@ -1,4 +1,5 @@
 import { Brain, User, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SectionHeading from '../ui/SectionHeading';
 
 const conversation = [
@@ -29,13 +30,15 @@ const followUps = [
 ];
 
 function MentorShowcase() {
+  const { t } = useTranslation();
+
   return (
     <section id="mentor" className="py-16 md:py-24 border-t border-subtle">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          label="AI Mentor"
-          title="Like having a tutor available 24/7."
-          description="Ask questions, get step-by-step explanations, and build real understanding."
+          label={t('mentor.title') || 'AI Mentor'}
+          title={t('landing.mentorShowcase.title')}
+          description={t('landing.mentorShowcase.subtitle')}
         />
 
         <div className="max-w-2xl mx-auto">
@@ -46,7 +49,7 @@ function MentorShowcase() {
                 <Brain className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-text">AI Mentor</p>
+                <p className="text-sm font-medium text-text">{t('mentor.title') || 'AI Mentor'}</p>
                 <p className="text-xs text-emerald-400">Online</p>
               </div>
             </div>
@@ -68,7 +71,7 @@ function MentorShowcase() {
                     {msg.role === 'mentor' && (
                       <div className="flex items-center gap-1.5 mb-2">
                         <Brain className="w-3 h-3 text-primary" />
-                        <span className="text-[11px] text-primary font-medium">AI Mentor</span>
+                        <span className="text-[11px] text-primary font-medium">{t('mentor.title') || 'AI Mentor'}</span>
                       </div>
                     )}
                     {msg.role === 'student' && (
@@ -89,7 +92,7 @@ function MentorShowcase() {
             <div className="px-5 pb-4">
               <div className="flex items-center gap-1.5 mb-2.5">
                 <Sparkles className="w-3 h-3 text-primary" />
-                <span className="text-[11px] text-muted font-medium">Suggested follow-ups</span>
+                <span className="text-[11px] text-muted font-medium">{t('landing.mentorShowcase.tryAsking') || 'Suggested follow-ups'}</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {followUps.map((q) => (
@@ -108,7 +111,7 @@ function MentorShowcase() {
               <div className="flex items-center gap-3 p-3 rounded-xl border border-subtle bg-dark/50">
                 <input
                   type="text"
-                  placeholder="Ask your AI Mentor..."
+                  placeholder={t('landing.mentorShowcase.askMentor') || 'Ask your AI Mentor...'}
                   className="flex-1 bg-transparent text-sm text-text placeholder:text-muted/50 outline-none"
                   readOnly
                 />

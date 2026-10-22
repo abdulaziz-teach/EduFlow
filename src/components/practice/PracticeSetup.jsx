@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, Sparkles, ChevronRight } from 'lucide-react';
 import studyPlanService from '../../services/studyPlan';
 import knowledgeService from '../../services/knowledge';
-
+import { useAuth } from '../../context/AuthContext';
 
 function PracticeSetup({ recommendation, onStart }) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const [subjectsMap, setSubjectsMap] = useState({}); // { 'Mathematics': ['Quadratic Equations', ...] }
   const [loading, setLoading] = useState(true);
   
@@ -21,6 +24,10 @@ function PracticeSetup({ recommendation, onStart }) {
       const pool = {};
 
       try {
+        for (const subject of user?.subjects || []) {
+          pool[subject] = new Set([t('practice.generalTopic')]);
+        }
+
         // 1. Fetch study plan topics
         const planRes = await studyPlanService.getCurrent();
         if (planRes.plan && planRes.plan.days) {
@@ -73,7 +80,7 @@ function PracticeSetup({ recommendation, onStart }) {
     };
 
     loadTopicsPool();
-  }, []);
+  }, [t, user?.subjects]);
 
   // Sync topic selection on subject change
   const handleSubjectChange = (subj) => {
@@ -133,11 +140,16 @@ function PracticeSetup({ recommendation, onStart }) {
     return topic.replace(/\b\w/g, (c) => c.toUpperCase());
   };
 
+  const getSubjectLabel = (subject) => {
+    const key = subject.replace(/\s+/g, '').replace(/^[A-Z]/, (letter) => letter.toLowerCase());
+    return t(`onboarding.subjectNames.${key}`, { defaultValue: subject });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-16">
         <Loader2 className="w-6 h-6 text-primary animate-spin" />
-        <span className="text-sm text-muted ml-2">Loading practice subjects...</span>
+        <span className="text-sm text-muted ml-2">{t('practice.loadingSubjects')}</span>
       </div>
     );
   }
@@ -155,36 +167,36 @@ function PracticeSetup({ recommendation, onStart }) {
               <Sparkles className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wide">Recommended Practice</span>
+              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wide">{t('practice.recommended')}</span>
               <h4 className="text-base font-bold text-text mt-0.5">{recommendation.topic}</h4>
-              <p className="text-xs text-muted mt-1 text-left">{recommendation.reason}</p>
+              <p className="text-xs text-muted mt-1 text-left">{t('practice.recommendationReason')}</p>
             </div>
           </div>
           <button
             onClick={handleStartRecommendation}
             className="px-4 py-2 text-xs font-semibold rounded-lg bg-primary hover:bg-primary-hover text-white transition-all shadow-md shadow-primary/10 shrink-0 cursor-pointer text-center"
           >
-            Start Practice
+            {t('practice.startQuiz')}
           </button>
         </div>
       )}
 
       {subjectsList.length === 0 ? (
         <div className="rounded-2xl border border-white/5 bg-[#111827] p-8 text-center max-w-md mx-auto">
-          <h3 className="text-base font-bold text-text mb-2">No topics found</h3>
+          <h3 className="text-base font-bold text-text mb-2">{t('practice.noTopicsTitle')}</h3>
           <p className="text-xs text-muted mb-4">
-            Create a study plan or log subject activity to generate practice topics pool.
+            {t('practice.noTopicsDescription')}
           </p>
         </div>
       ) : (
         /* Setup Form */
         <form onSubmit={handleSubmit} className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6 space-y-6">
-          <h3 className="text-base font-bold text-text">Configure Practice Session</h3>
+          <h3 className="text-base font-bold text-text">{t('practice.configureTitle')}</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Subject Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted uppercase tracking-wider">Subject</label>
+              <label className="text-xs font-bold text-muted uppercase tracking-wider">{t('practice.subjectLabel')}</label>
               <select
                 value={selectedSubject}
                 onChange={(e) => handleSubjectChange(e.target.value)}
@@ -192,7 +204,7 @@ function PracticeSetup({ recommendation, onStart }) {
               >
                 {subjectsList.map((sub) => (
                   <option key={sub} value={sub} className="bg-[#111827]">
-                    {sub}
+                    {getSubjectLabel(sub)}
                   </option>
                 ))}
               </select>
@@ -200,7 +212,7 @@ function PracticeSetup({ recommendation, onStart }) {
 
             {/* Topic Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted uppercase tracking-wider">Topic</label>
+              <label className="text-xs font-bold text-muted uppercase tracking-wider">{t('practice.topicLabel')}</label>
               <select
                 value={selectedTopic}
                 onChange={(e) => setSelectedTopic(e.target.value)}
@@ -218,7 +230,7 @@ function PracticeSetup({ recommendation, onStart }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Difficulty Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Difficulty</label>
+              <label className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t('practice.difficulty')}</label>
               <div className="flex gap-2">
                 {['easy', 'medium', 'hard'].map((diff) => (
                   <button
@@ -231,7 +243,7 @@ function PracticeSetup({ recommendation, onStart }) {
                         : 'border-white/5 bg-white/[0.01] text-muted hover:bg-white/[0.03]'
                     }`}
                   >
-                    {diff}
+                    {t(`practice.${diff}`)}
                   </button>
                 ))}
               </div>
@@ -239,7 +251,7 @@ function PracticeSetup({ recommendation, onStart }) {
 
             {/* Count Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">Number of Questions</label>
+              <label className="text-xs font-bold text-muted uppercase tracking-wider block mb-1">{t('practice.questionCount')}</label>
               <div className="flex gap-2">
                 {[5, 7, 10].map((num) => (
                   <button
@@ -252,7 +264,7 @@ function PracticeSetup({ recommendation, onStart }) {
                         : 'border-white/5 bg-white/[0.01] text-muted hover:bg-white/[0.03]'
                     }`}
                   >
-                    {num} qs
+                    {num} {t('practice.questionSuffix')}
                   </button>
                 ))}
               </div>
@@ -265,7 +277,7 @@ function PracticeSetup({ recommendation, onStart }) {
               disabled={submitting}
               className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all shadow-lg shadow-primary/20 cursor-pointer"
             >
-              Start Practice Session
+              {t('practice.startSession')}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

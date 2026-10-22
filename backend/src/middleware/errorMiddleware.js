@@ -28,11 +28,16 @@ const errorHandler = (err, req, res, _next) => {
       : `Duplicate value for ${field}`;
   }
 
-  // Mongoose bad ObjectId
-  if (err.name === 'CastError' && err.kind === 'ObjectId') {
+  // Mongoose CastError (bad ObjectId, invalid type/format)
+  if (err.name === 'CastError') {
     statusCode = 400;
-    errorCode = 'INVALID_ID';
-    message = 'Invalid resource ID format';
+    if (err.kind === 'ObjectId') {
+      errorCode = 'INVALID_ID';
+      message = 'Invalid resource ID format';
+    } else {
+      errorCode = 'INVALID_FORMAT';
+      message = `Invalid format for parameter: ${err.path || 'field'}`;
+    }
   }
 
   // JWT errors
@@ -64,6 +69,7 @@ const errorHandler = (err, req, res, _next) => {
     success: false,
     error: errorCode,
     message,
+    requestId: req.id || undefined,
   };
 
   // Include stack trace in development only

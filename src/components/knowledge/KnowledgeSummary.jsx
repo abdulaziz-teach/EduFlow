@@ -1,29 +1,31 @@
 import { BookOpen, AlertCircle, Sparkles, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function KnowledgeSummary({ summary }) {
+  const { t } = useTranslation();
   if (!summary) return null;
 
   const cards = [
     {
-      label: 'Topics Tracked',
+      label: t('knowledge.totalTopics'),
       value: summary.totalTopics || 0,
       icon: BookOpen,
       color: 'text-indigo-400 bg-indigo-500/10',
     },
     {
-      label: 'Learning',
+      label: t('knowledge.learning'),
       value: summary.learningTopics || 0,
       icon: TrendingUp,
       color: 'text-sky-400 bg-sky-500/10',
     },
     {
-      label: 'Needs Review',
+      label: t('knowledge.needsReviewTopics'),
       value: summary.needsReview || 0,
       icon: AlertCircle,
       color: 'text-rose-400 bg-rose-500/10',
     },
     {
-      label: 'Strong Areas',
+      label: t('knowledge.strongTopics'),
       value: summary.strongTopics || 0,
       icon: Sparkles,
       color: 'text-emerald-400 bg-emerald-500/10',
@@ -31,7 +33,7 @@ function KnowledgeSummary({ summary }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-sans select-none">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 font-sans select-none">
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (

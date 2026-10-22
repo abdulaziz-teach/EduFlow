@@ -8,20 +8,40 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed:demo": "node src/seed/demoSeed.js",
-    "test": "node --test tests/api.test.js",
+    "seed:production": "node src/seed/productionSeed.js",
+    "migrate": "node src/scripts/migrate.js",
+    "test": "node --test tests/api.test.js tests/studyPlanPersonalization.test.js tests/questionGenerationLanguage.test.js",
+    "test:security": "node --test tests/securityRemediation.test.js",
     "test:adversarial": "node --test tests/adversarial.test.js",
-    "test:all": "node --test tests/api.test.js tests/adversarial.test.js"
+    "test:production": "node --test tests/productionArchitecture.test.js",
+    "test:personalization": "node --test tests/aiPersonalization.test.js",
+    "test:adaptive": "node --test tests/adaptiveEngine.test.js",
+    "test:content": "node --test tests/aiContentEngine.test.js",
+    "test:search": "node --test tests/searchEngine.test.js",
+    "test:notifications": "node --test tests/notificationEngine.test.js",
+    "test:billing": "node --test tests/billingEngine.test.js",
+    "test:admin": "node --test tests/adminOperations.test.js",
+    "test:reliability": "node --test tests/reliabilityScalability.test.js",
+    "test:audit": "node --test tests/finalPreLaunchAudit.test.js",
+    "test:e2e": "node --test tests/e2eCertification.test.js",
+    "test:smoke": "node --test tests/productionSmokeTest.test.js",
+    "test:db": "node --test tests/databaseVerification.test.js",
+    "drill:backup": "node src/scripts/backupDrill.js",
+    "test:all": "node --test --test-concurrency=1 tests/api.test.js tests/securityRemediation.test.js tests/sessionSecurity.test.js tests/quizSecurity.test.js tests/stripeWebhookSecurity.test.js tests/regexSecurity.test.js tests/adversarial.test.js tests/productionArchitecture.test.js tests/aiPersonalization.test.js tests/adaptiveEngine.test.js tests/aiContentEngine.test.js tests/searchEngine.test.js tests/notificationEngine.test.js tests/billingEngine.test.js tests/adminOperations.test.js tests/reliabilityScalability.test.js tests/finalPreLaunchAudit.test.js tests/e2eCertification.test.js tests/productionSmokeTest.test.js tests/databaseVerification.test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.4.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
-    "openai": "^7.8.0"
+    "openai": "^7.8.0",
+    "stripe": "^22.6.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

@@ -1,6 +1,8 @@
 import { CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function AnswerFeedback({ feedback, onNext, isLast }) {
+  const { t } = useTranslation();
   if (!feedback) return null;
 
   const { correct, correctAnswer, explanation } = feedback;
@@ -19,14 +21,14 @@ function AnswerFeedback({ feedback, onNext, isLast }) {
             <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
-            <h4 className="text-sm md:text-base font-bold text-emerald-400">Correct ✓</h4>
+            <h4 className="text-sm md:text-base font-bold text-emerald-400">{t('practice.correctFeedback')} ✓</h4>
           </>
         ) : (
           <>
             <div className="w-7 h-7 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0">
               <AlertCircle className="w-4 h-4 text-rose-400" />
             </div>
-            <h4 className="text-sm md:text-base font-bold text-rose-400">Not quite.</h4>
+            <h4 className="text-sm md:text-base font-bold text-rose-400">{t('practice.incorrectFeedback')}</h4>
           </>
         )}
       </div>
@@ -34,14 +36,14 @@ function AnswerFeedback({ feedback, onNext, isLast }) {
       {/* Correct answer text if wrong */}
       {!correct && (
         <div className="text-sm">
-          <span className="text-muted">Correct answer:</span>
+          <span className="text-muted">{t('practice.correctAnswer')}</span>
           <span className="font-semibold text-text ml-1.5">{correctAnswer}</span>
         </div>
       )}
 
       {/* Explanation text */}
       <div className="space-y-1.5 pl-0.5">
-        <span className="text-xs font-bold text-muted uppercase tracking-wider">Explanation</span>
+        <span className="text-xs font-bold text-muted uppercase tracking-wider">{t('practice.explanation')}</span>
         <p className="text-xs md:text-sm text-text leading-relaxed font-sans text-left">
           {explanation}
         </p>
@@ -57,7 +59,7 @@ function AnswerFeedback({ feedback, onNext, isLast }) {
               : 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/10'
           }`}
         >
-          {isLast ? 'Finish Practice' : 'Next Question'}
+          {isLast ? t('practice.finishPractice') : t('practice.nextQuestion')}
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>

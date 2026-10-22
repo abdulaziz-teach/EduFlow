@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GraduationCap, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Register() {
-  const { register, isAuthenticated, loading: authLoading } = useAuth();
+  const { register, user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [form, setForm] = useState({
     name: '',
@@ -19,10 +19,11 @@ function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const justRegistered = useRef(false);
 
-  // If already authenticated, redirect to dashboard
-  if (!authLoading && isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+  // If already authenticated (and not just registered), redirect to dashboard
+  if (!authLoading && isAuthenticated && !justRegistered.current) {
+    return <Navigate to={user?.onboardingComplete ? '/dashboard' : '/onboarding'} replace />;
   }
 
   const handleChange = (e) => {
@@ -57,15 +58,20 @@ function Register() {
     }
 
     setLoading(true);
+    justRegistered.current = true;
     try {
       await register({
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
+        preferredLanguage: i18n.resolvedLanguage || i18n.language,
       });
       navigate('/onboarding', { replace: true });
     } catch (err) {
-      setError(err.message || t('auth.serverError'));
+      justRegistered.current = false;
+      setError(err instanceof TypeError || err.message === 'Failed to fetch'
+        ? t('auth.serverError')
+        : err.message || t('auth.serverError'));
     } finally {
       setLoading(false);
     }

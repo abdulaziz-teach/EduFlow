@@ -9,10 +9,14 @@ export const getActiveSession = () =>
 export const completeSession = (id) =>
   api.patch(`/study-sessions/${id}/complete`, {});
 
+export const logFocusSession = (durationMinutes, subject) =>
+  api.post('/study-sessions/log-focus', { durationMinutes, subject });
+
 const studySessionService = {
   startSession,
   getActiveSession,
   completeSession,
+  logFocusSession,
 };
 
 export default studySessionService;

@@ -1,20 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, GraduationCap, LogOut } from 'lucide-react';
+import { Menu, X, GraduationCap, LogOut, Search, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Button from './ui/Button';
 import NotificationCenter from './notifications/NotificationCenter';
 import LanguageSwitcher from './ui/LanguageSwitcher';
+import GlobalSearchModal from './search/GlobalSearchModal';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, loading } = useAuth();
   const { t } = useTranslation();
   const isLanding = pathname === '/';
+
+  // Global Ctrl+K / Cmd+K listener to trigger search modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const landingLinks = [
     { label: t('nav.features'), href: '#features' },
@@ -34,8 +48,8 @@ function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -72,8 +86,64 @@ function Navbar() {
             </div>
           )}
 
+          {!loading && isAuthenticated && (
+            <nav className="hidden md:flex 2xl:hidden items-center gap-0.5" aria-label={t('nav.primary')}>
+              {[
+                { path: '/dashboard', key: 'dashboard' },
+                { path: '/study-plan', key: 'studyPlan' },
+                { path: '/practice', key: 'practice' },
+              ].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-2 sm:px-2.5 py-2 text-xs sm:text-sm rounded-lg transition-colors ${
+                    pathname.startsWith(item.path)
+                      ? 'text-primary font-medium bg-primary/10'
+                      : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t(`nav.${item.key}`)}
+                </Link>
+              ))}
+              <Link
+                to="/mentor"
+                className={`hidden xl:inline-flex px-2.5 py-2 text-sm rounded-lg transition-colors ${
+                  pathname === '/mentor'
+                    ? 'text-primary font-medium bg-primary/10'
+                    : 'text-muted hover:text-text hover:bg-white/5'
+                }`}
+              >
+                {t('nav.mentor')}
+              </Link>
+            </nav>
+          )}
+
           {/* Desktop actions */}
-          <div className="hidden lg:flex items-center gap-1.5">
+          <div className="hidden 2xl:flex items-center gap-1.5">
+            {/* Quick Global Search Trigger Button */}
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-muted hover:text-text text-xs transition-colors cursor-pointer mr-1"
+              title={`${t('nav.search')} (Ctrl+K)`}
+              aria-label={t('nav.search')}
+            >
+              <Search className="w-3.5 h-3.5 text-primary" />
+              <span className="hidden xl:inline">{t('nav.searchPlaceholder')}</span>
+              <kbd className="hidden sm:inline-block text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-muted">
+                Ctrl K
+              </kbd>
+            </button>
+            <Link
+              to="/search"
+              className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg mr-1 ${
+                pathname.startsWith('/search')
+                  ? 'text-primary font-medium bg-primary/10'
+                  : 'text-muted hover:text-text hover:bg-white/5'
+              }`}
+            >
+              {t('nav.discover')}
+            </Link>
+
             {loading ? null : isAuthenticated ? (
               <>
                 <Link
@@ -98,7 +168,7 @@ function Navbar() {
                 </Link>
                 <Link
                   to="/practice"
-                  className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
                     pathname.startsWith('/practice')
                       ? 'text-primary font-medium bg-primary/10'
                       : 'text-muted hover:text-text hover:bg-white/5'
@@ -107,8 +177,38 @@ function Navbar() {
                   {t('nav.practice')}
                 </Link>
                 <Link
+                  to="/flashcards"
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
+                    pathname.startsWith('/flashcards')
+                      ? 'text-primary font-medium bg-primary/10'
+                      : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.flashcards')}
+                </Link>
+                <Link
+                  to="/focus"
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
+                    pathname === '/focus'
+                      ? 'text-primary font-medium bg-primary/10'
+                      : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.focusRoom')}
+                </Link>
+                <Link
+                  to="/smart-notes"
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
+                    pathname === '/smart-notes'
+                      ? 'text-primary font-medium bg-primary/10'
+                      : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.smartNotes')}
+                </Link>
+                <Link
                   to="/mentor"
-                  className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
                     pathname === '/mentor'
                       ? 'text-primary font-medium bg-primary/10'
                       : 'text-muted hover:text-text hover:bg-white/5'
@@ -117,18 +217,18 @@ function Navbar() {
                   {t('nav.mentor')}
                 </Link>
                 <Link
-                  to="/knowledge"
-                  className={`text-sm transition-colors px-3 py-2 rounded-lg ${
-                    pathname === '/knowledge'
+                  to="/leaderboard"
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
+                    pathname === '/leaderboard'
                       ? 'text-primary font-medium bg-primary/10'
                       : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
-                  {t('nav.knowledge')}
+                  {t('nav.leaderboard')}
                 </Link>
                 <Link
                   to="/progress"
-                  className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
                     pathname === '/progress'
                       ? 'text-primary font-medium bg-primary/10'
                       : 'text-muted hover:text-text hover:bg-white/5'
@@ -138,7 +238,7 @@ function Navbar() {
                 </Link>
                 <Link
                   to="/profile"
-                  className={`text-sm transition-colors px-3 py-2 rounded-lg ${
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
                     pathname === '/profile'
                       ? 'text-primary font-medium bg-primary/10'
                       : 'text-muted hover:text-text hover:bg-white/5'
@@ -146,11 +246,34 @@ function Navbar() {
                 >
                   {t('nav.profile')}
                 </Link>
+                <Link
+                  to="/billing"
+                  className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg ${
+                    pathname === '/billing'
+                      ? 'text-primary font-medium bg-primary/10'
+                      : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.billing')}
+                </Link>
+                {user?.role && user.role !== 'user' && (
+                  <Link
+                    to="/admin"
+                    className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg flex items-center gap-1 font-semibold ${
+                      pathname.startsWith('/admin')
+                        ? 'text-indigo-400 font-medium bg-indigo-500/10'
+                        : 'text-indigo-400/80 hover:text-indigo-300 hover:bg-white/5'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    {t('nav.admin')}
+                  </Link>
+                )}
                 <NotificationCenter />
                 <LanguageSwitcher className="ml-1" />
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-danger transition-colors px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer ml-1"
+                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-danger transition-colors px-2.5 py-1.5 rounded-lg hover:bg-white/5 cursor-pointer ml-1"
                 >
                   <LogOut className="w-4 h-4" />
                   {t('nav.logout')}
@@ -173,12 +296,21 @@ function Navbar() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex 2xl:hidden items-center gap-1.5 sm:gap-2">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="p-2 text-muted hover:text-text transition-colors rounded-lg hover:bg-white/5 cursor-pointer"
+              aria-label={t('nav.search')}
+            >
+              <Search className="w-5 h-5 text-primary" />
+            </button>
             <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 text-muted hover:text-text transition-colors rounded-lg hover:bg-white/5"
-              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -188,8 +320,9 @@ function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-[550px] opacity-100' : 'max-h-0 opacity-0'
+        id="mobile-navigation"
+        className={`2xl:hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-[calc(100vh-4rem)] overflow-y-auto opacity-100' : 'max-h-0 overflow-hidden opacity-0'
         }`}
       >
         <div className="px-4 pb-4 pt-2 bg-dark/95 backdrop-blur-xl border-t border-subtle">
@@ -199,7 +332,7 @@ function Navbar() {
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2.5 text-sm text-muted hover:text-text transition-colors rounded-lg hover:bg-white/5"
+                className="block px-3 py-2 text-sm text-muted hover:text-text transition-colors rounded-lg hover:bg-white/5"
               >
                 {link.label}
               </a>
@@ -211,7 +344,7 @@ function Navbar() {
                 <Link
                   to="/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`md:hidden block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname === '/dashboard' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
@@ -220,7 +353,7 @@ function Navbar() {
                 <Link
                   to="/study-plan"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`md:hidden block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname === '/study-plan' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
@@ -229,57 +362,97 @@ function Navbar() {
                 <Link
                   to="/practice"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`md:hidden block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname.startsWith('/practice') ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
                   {t('nav.practice')}
                 </Link>
                 <Link
+                  to="/flashcards"
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname.startsWith('/flashcards') ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.flashcards')}
+                </Link>
+                <Link
+                  to="/focus"
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname === '/focus' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.focusRoom')}
+                </Link>
+                <Link
+                  to="/smart-notes"
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname === '/smart-notes' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.smartNotes')}
+                </Link>
+                <Link
                   to="/mentor"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`md:hidden block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname === '/mentor' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
                   {t('nav.mentor')}
                 </Link>
                 <Link
-                  to="/knowledge"
+                  to="/leaderboard"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
-                    pathname === '/knowledge' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname === '/leaderboard' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
-                  {t('nav.knowledge')}
+                  {t('nav.leaderboard')}
                 </Link>
                 <Link
                   to="/progress"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname === '/progress' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
                   {t('nav.progress')}
                 </Link>
                 <Link
-                  to="/notifications"
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
-                    pathname === '/notifications' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
-                  }`}
-                >
-                  {t('nav.notifications')}
-                </Link>
-                <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
                     pathname === '/profile' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
                   }`}
                 >
                   {t('nav.profile')}
                 </Link>
+                <Link
+                  to="/billing"
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                    pathname === '/billing' ? 'bg-primary/10 text-primary font-medium' : 'text-muted hover:text-text hover:bg-white/5'
+                  }`}
+                >
+                  {t('nav.billingSubscriptions')}
+                </Link>
+                {user?.role && user.role !== 'user' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className={`block px-3 py-2 text-sm rounded-lg transition-colors font-semibold ${
+                      pathname.startsWith('/admin')
+                        ? 'bg-indigo-500/20 text-indigo-400 font-medium'
+                        : 'text-indigo-400/80 hover:text-indigo-300 hover:bg-white/5'
+                    }`}
+                  >
+                    {t('nav.adminOperations')}
+                  </Link>
+                )}
                 <button
                   onClick={() => { setIsOpen(false); handleLogout(); }}
                   className="flex items-center gap-1.5 px-3 py-2.5 text-sm text-muted hover:text-danger transition-colors rounded-lg hover:bg-white/5 w-full text-left cursor-pointer"
@@ -305,6 +478,7 @@ function Navbar() {
           </div>
         </div>
       </div>
+      <GlobalSearchModal isOpen={searchModalOpen} onClose={() => setSearchModalOpen(false)} />
     </nav>
   );
 }

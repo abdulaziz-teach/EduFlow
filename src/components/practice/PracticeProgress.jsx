@@ -1,10 +1,13 @@
+import { useTranslation } from 'react-i18next';
+
 function PracticeProgress({ current, total }) {
+  const { t } = useTranslation();
   const pct = Math.round((current / total) * 100);
 
   return (
     <div className="space-y-2 font-sans select-none">
       <div className="flex justify-between items-center text-[10px] font-bold text-muted uppercase tracking-wider">
-        <span>Session progress</span>
+        <span>{t('practice.sessionProgress')}</span>
         <span>{pct}%</span>
       </div>
       <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">

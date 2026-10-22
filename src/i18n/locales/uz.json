@@ -4,15 +4,30 @@
     "howItWorks": "Qanday ishlaydi",
     "mentor": "AI Mentor",
     "progress": "O'sish darajasi",
+    "primary": "Asosiy navigatsiya",
     "dashboard": "Boshqaruv paneli",
     "studyPlan": "O'quv rejasi",
     "practice": "Amaliyot",
     "knowledge": "Bilimlar xaritasi",
     "profile": "Profil",
     "notifications": "Bildirishnomalar",
+    "flashcards": "Flashcards",
+    "focusRoom": "Fokus Xona",
+    "smartNotes": "Aqlli Konspekt",
+    "leaderboard": "Reyting",
     "login": "Kirish",
     "logout": "Chiqish",
-    "startLearning": "O'rganishni boshlash"
+    "startLearning": "O'rganishni boshlash",
+    "changeLanguage": "Tilni o'zgartirish",
+    "search": "Qidirish",
+    "searchPlaceholder": "Qidirish...",
+    "discover": "Kashf qilish",
+    "openMenu": "Menyuni ochish",
+    "closeMenu": "Menyuni yopish",
+    "billing": "To'lovlar",
+    "admin": "Administrator",
+    "billingSubscriptions": "To'lovlar va obunalar",
+    "adminOperations": "Administrator paneli"
   },
   "auth": {
     "welcomeBack": "Xush kelibsiz",
@@ -20,7 +35,7 @@
     "createAccount": "Hisob yaratish",
     "registerSubtitle": "Aqlli va samarali o'quv rejangizni hoziroq boshlang.",
     "fullName": "To'liq ism",
-    "fullNamePlaceholder": "masalan: Abdulaziz Rahmatjonov",
+    "fullNamePlaceholder": "Ismingizni kiritng ",
     "email": "Elektron pochta",
     "emailPlaceholder": "sizning.emailingiz@example.com",
     "password": "Parol",
@@ -50,7 +65,162 @@
     "minutesPerDay": "daqiqa / kuniga",
     "continue": "Davom etish",
     "back": "Orqaga",
-    "finish": "Yakunlash va reja tuzish"
+    "finish": "Ro'yxatdan o'tishni yakunlash",
+    "questionCount": "{{total}} savoldan {{current}}-savol",
+    "ageTitle": "Yoshingiz nechada?",
+    "ageSubtitle": "Yoshingiz qulay mashg'ulot davomiyligini tavsiya qilish uchun ishlatiladi va profilingizda maxfiy saqlanadi.",
+    "ageLabel": "Yosh",
+    "ageHelp": "5 dan 100 gacha bo'lgan butun sonni kiriting.",
+    "ageInvalid": "5 dan 100 gacha bo'lgan butun sonni kiriting.",
+    "steps": {
+      "goal": "Maqsad",
+      "subjects": "Fanlar",
+      "level": "Daraja",
+      "focus": "Qiyin mavzular",
+      "time": "Vaqt",
+      "schedule": "Jadval",
+      "language": "Til",
+      "age": "Yosh"
+    },
+    "goalQuestionTitle": "Asosiy o‘quv maqsadingiz nima?",
+    "goalQuestionSubtitle": "Maqsadingiz rejangizdagi mavzular va o‘qish sur’atini belgilashga yordam beradi.",
+    "goals": {
+      "exam": {
+        "label": "Imtihonga tayyorlanish",
+        "description": "Yaqinlashayotgan imtihon yoki sertifikat uchun aniq reja."
+      },
+      "grades": {
+        "label": "Baholarimni yaxshilash",
+        "description": "Qiyin mavzularni mustahkamlash va dars topshiriqlariga yordam."
+      },
+      "learn": {
+        "label": "Yangi fan yoki ko‘nikmani o‘rganish",
+        "description": "Asoslardan boshlab bilimni bosqichma-bosqich oshirish."
+      },
+      "habit": {
+        "label": "Muntazam o‘qish odatini shakllantirish",
+        "description": "Bajarish mumkin bo‘lgan mashg‘ulotlar bilan izchil tartib yaratish."
+      }
+    },
+    "subjectsQuestionTitle": "Qaysi fanlarni o‘rganmoqchisiz?",
+    "subjectsQuestionSubtitle": "Shaxsiy rejangiz uchun bir yoki bir nechta fanni tanlang.",
+    "subjectNames": {
+      "mathematics": "Matematika",
+      "english": "Ingliz tili",
+      "computerScience": "Informatika",
+      "physics": "Fizika",
+      "biology": "Biologiya",
+      "chemistry": "Kimyo",
+      "history": "Tarix",
+      "economics": "Iqtisodiyot",
+      "psychology": "Psixologiya",
+      "other": "Boshqa"
+    },
+    "levelQuestionTitle": "Hozirgi bilim darajangiz qanday?",
+    "levelQuestionSubtitle": "Yoshga emas, aynan shu fandagi tajribangizga qarab tanlang.",
+    "levels": {
+      "beginner": {
+        "label": "Boshlang‘ich",
+        "description": "Asoslardan va aniq, bosqichma-bosqich vazifalardan boshlang.",
+        "badge": "1-daraja"
+      },
+      "intermediate": {
+        "label": "O‘rta",
+        "description": "Asoslarni mustahkamlab, murakkabroq mashqlarga o‘ting.",
+        "badge": "2-daraja"
+      },
+      "advanced": {
+        "label": "Ilg‘or",
+        "description": "Murakkab masalalar ustida ishlab, bilimni chuqurlashtiring.",
+        "badge": "3-daraja"
+      },
+      "revision": {
+        "label": "Takrorlash",
+        "description": "Muhim tushunchalarni qayta ko‘rib, eslab qolishni mashq qiling.",
+        "badge": "4-daraja"
+      }
+    },
+    "focusQuestionTitle": "Qaysi fan yoki mavzular sizga qiyin tuyuladi?",
+    "focusQuestionSubtitle": "Ixtiyoriy. Rejada ustuvor bo‘lishi uchun vergul bilan ajratib, 20 tagacha mavzu kiriting.",
+    "focusLabel": "E’tibor qaratiladigan mavzular",
+    "focusPlaceholder": "Masalan: algebra, insho yozish, kimyoviy reaksiyalar",
+    "timeQuestionTitle": "Kuniga qancha vaqt o‘qishga mos keladi?",
+    "timeQuestionSubtitle": "Reja tanlagan diqqat bilan o‘qish vaqtingizdan oshmaydi.",
+    "timeOptions": {
+      "20": {
+        "label": "15–20 daqiqa",
+        "description": "Yengil va muntazam kunlik sur’at"
+      },
+      "45": {
+        "label": "30–45 daqiqa",
+        "description": "Muvozanatli kunlik mashg‘ulot"
+      },
+      "60": {
+        "label": "1 soat",
+        "description": "Nazariya va mashqlar uchun ko‘proq vaqt"
+      },
+      "120": {
+        "label": "2 soat yoki ko‘proq",
+        "description": "Qisqa mashg‘ulotlarga bo‘lingan jadal tayyorgarlik"
+      }
+    },
+    "scheduleQuestionTitle": "Qachon va qanday o‘qishni ma’qul ko‘rasiz?",
+    "scheduleQuestionSubtitle": "Tartibingizga mos kun va vaqtlarni tanlang.",
+    "preferredDays": "O‘qish uchun qulay kunlar",
+    "preferredTime": "Qulay vaqt",
+    "weekdays": {
+      "monday": "Dushanba",
+      "tuesday": "Seshanba",
+      "wednesday": "Chorshanba",
+      "thursday": "Payshanba",
+      "friday": "Juma",
+      "saturday": "Shanba",
+      "sunday": "Yakshanba"
+    },
+    "times": {
+      "morning": "Ertalab",
+      "afternoon": "Kunduzi",
+      "evening": "Kechqurun",
+      "anytime": "Istalgan vaqt"
+    },
+    "learningStyleTitle": "Qanday usulda o‘rganish sizga ma’qul?",
+    "styles": {
+      "practice": {
+        "label": "Avval mashq",
+        "description": "Masalalar va qisqa testlar orqali o‘rganing."
+      },
+      "theory": {
+        "label": "Avval tushuncha",
+        "description": "Aniq tushuntirishlar va misollardan boshlang."
+      },
+      "flashcards": {
+        "label": "Kartochkalar va takrorlash",
+        "description": "Muhim ma’lumotlarni eslab qolish orqali takrorlang."
+      },
+      "mixed": {
+        "label": "Aralash usul",
+        "description": "Tushuntirish, mashq va takrorlashni uyg‘unlashtiring."
+      }
+    },
+    "examName": "Imtihon yoki test nomi",
+    "goalName": "Aniq maqsad",
+    "examPlaceholder": "Masalan: IELTS, matematika SAT yoki nazorat ishi",
+    "goalPlaceholder": "Masalan: veb-dasturlashni o‘rganish",
+    "targetDate": "Maqsad sanasi yoki muddati",
+    "optional": "ixtiyoriy",
+    "languageQuestionTitle": "Qaysi tilni ma’qul ko‘rasiz?",
+    "languageQuestionSubtitle": "Tanlovingiz o‘quv profilingizda saqlanadi.",
+    "languageNames": {
+      "en": "English",
+      "ru": "Русский",
+      "uz": "O‘zbekcha"
+    },
+    "profilePreview": "Profilingiz: {{subjects}} · kuniga {{minutes}} daqiqa",
+    "chooseSubjects": "Fanlarni tanlang",
+    "chooseStudyTime": "O‘qish vaqtini tanlang",
+    "saving": "O‘quv profilingiz saqlanmoqda...",
+    "saveError": "Profilni saqlab bo‘lmadi. Javoblaringizni qayta yuborishingiz mumkin.",
+    "draftSyncError": "Javoblaringiz ushbu qurilmada saqlandi, aloqa tiklangach sinxronlanadi."
   },
   "dashboard": {
     "welcome": "Xush kelibsiz",
@@ -66,11 +236,88 @@
     "viewAll": "Barchasini ko'rish",
     "minutesStudied": "O'rganilgan daqiqalar",
     "tasksCompleted": "Bajarilgan vazifalar",
-    "practiceAccuracy": "Amaliyot aniqligi"
+    "practiceAccuracy": "Amaliyot aniqligi",
+    "loadingGoals": "Saqlangan maqsadlaringiz ko'rib chiqilmoqda",
+    "loadingSessions": "O'quv mashg'ulotlari rejalashtirilmoqda",
+    "balancingWorkload": "Kunlik yuklama muvozanatlashtirilmoqda",
+    "greetingMorning": "Xayrli tong, {{name}} 👋",
+    "greetingAfternoon": "Xayrli kun, {{name}} 👋",
+    "greetingEvening": "Xayrli kech, {{name}} 👋",
+    "profileReady": "O‘quv profilingiz tayyor.",
+    "goal": "Maqsad",
+    "dailyStudyTime": "Kunlik o‘qish vaqti",
+    "subjects": "Fanlar",
+    "target": "Muddat",
+    "currentLevel": "Hozirgi daraja",
+    "focusTopics": "Asosiy mavzular",
+    "noFocusTopics": "Mavzular belgilanmagan",
+    "studySchedule": "O‘qish jadvali",
+    "flexibleDays": "Erkin kunlar",
+    "learningLanguage": "O‘qish tili",
+    "editProfile": "Profilni tahrirlash",
+    "notSet": "O‘rnatilmagan",
+    "reviewPastMistakes": "Xatolarni ko‘rib chiqish",
+    "todayLearning": "Bugungi o‘qish",
+    "minStudied": "{{count}} daqiqa o‘qildi",
+    "tasksCompletedCount": "Bugun {{count}} ta vazifa bajarildi",
+    "streak": "Ketma-ketlik",
+    "dayStreak": "{{count}} kunlik ketma-ketlik",
+    "notStartedToday": "Bugun hali o‘qishni boshlamadingiz.",
+    "startFirstTask": "Bugungi birinchi vazifani boshlash →",
+    "studyFocus": "Asosiy e'tibor",
+    "loadingPlan": "O‘quv rejasi yuklanmoqda...",
+    "viewStudyPlan": "O‘quv rejasini ko‘rish",
+    "noPlanFocus": "Jadval va natijalarga asoslangan kunlik yo‘nalishni ko‘rish uchun reja tuzing.",
+    "unfinishedTasks": "Tugallanmagan vazifalaringiz bor",
+    "unfinishedTasksDesc": "O‘tgan kunlardan {{count}} ta vazifa qolgan. Yetib olaylik!",
+    "studyNow": "Hozir o‘qish",
+    "learningMap": "Bilim xaritasi",
+    "topicsTracked": "{{count}} ta mavzu kuzatilmoqda",
+    "viewLearningMap": "Bilim xaritasini ko‘rish",
+    "topicsNeedReview": "⚠️ {{count}} ta mavzuni takrorlash kerak bo‘lishi mumkin",
+    "smartPractice": "Aqlli mashq",
+    "recommendedTopic": "Tavsiya etilgan mavzu",
+    "startPractice": "Mashqni boshlash",
+    "noPracticeRec": "Hozircha tavsiya yo‘q. O‘quv rejangizdan mavzu tanlang.",
+    "lastPractice": "Oxirgi mashq:",
+    "accuracyValue": "{{accuracy}}% aniqlik",
+    "recentUpdates": "So‘nggi yangilanishlar",
+    "allCaughtUp": "Hammasi ko‘rib chiqilgan. Yangilanishlar yo‘q.",
+    "todayTasks": "Bugungi vazifalar",
+    "startStudying": "O‘qishni boshlash",
+    "noTasksScheduled": "Barchasi bajarildi 🎉 Bugun uchun boshqa vazifalar rejalashtirilmagan.",
+    "journeyStartsHere": "O‘rganish yo‘lingiz shu yerdan boshlanadi. Shaxsiy rejangizni tuzing.",
+    "createPlan": "O‘quv rejasini tuzish",
+    "yourPlan": "Sizning o‘quv rejangiz",
+    "daysCount": "{{count}} kun",
+    "minPerDay": "{{count}} daqiqa/kun",
+    "openPlan": "O‘quv rejasini ochish",
+    "personalizedPlan": "Shaxsiy o‘quv rejangiz",
+    "createPlanDesc": "Maqsadlaringiz, fanlaringiz va bo‘sh vaqtingizga asoslangan reja tuzing.",
+    "createMyPlan": "O‘quv rejamni tuzish",
+    "toolkit": {
+      "title": "Aqlli o‘quv vositalari",
+      "subtitle": "O‘qishingizni kuchaytiring",
+      "spacedRepetition": "Intervalli takrorlash",
+      "pomodoro": "Pomodoro va Lo-Fi",
+      "aiSummarizer": "AI xulosa chiqaruvchi",
+      "rankings": "Reyting va ballar"
+    },
+    "mentorCard": {
+      "title": "AI Mentor",
+      "desc": "Biror mavzuni tushunishda yordam kerakmi? AI Mentordan bugungi mavzular bo‘yicha so‘rang.",
+      "ask": "AI Mentordan so‘rash →"
+    },
+    "goals": {
+      "grades": "Baholarni yaxshilash",
+      "exam": "Imtihonga tayyorlanish",
+      "learn": "Yangi fanni o‘rganish",
+      "habit": "O‘qish odatini shakllantirish"
+    }
   },
   "studyPlan": {
     "title": "O'quv rejasi",
-    "subtitle": "Maqsad va vaqtingizga moslashtirilgan sun'iy intellekt o'quv rejasi.",
+    "subtitle": "Profilingiz va jadvalingizga mos, shaffof qoidalarga asoslangan o'quv rejasi.",
     "adaptPlan": "Jadvalni moslashtirish",
     "generating": "Optimal reja tuzilmoqda...",
     "day": "{{number}}-kun",
@@ -80,11 +327,26 @@
     "markDone": "Bajarildi deb belgilash",
     "startTask": "Vazifani boshlash",
     "noPlan": "Faol o'quv rejasi topilmadi.",
-    "createPlan": "O'quv rejasi yaratish"
+    "createPlan": "O'quv rejasi yaratish",
+    "noPlanTitle": "Hozircha o'quv rejasi yo'q",
+    "noPlanSubtitle": "Saqlangan maqsadlar, fanlar, bilim darajasi va jadval asosida amaliy reja tuzing.",
+    "ruleBased": "Qoidalarga asoslangan tavsiya — AI yaratmagan",
+    "personalizedRoadmap": "Sizga moslashtirilgan o'quv rejasi",
+    "creatingPlan": "O'quv rejangiz tuzilmoqda...",
+    "exportCalendar": "Kalendarni eksport qilish",
+    "planProgress": "Reja bo'yicha jarayon",
+    "tasksCompletedCount": "{{total}} ta vazifadan {{completed}} tasi bajarildi",
+    "takeBreak": "Mashg'ulotlar orasida tavsiya etiladigan tanaffus: {{minutes}} daqiqa",
+    "dailySchedule": "Har o'quv kunida {{minutes}} daqiqalik diqqatli mashg'ulot",
+    "lastAdjusted": "So'nggi o'zgartirish: {{date}}",
+    "adaptation": {
+      "bannerTitle": "O‘qish sur’atingiz o‘zgardi",
+      "adaptButton": "Rejani moslashtirish"
+    }
   },
   "practice": {
     "title": "Aqlli amaliyot va testlar",
-    "subtitle": "Mavzularni mustahkamlash uchun AI testlari va amaliy savollar.",
+    "subtitle": "Har bir fan bo‘yicha tanlangan tilingizda mavzuli savollar bilan shug‘ullaning.",
     "selectSubject": "Fanni tanlang",
     "selectTopic": "Mavzuni tanlang",
     "questionCount": "Savollar soni",
@@ -99,7 +361,42 @@
     "resultsTitle": "Amaliyot natijalari",
     "score": "Sizning natijangiz: {{score}}%",
     "retry": "Qaytadan urinish",
-    "backToPractice": "Amaliyotga qaytish"
+    "backToPractice": "Amaliyotga qaytish",
+    "recommended": "Tavsiya etilgan amaliyot",
+    "recommendationReason": "O‘quv profilingizdagi qo‘shimcha mashq foydali bo‘lishi mumkin bo‘lgan mavzu.",
+    "noTopicsTitle": "Hozircha o‘quv mavzulari yo‘q",
+    "noTopicsDescription": "Mashqni boshlash uchun o‘quv rejasini yarating yoki profilingizga fan qo‘shing.",
+    "configureTitle": "Amaliy mashg‘ulotni sozlash",
+    "subjectLabel": "Fan",
+    "topicLabel": "Mavzu",
+    "difficulty": "Qiyinlik",
+    "easy": "Oson",
+    "medium": "O‘rtacha",
+    "hard": "Qiyin",
+    "questionSuffix": "ta savol",
+    "startSession": "Mashqni boshlash",
+    "loadingSubjects": "O‘quv fanlaringiz yuklanmoqda...",
+    "generalTopic": "Asoslar",
+    "recentHistory": "So‘nggi mashg‘ulotlar",
+    "historyEmptyTitle": "Hozircha amaliyot tarixi yo‘q",
+    "historyEmptyDescription": "Hali amaliy mashg‘ulotni yakunlamadingiz. Fanni tanlab, boshlang.",
+    "accuracy": "Aniqlik",
+    "correctOfTotal": "{{total}} tadan {{correct}} tasi to‘g‘ri",
+    "sessionProgress": "Mashg‘ulot jarayoni",
+    "quitPractice": "Mashqdan chiqish",
+    "confirmQuit": "Mashg‘ulotdan chiqilsinmi? Jarayon saqlanmaydi.",
+    "dashboard": "Boshqaruv paneli",
+    "building": "Mashq savollari tayyorlanmoqda...",
+    "generateFailed": "Mashq savollarini tuzib bo‘lmadi. Qayta urinib ko‘ring.",
+    "startFailed": "Mashg‘ulotni boshlab bo‘lmadi. Qayta urinib ko‘ring.",
+    "submitFailed": "Javob yuborilmadi. Qayta urinib ko‘ring.",
+    "completeFailed": "Mashg‘ulot yakunlanmadi. Natijalar sahifasi ochilmoqda.",
+    "answerPlaceholder": "Javobingizni kiriting...",
+    "correctAnswer": "To‘g‘ri javob:",
+    "correctFeedback": "To‘g‘ri!",
+    "incorrectFeedback": "Bu javob to‘g‘ri emas.",
+    "finishPractice": "Mashqni yakunlash",
+    "nextQuestion": "Keyingi savol"
   },
   "mentor": {
     "title": "AI O'quv Mentori",
@@ -108,7 +405,29 @@
     "send": "Yuborish",
     "thinking": "Mentor o'ylamoqda...",
     "clearChat": "Suhbatni tozalash",
-    "suggestionsTitle": "Mavzular bo'yicha so'rab ko'ring:"
+    "suggestionsTitle": "Mavzular bo'yicha so'rab ko'ring:",
+    "chats": "Suhbatlar",
+    "newChat": "Yangi suhbat",
+    "learnerProfile": "O‘quvchi profili",
+    "weakness": "Zaif mavzu: {{topic}}",
+    "noChats": "Suhbatlar tarixi bo‘sh",
+    "deleteChat": "Suhbatni o‘chirish",
+    "explain": "Tushuntirish",
+    "socratic": "Sokratik",
+    "socraticTutor": "Sokratik o‘qituvchi",
+    "directExplanation": "To‘g‘ridan-to‘g‘ri tushuntirish",
+    "socraticActive": "Sokratik uslub faol",
+    "explainActive": "Tushuntirish uslubi faol",
+    "socraticDesc": "Mentor tayyor javob berish o‘rniga savollar va yo‘naltiruvchi maslahatlar orqali bosqichma-bosqich o‘rgatadi.",
+    "explainDesc": "Mentor asosiy mantiq va misollar bilan batafsil tushuntirish beradi.",
+    "groundingAll": "Barcha fanlar asosida",
+    "practiceQuiz": "Amaliy test",
+    "generatingQuiz": "Amaliy test yaratilmoqda...",
+    "practiceQuestions": "AI amaliy savollari",
+    "socraticPlaceholder": "Savol bering yoki mentorning maslahatiga javob bering...",
+    "explainPlaceholder": "Mentordan istalgan narsani so‘rang...",
+    "formulatingHint": "Mentor maslahat tayyorlamoqda...",
+    "groundedIn": "Asos: {{course}}"
   },
   "knowledge": {
     "title": "Bilimlar xaritasi",
@@ -119,7 +438,21 @@
     "new": "Yangi",
     "confidence": "Ishonch darajasi",
     "lastPracticed": "So'nggi mashg'ulot",
-    "reviewNow": "Hozir takrorlash"
+    "reviewNow": "Hozir takrorlash",
+    "loading": "Bilim xaritangiz chizilmoqda...",
+    "emptyTitle": "Bilim xaritangiz hali bo‘sh",
+    "emptyDesc": "O‘qishni boshlang va EduFlow asta-sekin siz shug‘ullanayotgan mavzular manzarasini shakllantiradi.",
+    "goToDashboard": "Bosh sahifaga o‘tish",
+    "subjectsBreakdown": "Fanlar taqsimoti",
+    "nextAction": "Keyingi qadam",
+    "totalTopics": "Jami mavzular",
+    "strongTopics": "O‘zlashtirilgan mavzular",
+    "needsReviewTopics": "Takrorlash kerak",
+    "newTopics": "Yangi mavzular",
+    "reviewRecommended": "Takrorlash tavsiya etiladi",
+    "practiceNow": "Hozir mashq qilish",
+    "noReviewNeeded": "A'lo darajada! Shoshilinch takrorlash talab etilmaydi.",
+    "noTopicsSubject": "Bu fan bo‘yicha hali mavzular o‘rganilmadi."
   },
   "progress": {
     "title": "O'sish va statistika",
@@ -129,13 +462,72 @@
     "masteryScore": "O'rtacha o'zlashtirish",
     "achievements": "Yutuqlar",
     "unlocked": "Ochilgan",
-    "locked": "Qulflangan"
+    "locked": "Qulflangan",
+    "loading": "O‘rganish statistikasi hisoblanmoqda...",
+    "loadError": "Statistikani yuklab bo‘lmadi. Qaytadan urinib ko‘ring.",
+    "noActivity": "Hozircha faollik yo‘q",
+    "startFirstSession": "Natijalarni ko‘rish uchun birinchi darsingizni boshlang.",
+    "goToPlan": "O‘quv rejasiga o‘tish",
+    "createPlanFirst": "Avval o‘quv rejasini tuzing",
+    "digestTitle": "7 kunlik hisobot",
+    "weekMinutesStudied": "Bu hafta {{minutes}} daqiqa o‘qildi",
+    "noWeekSessions": "Bu haftada darslar qayd etilmagan",
+    "topFocus": "Asosiy fan: {{subject}} ({{minutes}} daqiqa)",
+    "weeklyAccuracy": "Haftalik test aniqligi",
+    "studyTime": "O‘qish vaqti",
+    "tasksDone": "Bajarilgan vazifalar",
+    "streak": "Ketma-ketlik",
+    "sessions": "Darslar",
+    "practiceSessions": "Mashq darslari",
+    "questionsAnswered": "Javob berilgan savollar",
+    "recentAccuracy": "Yaqindagi aniqlik",
+    "planProgress": "Rejaning bajarilishi",
+    "tasksCompletedRatio": "{{total}} tadan {{completed}} ta vazifa bajarildi",
+    "noActivePlan": "Faol o‘quv rejasi yo‘q",
+    "createPlanToTrack": "O‘rganish yo‘lingizni kuzatib borish uchun o‘quv rejasini tuzing.",
+    "subjectFocus": "Fan bo‘yicha e'tibor",
+    "mostStudied": "Eng ko‘p o‘qilgan",
+    "timeStudied": "{{time}} o‘qildi",
+    "learningConsistency": "O‘qish davomiyligi",
+    "activityRatio": "Faollik ko‘rsatkichi",
+    "daysActiveRatio": "{{total}} kundan {{active}} kun faol",
+    "studyBySubject": "Fanlar kesimida o‘qish",
+    "noSubjectActivity": "Hozircha fanlar bo‘yicha darslar yo‘q.",
+    "tasksDoneCount": "{{count}} ta bajarildi",
+    "learningAreas": "Bilim sohalari",
+    "viewMap": "Xaritani ko‘rish →",
+    "topicsTracked": "{{count}} ta mavzu kuzatilmoqda",
+    "needsReview": "takrorlash kerak",
+    "studyActivity": "O‘quv faolligi",
+    "daysAgo30": "30 kun oldin",
+    "today": "Bugun",
+    "yesterday": "Kecha",
+    "less": "Kamroq",
+    "more": "Ko‘proq",
+    "recentActivity": "So‘nggi faollik",
+    "noRecentSessions": "So‘nggi darslar mavjud emas.",
+    "minStudied": "{{minutes}} daqiqa o‘qildi"
   },
   "notifications": {
     "title": "Bildirishnomalar",
     "markAllRead": "Barchasini o'qilgan qilish",
     "noNotifications": "Hozircha bildirishnomalar yo'q",
-    "viewAll": "Barcha bildirishnomalar"
+    "viewAll": "Barcha bildirishnomalar",
+    "clearAll": "Barchasini tozalash",
+    "preferences": "Sozlamalar",
+    "prefsTitle": "Bildirishnoma sozlamalari",
+    "savePrefs": "Sozlamalarni saqlash",
+    "unreadOnly": "Faqat o‘qilmaganlar",
+    "filters": {
+      "all": "Barchasi",
+      "dailyplan": "Kunlik rejalar",
+      "streaks": "Ketma-ketlik",
+      "quizzes": "Testlar va vazifalar",
+      "flashcards": "Kartochkalar",
+      "achievements": "Yutuqlar",
+      "recommendations": "Tavsiyalar",
+      "system": "Tizim"
+    }
   },
   "profile": {
     "title": "Sizning profilingiz",
@@ -145,7 +537,63 @@
     "language": "Tizim tili",
     "saveChanges": "O'zgarishlarni saqlash",
     "savedSuccess": "Profil ma'lumotlari muvaffaqiyatli saqlandi!",
-    "dangerZone": "Xavfli hudud"
+    "dangerZone": "Xavfli hudud",
+    "age": "Yosh",
+    "ageInvalid": "5 dan 100 gacha bo'lgan butun sonni kiriting.",
+    "notProvided": "Kiritilmagan",
+    "edit": "Profilni tahrirlash",
+    "planPreferencesChanged": "O'quv sozlamalari yangilandi. Rejani yangi sozlamalarga moslashtirish uchun o'quv rejasini oching.",
+    "goalPlaceholder": "Masalan: matematika imtihoniga tayyorlanish",
+    "languageOptions": "O'zbek, rus, ingliz",
+    "minutesValue": "{{count}} daqiqa",
+    "timeOptions": {
+      "30Minutes": "30 daqiqa",
+      "1Hour": "1 soat",
+      "2Hours": "2 soat",
+      "3PlusHours": "3 soatdan ko'p"
+    },
+    "notifications": {
+      "description": "Qaysi bildirishnoma va yangilanishlarni olishni tanlang.",
+      "enabled": "Bildirishnomalarga ruxsat berish",
+      "enabledDescription": "Barcha bildirishnomalarni yoqing yoki o'chiring.",
+      "studyReminders": "O'qish eslatmalari",
+      "studyRemindersDescription": "Yaqinlashayotgan va muddati o'tgan vazifalar haqida eslatma oling.",
+      "reviewRecommendations": "Takrorlash tavsiyalari",
+      "reviewRecommendationsDescription": "Qayta ko'rib chiqish kerak bo'lgan mavzular haqida xabar oling.",
+      "practiceSuggestions": "Mashq tavsiyalari",
+      "practiceSuggestionsDescription": "Mavzular bo'yicha qisqa mashqlar tavsiyalarini oling.",
+      "streakNotifications": "Izchillik bildirishnomalari",
+      "streakNotificationsDescription": "Kunlik o'qish maqsadingiz bajarilganda xabar oling.",
+      "achievementAlerts": "Yutuqlar haqida xabarlar",
+      "achievementAlertsDescription": "Yangi yutuqqa erishganingizda xabar oling.",
+      "studyPlanUpdates": "O'quv rejasi yangilanishlari",
+      "studyPlanUpdatesDescription": "O'quv rejangiz o'zgartirilganda xabar oling.",
+      "saveError": "Bildirishnoma sozlamasini saqlab bo'lmadi."
+    },
+    "achievements": {
+      "title": "O'quv yutuqlari",
+      "unlocked": "Ochildi: {{date}}",
+      "first_study_session": {
+        "title": "Birinchi o'quv mashg'uloti",
+        "description": "Birinchi qadamni qo'ying va o'quv mashg'ulotini yakunlang."
+      },
+      "first_practice": {
+        "title": "Birinchi mashq",
+        "description": "Birinchi amaliy test orqali bilimingizni sinab ko'ring."
+      },
+      "10_practice_questions": {
+        "title": "10 ta amaliy savol",
+        "description": "Istalgan mavzu bo'yicha 10 ta savolga javob bering."
+      },
+      "5_completed_tasks": {
+        "title": "5 ta bajarilgan vazifa",
+        "description": "Shaxsiy o'quv rejangizdagi 5 ta maqsadni bajaring."
+      },
+      "7_day_streak": {
+        "title": "7 kunlik o'qish izchilligi",
+        "description": "Ketma-ket 7 kun muntazam o'qing."
+      }
+    }
   },
   "landing": {
     "heroBadge": "Yangi avlod AI Ta'lim Yordamchisi",
@@ -158,11 +606,110 @@
     "featuresSubtitle": "Ortiqcha stresslarsiz, yuqori samaradorlik bilan o'qishni istagan talabalar uchun maxsus yaratilgan.",
     "ctaTitle": "O'qish samaradorligini oshirishga tayyormisiz?",
     "ctaSubtitle": "Bugunoq EduFlow ga qo'shiling va sun'iy intellekt ko'magida maqsadlaringizga tezroq erishing.",
-    "ctaButton": "Bepul o'rganishni boshlang"
+    "ctaButton": "Bepul o'rganishni boshlang",
+    "features": {
+      "planTitle": "AI o‘quv rejalari",
+      "planDesc": "Maqsadlaringiz, fanlaringiz, bo‘sh vaqtingiz va muddatingizga asoslangan shaxsiy reja.",
+      "mentorTitle": "AI Mentor",
+      "mentorDesc": "Tayyor javoblar o‘rniga savollar bering, tushuntirishlar oling va bosqichma-bosqich o‘rganing.",
+      "progressTitle": "O‘sishni kuzatish",
+      "progressDesc": "Nimalarni bajarganingizni, qayerda o‘sayotganingizni va qaysi fanlarga e'tibor kerakligini ko‘ring."
+    },
+    "howItWorks": {
+      "title": "EduFlow qanday ishlaydi",
+      "subtitle": "O‘qish tartibingizni o‘zgartirish uchun uchta oddiy qadam",
+      "step1Title": "O‘rganish maqsadlarini belgilang",
+      "step1Desc": "Nimani o‘rganmoqchi ekanligingizni, imtihon sanasi yoki muddatini va kunlik vaqtingizni ayting.",
+      "step2Title": "Kunlik rejaga amal qiling",
+      "step2Desc": "Har kuni qulay o‘quv bloklari bilan muvozanatli va muntazam jadvalga ega bo‘ling.",
+      "step3Title": "AI Mentor bilan mavzularni o‘zlashtiring",
+      "step3Desc": "Savollar bering, testlar bilan bilimlaringizni sinab ko‘ring va tushunchalarni chuqur anglang."
+    },
+    "mentorShowcase": {
+      "title": "Shunchaki javoblar emas, bosqichma-bosqich yo‘l-yo‘riq",
+      "subtitle": "EduFlow AI Mentori sizga mavzuni haqiqatdan tushunib yetishingiz uchun masalalarni bosqichma-bosqich o‘rgatadi.",
+      "tryAsking": "Savol berib ko‘ring",
+      "askMentor": "AI Mentordan so‘rash"
+    },
+    "progressShowcase": {
+      "title": "O‘sishingizning aniq manzarasi",
+      "subtitle": "O‘qish ketma-ketligini, bajarilgan vazifalarni va har bir fan bo‘yicha natijalaringizni kuzating."
+    },
+    "trust": {
+      "title": "Jiddiy o‘quvchilar uchun yaratilgan",
+      "subtitle": "Kognitiv fanga asoslangan ishonchli o‘qish metodikalari",
+      "spacedRepetition": "Intervalli takrorlash",
+      "activeRecall": "Faol eslash",
+      "adaptiveDifficulty": "Moslashuvchan murakkablik",
+      "microlearning": "Mikro-o‘qitish"
+    }
   },
   "footer": {
     "tagline": "Dunyodagi barcha talabalar uchun AI shaxsiy o'quv yordamchisi.",
     "rights": "Barcha huquqlar himoyalangan."
+  },
+  "flashcards": {
+    "title": "Flashcards & Spaced Repetition",
+    "subtitle": "SuperMemo-2 algoritmi bilan bilimlarni uzoq muddatli xotiraga muhrlang.",
+    "createDeck": "Yangi to'plam",
+    "generateAI": "AI bilan to'plam yaratish",
+    "dueReview": "Takrorlash kutilmoqda",
+    "cardsCount": "{{count}} ta kartochka",
+    "studyNow": "O'rganishni boshlash",
+    "editDeck": "Tahrirlash",
+    "deleteDeck": "O'chirish",
+    "noDecks": "Hozircha hech qanday to'plam yaratilmagan.",
+    "flipCard": "Javobni ko'rish",
+    "again": "Qaytadan (1 kun)",
+    "hard": "Qiyin (3 kun)",
+    "good": "Yaxshi (7 kun)",
+    "easy": "Oson (14+ kun)",
+    "completedTitle": "To'plam yakunlandi! 🎉",
+    "completedSubtitle": "Barcha rejalashtirilgan kartochkalar ko'rib chiqildi.",
+    "backToDecks": "To'plamlarga qaytish"
+  },
+  "focusRoom": {
+    "title": "Fokus Xona & Pomodoro",
+    "subtitle": "Chalg'imasdan chuqur fokusda o'rganing va har daqiqangizni hisobga oling.",
+    "pomodoro": "Pomodoro (25m)",
+    "deepFocus": "Chuqur Fokus (50m)",
+    "shortBreak": "Qisqa Tanaffus (5m)",
+    "longBreak": "Uzoq Tanaffus (15m)",
+    "start": "Boshlash",
+    "pause": "To'xtatish",
+    "reset": "Qayta o'rnatish",
+    "ambientSounds": "Fon musiqalari & Atmosfera",
+    "lofi": "Lo-Fi Beats",
+    "rain": "Yomg'ir tovushi",
+    "cafe": "Shinam Qahvaxona",
+    "whitenoise": "Oq Shovqin (Zen)",
+    "sessionCompleted": "Sessiya yakunlandi! +{{minutes}} daqiqa profilga yozildi."
+  },
+  "smartNotes": {
+    "title": "Smart Notes & AI Xulosalovchi",
+    "subtitle": "Konspekt yoki darslik matnini kiriting — AI asosiy xulosalar, testlar va kartochkalarni tayyorlab beradi.",
+    "inputPlaceholder": "Konspekt, ma'ruza yoki kitob matnini bu yerga joylashtiring (kamida 20 belgi)...",
+    "subjectLabel": "Fan yoki Yo'nalish",
+    "titleLabel": "Konspekt sarlavhasi",
+    "summarizeBtn": "AI tahlil qilish",
+    "summaryTitle": "Asosiy Mazmun",
+    "keyTakeaways": "Muhim Xulosalar",
+    "formulas": "Formulalar va Qoidalar",
+    "practiceQuestions": "O'z-o'zini sinash savollari",
+    "flashcards": "Tayyor Kartochkalar",
+    "saveAsDeck": "Flashcard to'plami sifatida saqlash",
+    "printCheatsheet": "Cheatsheet (Chop etish / PDF)"
+  },
+  "leaderboard": {
+    "title": "O'quvchilar Reytingi",
+    "subtitle": "O'rganish vaqti, testlar va uzluksiz seriya (streak) bo'yicha eng faol o'quvchilar.",
+    "rank": "O'rin",
+    "student": "O'quvchi",
+    "xp": "XP Ball",
+    "streak": "Seriya",
+    "studyTime": "O'qish vaqti",
+    "quizzes": "Testlar",
+    "yourRank": "Sizning o'rningiz: {{rank}}-o'rin ({{xp}} XP)"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -172,8 +719,63 @@
     "delete": "O'chirish",
     "close": "Yopish",
     "back": "Orqaga",
+    "languageSaveError": "Til ushbu qurilmada o'zgartirildi, ammo hisobingizga saqlanmadi.",
+    "saving": "Saqlanmoqda...",
     "notFoundTitle": "Sahifa topilmadi",
     "notFoundDesc": "Siz qidirayotgan sahifa mavjud emas.",
-    "backHome": "Bosh sahifaga qaytish"
+    "backHome": "Bosh sahifaga qaytish",
+    "retry": "Qayta urinish",
+    "dismiss": "Yopish",
+    "somethingWentWrong": "Xatolik yuz berdi",
+    "tryAgain": "Qaytadan urinish",
+    "notSet": "O‘rnatilmagan"
+  },
+  "practiceResult": {
+    "loading": "Natijangiz hisoblanmoqda...",
+    "unavailable": "Ushbu amaliyot natijasi topilmadi",
+    "backToPractice": "Mashqqa qaytish",
+    "complete": "Mashq yakunlandi",
+    "accuracy": "Aniqlik",
+    "correct": "To‘g‘ri javoblar",
+    "incorrect": "Noto‘g‘ri javoblar",
+    "timeSpent": "Sarflangan vaqt",
+    "breakdown": "Savollar tahlili",
+    "anotherSession": "Yangi mashq boshlash",
+    "goToDashboard": "Bosh sahifaga o‘tish"
+  },
+  "search": {
+    "placeholder": "Mavzular, kurslar, kartochkalarni qidirish...",
+    "all": "Barchasi",
+    "courses": "Kurslar",
+    "flashcards": "Kartochkalar",
+    "quizzes": "Testlar",
+    "filter": "Filtr",
+    "noResults": "Natijalar topilmadi",
+    "discoverTitle": "Mavzular va materiallarni kashf eting",
+    "trending": "Ommabop qidiruvlar",
+    "recommended": "Siz uchun tavsiyalar"
+  },
+  "billing": {
+    "title": "To‘lovlar va obunalar",
+    "subtitle": "Tarif, to‘lov usullari va to‘lovlar tarixini boshqaring.",
+    "currentPlan": "Joriy tarif",
+    "upgrade": "Tarifni oshirish",
+    "freePlan": "Bepul tarif",
+    "proPlan": "Pro tarif",
+    "history": "To‘lovlar tarixi",
+    "noHistory": "To‘lov operatsiyalari hozircha yo‘q."
+  },
+  "admin": {
+    "title": "Boshqaruv paneli",
+    "tabs": {
+      "overview": "Umumiy ko‘rinish",
+      "users": "Foydalanuvchilar",
+      "content": "Kontent",
+      "reports": "Shikoyatlar",
+      "flags": "Funksiya bayroqlari",
+      "health": "Tizim holati",
+      "incidents": "Hodisalar",
+      "logs": "Audit jurnallari"
+    }
   }
 }

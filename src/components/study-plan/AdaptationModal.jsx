@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, CheckCircle2, X } from 'lucide-react';
 import studyPlanService from '../../services/studyPlan';
 
 function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
+  const { t, i18n } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null); // { type, reason, changes, explanation }
@@ -27,7 +29,7 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
       const data = await studyPlanService.adaptStudyPlan(planId);
       
       if (data.alreadyAdaptedToday) {
-        setError('Your study plan was already adapted today. Please try again tomorrow to avoid excessive scheduling changes.');
+        setError(t('studyPlan.alreadyAdaptedToday') || 'Your study plan was already adapted today. Please try again tomorrow to avoid excessive scheduling changes.');
         setSubmitting(false);
         return;
       }
@@ -64,7 +66,8 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const localeMap = { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-US' };
+    return new Date(dateStr).toLocaleDateString(localeMap[i18n.language] || 'en-US', {
       month: 'short',
       day: 'numeric',
     });
@@ -87,12 +90,12 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
           /* State 1: Request Adaptation Confirmation */
           <div className="space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-text mb-2">Adjust your study plan?</h3>
+              <h3 className="text-lg font-bold text-text mb-2">{t('studyPlan.adaptTitle') || 'Adjust your study plan?'}</h3>
               <p className="text-sm text-muted leading-relaxed">
-                EduFlow found that your recent progress doesn&apos;t perfectly match the current schedule.
+                {t('studyPlan.adaptSubtitle') || "EduFlow found that your recent progress doesn't perfectly match the current schedule."}
               </p>
               <p className="text-sm text-muted leading-relaxed mt-2">
-                We can reorganize future tasks while keeping your completed progress unchanged.
+                {t('studyPlan.adaptDescription') || "We can reorganize future tasks while keeping your completed progress unchanged."}
               </p>
             </div>
 
@@ -108,7 +111,7 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
                 disabled={submitting}
                 className="px-4 py-2 text-xs font-semibold rounded-lg bg-white/5 border border-subtle text-muted hover:bg-white/10 hover:text-text transition-all cursor-pointer disabled:opacity-50"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleConfirm}
@@ -116,7 +119,7 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
                 className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-primary hover:bg-primary-hover text-white transition-all shadow-lg shadow-primary/25 cursor-pointer disabled:opacity-50"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                Adjust plan
+                {t('studyPlan.adaptNow') || 'Adjust plan'}
               </button>
             </div>
           </div>
@@ -127,19 +130,19 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
               <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               </div>
-              <h3 className="text-lg font-bold text-text">Plan updated ✓</h3>
+              <h3 className="text-lg font-bold text-text">{t('studyPlan.planAdapted') || 'Plan updated ✓'}</h3>
             </div>
 
             {result.changes.length === 0 ? (
               <p className="text-sm text-muted">
-                Your plan is already on track. No changes were necessary.
+                {t('studyPlan.noChanges') || 'Your plan is already on track. No changes were necessary.'}
               </p>
             ) : (
               <div className="space-y-4">
                 {/* AI Explanation bubble */}
                 {(loadingExplanation || explanation) && (
                   <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-1 select-none">AI Coach Advice</p>
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wide mb-1 select-none">{t('mentor.title') || 'AI Coach Advice'}</p>
                     {loadingExplanation ? (
                       <Loader2 className="w-4 h-4 text-primary animate-spin" />
                     ) : (
@@ -152,11 +155,11 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
 
                 {/* Rescheduling Changes breakdown */}
                 <div>
-                  <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Reorganized Tasks ({result.changes.length})</p>
+                  <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">{t('studyPlan.reorganizedTasks') || 'Reorganized Tasks'} ({result.changes.length})</p>
                   <div className="max-h-40 overflow-y-auto space-y-2 pr-1 border border-subtle/40 rounded-xl bg-white/[0.01] p-3">
                     {result.changes.map((ch, idx) => (
                       <div key={idx} className="text-xs flex flex-col justify-between py-1 border-b border-white/[0.02] last:border-0 last:pb-0">
-                        <span className="font-semibold text-text truncate">Rescheduled Task</span>
+                        <span className="font-semibold text-text truncate">{t('studyPlan.rescheduledTask') || 'Rescheduled Task'}</span>
                         <span className="text-muted mt-0.5">
                           {formatDate(ch.fromDate)} &rarr; {formatDate(ch.toDate)}
                         </span>
@@ -172,7 +175,7 @@ function AdaptationModal({ isOpen, onClose, planId, onAdapted }) {
                 onClick={onClose}
                 className="px-4 py-2 text-xs font-semibold rounded-lg bg-white/5 border border-subtle text-muted hover:bg-white/10 hover:text-text transition-all cursor-pointer"
               >
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>

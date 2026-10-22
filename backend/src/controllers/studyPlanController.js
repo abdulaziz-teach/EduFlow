@@ -4,7 +4,7 @@ import * as adaptiveStudyService from '../services/adaptiveStudyService.js';
 import PlanAdaptation from '../models/PlanAdaptation.js';
 
 /**
- * @desc    Generate a new AI study plan
+ * @desc    Generate a deterministic, rule-based study plan
  * @route   POST /api/study-plans/generate
  * @access  Private
  */
@@ -16,10 +16,8 @@ export const generatePlan = async (req, res, next) => {
     const hasSubjects = Array.isArray(user.subjects) && user.subjects.length > 0;
     const hasGoal = user.goal && user.goal.type;
     const hasDailyMinutes = user.dailyStudyMinutes && user.dailyStudyMinutes > 0;
-    const needsTargetDate = user.goal?.type === 'exam';
-    const hasTargetDate = user.goal?.targetDate;
 
-    if (!hasSubjects || !hasGoal || !hasDailyMinutes || (needsTargetDate && !hasTargetDate)) {
+    if (!hasSubjects || !hasGoal || !hasDailyMinutes) {
       return res.status(400).json({
         success: false,
         message: 'Please complete your study profile before creating a study plan.',
@@ -36,7 +34,7 @@ export const generatePlan = async (req, res, next) => {
       });
     }
 
-    // Generate via AI
+    // Generate from saved preferences using deterministic rules; no AI credentials are needed.
     const plan = await studyPlanService.generatePlan(user, {
       startDate: req.body.startDate,
     });
@@ -47,6 +45,14 @@ export const generatePlan = async (req, res, next) => {
       plan,
     });
   } catch (error) {
+    if (error.message === 'STUDY_PROFILE_INCOMPLETE' || error.message === 'INVALID_AGE') {
+      return res.status(400).json({
+        success: false,
+        message: error.message === 'INVALID_AGE'
+          ? 'Age must be a whole number between 5 and 100.'
+          : 'Please complete your study profile before creating a study plan.',
+      });
+    }
     if (error.message === 'AI_GENERATION_FAILED' || error.message === 'AI_VALIDATION_FAILED') {
       return res.status(503).json({
         success: false,

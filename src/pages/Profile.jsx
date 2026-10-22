@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
   User,
   Mail,
@@ -24,10 +25,10 @@ const ALL_SUBJECTS = [
 ];
 
 const TIME_OPTIONS = [
-  { label: '30 min', value: 30 },
-  { label: '1 hour', value: 60 },
-  { label: '2 hours', value: 120 },
-  { label: '3+ hours', value: 180 },
+  { value: 30, key: '30Minutes' },
+  { value: 60, key: '1Hour' },
+  { value: 120, key: '2Hours' },
+  { value: 180, key: '3PlusHours' },
 ];
 
 function Profile() {
@@ -79,7 +80,7 @@ function Profile() {
     try {
       await notificationsService.updatePreferences({ [field]: updated[field] });
     } catch (err) {
-      setError('Failed to save preference adjustment.');
+      setError(t('profile.notifications.saveError'));
     }
   };
 
@@ -89,6 +90,7 @@ function Profile() {
     goalType: user?.goal?.type || '',
     goalDescription: user?.goal?.description || '',
     dailyStudyMinutes: user?.dailyStudyMinutes || null,
+    age: user?.age ?? '',
   });
 
   const startEdit = () => {
@@ -98,6 +100,7 @@ function Profile() {
       goalType: user?.goal?.type || '',
       goalDescription: user?.goal?.description || '',
       dailyStudyMinutes: user?.dailyStudyMinutes || null,
+      age: user?.age ?? '',
     });
     setEditing(true);
     setError('');
@@ -123,6 +126,10 @@ function Profile() {
       setError(t('auth.fillAllFields'));
       return;
     }
+    if (form.age !== '' && (!Number.isInteger(Number(form.age)) || Number(form.age) < 5 || Number(form.age) > 100)) {
+      setError(t('profile.ageInvalid'));
+      return;
+    }
 
     setSaving(true);
     setError('');
@@ -136,10 +143,11 @@ function Profile() {
           description: form.goalDescription,
         },
         dailyStudyMinutes: form.dailyStudyMinutes,
+        age: form.age === '' ? null : Number(form.age),
       });
       await refreshUser();
       setEditing(false);
-      setSuccess(t('profile.savedSuccess'));
+      setSuccess(t('profile.planPreferencesChanged'));
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.message);
@@ -150,19 +158,25 @@ function Profile() {
 
   const goalLabel =
     user?.goal?.description ||
-    user?.goal?.type ||
-    'Not set';
+    (user?.goal?.type ? t(`onboarding.goals.${user.goal.type}.label`) : t('profile.notProvided'));
 
+  const selectedTimeOption = TIME_OPTIONS.find((option) => option.value === user?.dailyStudyMinutes);
   const studyTimeLabel = user?.dailyStudyMinutes
-    ? TIME_OPTIONS.find((t) => t.value === user.dailyStudyMinutes)?.label ||
-      `${user.dailyStudyMinutes} min`
-    : 'Not set';
+    ? selectedTimeOption
+      ? t(`profile.timeOptions.${selectedTimeOption.key}`)
+      : t('profile.minutesValue', { count: user.dailyStudyMinutes })
+    : t('profile.notProvided');
+
+  const formatSubject = (subject) => {
+    const key = subject.replace(/\s+/g, '').replace(/^[A-Z]/, (letter) => letter.toLowerCase());
+    return t(`onboarding.subjectNames.${key}`, { defaultValue: subject });
+  };
 
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto min-w-0">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-text">{t('profile.title')}</h1>
             <p className="text-sm text-muted mt-1">{t('profile.subtitle')}</p>
@@ -173,7 +187,7 @@ function Profile() {
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-subtle text-sm text-muted hover:text-text transition-all cursor-pointer"
             >
               <Pencil className="w-4 h-4" />
-              {t('common.save') !== 'Save' ? 'Tahrirlash' : 'Edit Profile'}
+              {t('profile.edit')}
             </button>
           ) : (
             <div className="flex items-center gap-2">
@@ -203,7 +217,10 @@ function Profile() {
         )}
         {success && (
           <div className="mb-5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400">
-            {success}
+            <p>{success}</p>
+            <Link to="/study-plan" className="inline-block mt-2 underline underline-offset-2">
+              {t('studyPlan.title')}
+            </Link>
           </div>
         )}
 
@@ -234,9 +251,33 @@ function Profile() {
             <div className="w-9 h-9 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0 mt-0.5">
               <Mail className="w-5 h-5 text-sky-400" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-xs text-muted mb-1">{t('auth.email')}</p>
-              <p className="text-sm font-medium text-text">{user?.email}</p>
+              <p className="text-sm font-medium text-text break-all">{user?.email}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-fuchsia-500/10 flex items-center justify-center shrink-0 mt-0.5">
+              <User className="w-5 h-5 text-fuchsia-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <label htmlFor="profile-age" className="block text-xs text-muted mb-1">{t('profile.age')}</label>
+              {editing ? (
+                <input
+                  id="profile-age"
+                  type="number"
+                  inputMode="numeric"
+                  min="5"
+                  max="100"
+                  step="1"
+                  value={form.age}
+                  onChange={(event) => setForm((current) => ({ ...current, age: event.target.value }))}
+                  className="w-full sm:max-w-xs px-3 py-2 rounded-lg bg-dark border border-subtle text-sm text-text outline-none focus:border-primary"
+                />
+              ) : (
+                <p className="text-sm font-medium text-text">{user?.age ?? t('profile.notProvided')}</p>
+              )}
             </div>
           </div>
 
@@ -261,7 +302,7 @@ function Profile() {
                           : 'border-subtle bg-white/[0.02] text-muted hover:text-text'
                       }`}
                     >
-                      {s}
+                      {formatSubject(s)}
                     </button>
                   ))}
                 </div>
@@ -269,12 +310,12 @@ function Profile() {
                 <div className="flex flex-wrap gap-1.5">
                   {user.subjects.map((s) => (
                     <span key={s} className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-white/5 border border-subtle text-text">
-                      {s}
+                      {formatSubject(s)}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">Not set</p>
+                <p className="text-sm text-muted">{t('profile.notProvided')}</p>
               )}
             </div>
           </div>
@@ -291,7 +332,7 @@ function Profile() {
                   type="text"
                   value={form.goalDescription}
                   onChange={(e) => setForm((p) => ({ ...p, goalDescription: e.target.value }))}
-                  placeholder="e.g. Prepare for mathematics exam"
+                  placeholder={t('profile.goalPlaceholder')}
                   className="w-full px-3 py-2 rounded-lg bg-dark border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
                 />
               ) : (
@@ -339,7 +380,7 @@ function Profile() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-text">{t('profile.language')}</h3>
-                <p className="text-xs text-muted">O&apos;zbekcha, Русский, English</p>
+                <p className="text-xs text-muted">{t('profile.languageOptions')}</p>
               </div>
             </div>
             <LanguageSwitcher isMobile={false} />
@@ -353,15 +394,15 @@ function Profile() {
               <h3 className="text-sm font-bold text-text uppercase tracking-wider text-muted">
                 🔔 {t('notifications.title')}
               </h3>
-              <p className="text-xs text-muted mt-1">Configure what notifications and updates you want to receive.</p>
+              <p className="text-xs text-muted mt-1">{t('profile.notifications.description')}</p>
             </div>
 
             <div className="space-y-3.5 divide-y divide-white/[0.04] pt-1">
               {/* Enabled Toggler */}
               <div className="flex items-center justify-between py-1">
                 <div>
-                  <p className="text-sm font-semibold text-text">Allow Notifications</p>
-                  <p className="text-xs text-muted">Turn all notifications on or off globally.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.enabled')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.enabledDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -374,8 +415,8 @@ function Profile() {
               {/* Task Reminders */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Study Reminders</p>
-                  <p className="text-xs text-muted">Get notified about upcoming and overdue study tasks.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.studyReminders')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.studyRemindersDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -389,8 +430,8 @@ function Profile() {
               {/* Review Recommendations */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Review Recommendations</p>
-                  <p className="text-xs text-muted">Alerts when specific topics could use review based on consistency.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.reviewRecommendations')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.reviewRecommendationsDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -404,8 +445,8 @@ function Profile() {
               {/* Practice Recommendations */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Practice Suggestions</p>
-                  <p className="text-xs text-muted">Alerts recommending short practice sets on active topics.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.practiceSuggestions')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.practiceSuggestionsDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -419,8 +460,8 @@ function Profile() {
               {/* Streak Notifications */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Streak Notifications</p>
-                  <p className="text-xs text-muted">Get notifications confirming today&apos;s goal streak completions.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.streakNotifications')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.streakNotificationsDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -434,8 +475,8 @@ function Profile() {
               {/* Achievement Notifications */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Achievement Alerts</p>
-                  <p className="text-xs text-muted">Get notified immediately upon unlocking new milestones.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.achievementAlerts')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.achievementAlertsDescription')}</p>
                 </div>
                 <input
                   type="checkbox"
@@ -449,8 +490,8 @@ function Profile() {
               {/* Study Plan Notifications */}
               <div className="flex items-center justify-between pt-3.5">
                 <div>
-                  <p className="text-sm font-semibold text-text">Study Plan Updates</p>
-                  <p className="text-xs text-muted">Get notified when plans are adapted or adjusted by the system.</p>
+                  <p className="text-sm font-semibold text-text">{t('profile.notifications.studyPlanUpdates')}</p>
+                  <p className="text-xs text-muted">{t('profile.notifications.studyPlanUpdatesDescription')}</p>
                 </div>
                 <input
                   type="checkbox"

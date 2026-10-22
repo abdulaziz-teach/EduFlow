@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Loader2, ArrowLeft, Brain, Zap, History } from 'lucide-react';
 import practiceService from '../services/practice';
 import PracticeSetup from '../components/practice/PracticeSetup';
@@ -10,6 +11,7 @@ import PracticeHistory from '../components/practice/PracticeHistory';
 
 function Practice() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const preSubject = searchParams.get('subject') || '';
   const preTopic = searchParams.get('topic') || '';
@@ -59,8 +61,8 @@ function Practice() {
     } catch (err) {
       setError(
         err.response?.data?.error === 'QUESTIONS_UNAVAILABLE'
-          ? "We couldn't create practice questions right now. Please try again."
-          : 'Failed to start practice session. Please try again.'
+          ? t('practice.generateFailed')
+          : t('practice.startFailed')
       );
     } finally {
       setLoadingSession(false);
@@ -80,7 +82,7 @@ function Practice() {
       });
       setAnswerFeedback(feedback);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to submit answer. Please try again.');
+      setError(err.response?.data?.message || t('practice.submitFailed'));
     } finally {
       setSubmittingAnswer(false);
     }
@@ -95,7 +97,7 @@ function Practice() {
         await practiceService.completeSession(activeSession.id);
         navigate(`/practice/${activeSession.id}/result`);
       } catch (err) {
-        setError('Failed to complete practice session cleanly. Redirecting to result page.');
+        setError(t('practice.completeFailed'));
         setTimeout(() => {
           navigate(`/practice/${activeSession.id}/result`);
         }, 1500);
@@ -109,7 +111,7 @@ function Practice() {
   };
 
   const handleQuit = () => {
-    if (window.confirm('Are you sure you want to quit this practice session? Your progress on this session will not be saved.')) {
+    if (window.confirm(t('practice.confirmQuit'))) {
       setActiveSession(null);
       setAnswerFeedback(null);
       fetchMetadata();
@@ -121,7 +123,7 @@ function Practice() {
       <div className="pt-24 pb-16 min-h-screen bg-[#0B0F19] text-text flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
-          <p className="text-sm text-muted">Building your practice set...</p>
+          <p className="text-sm text-muted">{t('practice.building')}</p>
         </div>
       </div>
     );
@@ -138,7 +140,7 @@ function Practice() {
             className="flex items-center gap-1.5 text-sm text-rose-400 hover:text-rose-300 transition-colors cursor-pointer select-none"
           >
             <ArrowLeft className="w-4 h-4" />
-            Quit Practice
+            {t('practice.quitPractice')}
           </button>
         ) : (
           <button
@@ -146,17 +148,17 @@ function Practice() {
             className="flex items-center gap-1.5 text-sm text-muted hover:text-text transition-colors cursor-pointer select-none"
           >
             <ArrowLeft className="w-4 h-4" />
-            Dashboard
+            {t('practice.dashboard')}
           </button>
         )}
 
         {/* Header Title */}
         <div className="mb-6 select-none">
-          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">Smart Practice</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">{t('practice.title')}</h1>
           <p className="text-sm text-muted">
             {activeSession
               ? `${activeSession.subject} • ${activeSession.topic}`
-              : 'Strengthen what you are learning with custom generated questions.'}
+              : t('practice.subtitle')}
           </p>
         </div>
 
@@ -203,7 +205,7 @@ function Practice() {
             <div className="space-y-4">
               <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted flex items-center gap-2 select-none">
                 <History className="w-4 h-4" />
-                Recent Practice History
+                {t('practice.recentHistory')}
               </h3>
               {loadingMetadata ? (
                 <div className="flex justify-center py-6">

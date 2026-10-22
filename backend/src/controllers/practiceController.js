@@ -4,6 +4,7 @@ import * as questionGenerationService from '../services/questionGenerationServic
 import * as knowledgeService from '../services/knowledgeService.js';
 import * as studyPlanService from '../services/studyPlanService.js';
 import * as achievementService from '../services/achievementService.js';
+import * as knowledgeUpdateEngine from '../services/knowledgeUpdateEngine.js';
 
 /**
  * @desc    Generate and cache practice questions
@@ -43,6 +44,7 @@ export const generateQuestions = async (req, res, next) => {
       topic,
       difficulty: diff,
       count: questionCount,
+      language: req.user.preferredLanguage || 'en',
     });
 
     res.status(200).json({
@@ -89,6 +91,7 @@ export const createSession = async (req, res, next) => {
         topic,
         difficulty: diff,
         count: questionCount,
+        language: req.user.preferredLanguage || 'en',
       });
     } catch (err) {
       return res.status(500).json({
@@ -330,6 +333,19 @@ export const completeSession = async (req, res, next) => {
       }
     } catch (achErr) {
       console.error('Error checking practice achievements:', achErr.message);
+    }
+
+    // Trigger knowledge update & mistake log tracking
+    try {
+      const qIds = completedSession.questions.map((q) => q.questionId);
+      const dbQuestions = await PracticeQuestion.find({ _id: { $in: qIds } });
+      await knowledgeUpdateEngine.onPracticeSessionCompleted({
+        userId,
+        session: completedSession,
+        questions: dbQuestions,
+      });
+    } catch (kErr) {
+      console.error('Error in onPracticeSessionCompleted:', kErr.message);
     }
 
     const total = completedSession.questions.length;

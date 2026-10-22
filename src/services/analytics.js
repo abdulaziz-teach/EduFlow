@@ -105,8 +105,23 @@ export const AnalyticsEvents = {
   PRACTICE_COMPLETED: 'practice_completed',
   MENTOR_OPENED: 'mentor_opened',
   MENTOR_MESSAGE_SENT: 'mentor_message_sent',
-  KNOWLEDGE_UPDATED: 'knowledge_updated',
+  // Learning Funnel
+  COURSE_VIEWED: 'course_viewed',
+  COURSE_ENROLLED: 'course_enrolled',
+  LESSON_STARTED: 'lesson_started',
+  LESSON_COMPLETED: 'lesson_completed',
+  QUIZ_STARTED: 'quiz_started',
+  QUIZ_COMPLETED: 'quiz_completed',
+  FLASHCARD_REVIEWED: 'flashcard_reviewed',
+
+  // Economy & Shop
+  SHOP_VIEWED: 'shop_viewed',
+  PURCHASE_STARTED: 'purchase_started',
+  PURCHASE_COMPLETED: 'purchase_completed',
+
+  // Gamification & Engagement
   ACHIEVEMENT_UNLOCKED: 'achievement_unlocked',
+  LEADERBOARD_VIEWED: 'leaderboard_viewed',
   NOTIFICATION_OPENED: 'notification_opened',
 };
 

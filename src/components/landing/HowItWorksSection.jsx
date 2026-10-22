@@ -1,35 +1,38 @@
 import { Target, Map, Rocket } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SectionHeading from '../ui/SectionHeading';
 
-const steps = [
-  {
-    number: '01',
-    icon: Target,
-    title: 'Tell us your goal',
-    description: 'Choose your subjects, target, and available study time.',
-  },
-  {
-    number: '02',
-    icon: Map,
-    title: 'Get your plan',
-    description: 'EduFlow creates a personalized study roadmap.',
-  },
-  {
-    number: '03',
-    icon: Rocket,
-    title: 'Learn and improve',
-    description: 'Complete tasks, ask your AI Mentor, and track your progress.',
-  },
-];
-
 function HowItWorksSection() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      number: '01',
+      icon: Target,
+      title: t('landing.howItWorks.step1Title'),
+      description: t('landing.howItWorks.step1Desc'),
+    },
+    {
+      number: '02',
+      icon: Map,
+      title: t('landing.howItWorks.step2Title'),
+      description: t('landing.howItWorks.step2Desc'),
+    },
+    {
+      number: '03',
+      icon: Rocket,
+      title: t('landing.howItWorks.step3Title'),
+      description: t('landing.howItWorks.step3Desc'),
+    },
+  ];
+
   return (
     <section id="how-it-works" className="py-16 md:py-24 border-t border-subtle">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          label="How it works"
-          title="Get started in minutes."
-          description="Three simple steps to a smarter study routine."
+          label={t('common.howItWorks') || 'How it works'}
+          title={t('landing.howItWorks.title')}
+          description={t('landing.howItWorks.subtitle')}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">

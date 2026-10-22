@@ -1,26 +1,29 @@
 import { Clock, CheckCircle2, Flame, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SectionHeading from '../ui/SectionHeading';
 
-const subjects = [
-  { name: 'Mathematics', pct: 72, color: 'bg-primary' },
-  { name: 'English', pct: 51, color: 'bg-sky-500' },
-  { name: 'Physics', pct: 84, color: 'bg-emerald-500' },
-];
-
-const stats = [
-  { icon: Clock, label: 'Study time this week', value: '6h 42m' },
-  { icon: CheckCircle2, label: 'Tasks completed', value: '38 / 50' },
-  { icon: Flame, label: 'Study streak', value: '5 days' },
-];
-
 function ProgressShowcase() {
+  const { t } = useTranslation();
+
+  const subjects = [
+    { name: 'Mathematics', pct: 72, color: 'bg-primary' },
+    { name: 'English', pct: 51, color: 'bg-sky-500' },
+    { name: 'Physics', pct: 84, color: 'bg-emerald-500' },
+  ];
+
+  const stats = [
+    { icon: Clock, label: t('progress.studyTime') || 'Study time this week', value: '6h 42m' },
+    { icon: CheckCircle2, label: t('progress.tasksCompleted') || 'Tasks completed', value: '38 / 50' },
+    { icon: Flame, label: t('progress.studyStreak') || 'Study streak', value: '5 days' },
+  ];
+
   return (
     <section id="progress" className="py-16 md:py-24 border-t border-subtle">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          label="Progress"
-          title="See exactly where you stand."
-          description="Track your progress across all subjects and stay motivated with streaks and insights."
+          label={t('progress.title') || 'Progress'}
+          title={t('landing.progressShowcase.title')}
+          description={t('landing.progressShowcase.subtitle')}
         />
 
         <div className="max-w-3xl mx-auto">
@@ -49,8 +52,8 @@ function ProgressShowcase() {
                 </span>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-text mb-1">Overall Progress</h3>
-                <p className="text-sm text-muted">Across all subjects this semester</p>
+                <h3 className="text-base font-semibold text-text mb-1">{t('progress.overallProgress') || 'Overall Progress'}</h3>
+                <p className="text-sm text-muted">{t('progress.overallProgressDesc') || 'Across all subjects this semester'}</p>
               </div>
             </div>
 

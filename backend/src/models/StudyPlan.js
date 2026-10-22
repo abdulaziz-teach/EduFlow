@@ -77,6 +77,11 @@ const studyPlanSchema = new mongoose.Schema(
       required: true,
       min: 1,
     },
+    breakMinutes: {
+      type: Number,
+      min: 0,
+      default: 10,
+    },
     startDate: {
       type: Date,
       required: true,

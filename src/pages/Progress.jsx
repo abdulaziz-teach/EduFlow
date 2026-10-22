@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   Clock,
@@ -15,6 +16,7 @@ import studyPlanService from '../services/studyPlan';
 import knowledgeService from '../services/knowledge';
 
 function Progress() {
+  const { t, i18n } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [activity, setActivity] = useState([]);
@@ -47,13 +49,13 @@ function Progress() {
         setKnowledgeSubjects(knowRes.subjects || []);
         setWeeklyDigest(digRes.digest || null);
       } catch {
-        setError('Failed to load learning analytics. Please try again.');
+        setError(t('progress.loadError'));
       } finally {
         setLoading(false);
       }
     };
     fetchAnalytics();
-  }, []);
+  }, [t]);
 
   // 2. Format total time studied helper
   const formatTime = (totalMinutes) => {
@@ -71,13 +73,14 @@ function Progress() {
     yesterday.setDate(today.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return t('progress.today');
     }
     if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return t('progress.yesterday');
     }
 
-    return date.toLocaleDateString('en-US', {
+    const localeCode = i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'ru' ? 'ru-RU' : 'en-US';
+    return date.toLocaleDateString(localeCode, {
       month: 'short',
       day: 'numeric',
     });
@@ -119,7 +122,7 @@ function Progress() {
     return (
       <div className="min-h-[85vh] flex flex-col items-center justify-center gap-4 bg-[#0B0F19]">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <p className="text-sm text-muted">Calculating learning statistics...</p>
+        <p className="text-sm text-muted">{t('progress.loading')}</p>
       </div>
     );
   }
@@ -133,7 +136,7 @@ function Progress() {
           onClick={() => window.location.reload()}
           className="px-4 py-2 text-xs font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer"
         >
-          Retry
+          {t('common.retry')}
         </button>
       </div>
     );
@@ -147,36 +150,36 @@ function Progress() {
 
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-[#0B0F19] min-h-screen text-text">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-6 min-w-0">
         {/* Header Title */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">Your Progress</h1>
-          <p className="text-sm text-muted">See how your learning is improving over time.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">{t('progress.title')}</h1>
+          <p className="text-sm text-muted">{t('progress.subtitle')}</p>
         </div>
 
         {!hasActivity ? (
           /* Empty Session State */
-          <div className="rounded-2xl border border-white/5 bg-[#111827] p-8 text-center max-w-md mx-auto select-none">
+          <div className="rounded-2xl border border-white/5 bg-[#111827] p-6 sm:p-8 text-center max-w-md mx-auto select-none">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
               <TrendingUp className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-text mb-3">No study activity yet</h2>
+            <h2 className="text-xl font-bold text-text mb-3">{t('progress.noActivity')}</h2>
             <p className="text-muted text-sm leading-relaxed mb-6">
-              Start your first study session to see your progress here.
+              {t('progress.startFirstSession')}
             </p>
             {plan ? (
               <Link
                 to="/study-plan"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all shadow-lg shadow-primary/20 cursor-pointer"
               >
-                Go to Study Plan
+                {t('progress.goToPlan')}
               </Link>
             ) : (
               <Link
                 to="/dashboard"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all shadow-lg shadow-primary/20 cursor-pointer"
               >
-                Create a Study Plan first
+                {t('progress.createPlanFirst')}
               </Link>
             )}
           </div>
@@ -186,11 +189,11 @@ function Progress() {
             
             {/* 7-Day Weekly Digest Banner */}
             {weeklyDigest && (
-              <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-primary/20 text-primary uppercase tracking-wider">
-                      7-Day Digest
+                      {t('progress.digestTitle')}
                     </span>
                     <span className="text-xs text-muted">
                       {weeklyDigest.weekStart} – {weeklyDigest.weekEnd}
@@ -198,12 +201,12 @@ function Progress() {
                   </div>
                   <h3 className="text-base font-semibold text-text">
                     {weeklyDigest.currentWeekMinutes > 0
-                      ? `${weeklyDigest.currentWeekMinutes} minutes studied this week (${weeklyDigest.minutesTrendPercent >= 0 ? '+' : ''}${weeklyDigest.minutesTrendPercent}% vs last week)`
-                      : 'No study sessions recorded yet this week'}
+                      ? t('progress.weekMinutesStudied', { minutes: weeklyDigest.currentWeekMinutes })
+                      : t('progress.noWeekSessions')}
                   </h3>
                   {weeklyDigest.topSubject && (
                     <p className="text-xs text-muted mt-1">
-                      Top focus: <span className="text-primary font-medium">{weeklyDigest.topSubject.subject}</span> ({weeklyDigest.topSubject.minutes} mins)
+                      {t('progress.topFocus', { subject: weeklyDigest.topSubject.subject, minutes: weeklyDigest.topSubject.minutes })}
                     </p>
                   )}
                 </div>
@@ -211,7 +214,7 @@ function Progress() {
                   <div className="shrink-0 flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/5">
                     <TrendingUp className="w-4 h-4 text-emerald-400" />
                     <div>
-                      <p className="text-[10px] text-muted uppercase font-semibold">Weekly Quiz Accuracy</p>
+                      <p className="text-[10px] text-muted uppercase font-semibold">{t('progress.weeklyAccuracy')}</p>
                       <p className="text-sm font-bold text-emerald-400">{weeklyDigest.weeklyAccuracy}%</p>
                     </div>
                   </div>
@@ -220,14 +223,14 @@ function Progress() {
             )}
 
             {/* 1. Summary Cards Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Study Time Card */}
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-4 flex items-start gap-3">
                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <Clock className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Study Time</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.studyTime')}</p>
                   <p className="text-base font-bold mt-1 text-text">{formatTime(summary.totalStudyMinutes)}</p>
                 </div>
               </div>
@@ -238,7 +241,7 @@ function Progress() {
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Tasks Done</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.tasksDone')}</p>
                   <p className="text-base font-bold mt-1 text-text">{summary.completedTasks} / {summary.totalTasks}</p>
                 </div>
               </div>
@@ -249,8 +252,8 @@ function Progress() {
                   <Flame className="w-5 h-5 text-orange-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Streak</p>
-                  <p className="text-base font-bold mt-1 text-orange-400">🔥 {summary.currentStreak} days</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.streak')}</p>
+                  <p className="text-base font-bold mt-1 text-orange-400">🔥 {summary.currentStreak} {t('dashboard.daysCount', { count: summary.currentStreak })}</p>
                 </div>
               </div>
 
@@ -260,21 +263,21 @@ function Progress() {
                   <Calendar className="w-5 h-5 text-sky-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Sessions</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.sessions')}</p>
                   <p className="text-base font-bold mt-1 text-text">{summary.totalSessions}</p>
                 </div>
               </div>
             </div>
 
             {/* Practice Analytics Cards Row */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {/* Practice Sessions Completed */}
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-4 flex items-start gap-3">
                 <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
                   <BookOpen className="w-5 h-5 text-indigo-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Practice Sessions</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.practiceSessions')}</p>
                   <p className="text-base font-bold mt-1 text-text">{summary.practiceSessionsCount || 0}</p>
                 </div>
               </div>
@@ -285,18 +288,18 @@ function Progress() {
                   <Award className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Questions Answered</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.questionsAnswered')}</p>
                   <p className="text-base font-bold mt-1 text-text">{summary.questionsAnsweredCount || 0}</p>
                 </div>
               </div>
 
               {/* Recent Accuracy */}
-              <div className="rounded-2xl border border-white/5 bg-[#111827] p-4 flex items-start gap-3 col-span-2 md:col-span-1">
+              <div className="rounded-2xl border border-white/5 bg-[#111827] p-4 flex items-start gap-3 sm:col-span-2 lg:col-span-1">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
                   <TrendingUp className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">Recent Accuracy</p>
+                  <p className="text-[11px] text-muted uppercase font-semibold tracking-wider">{t('progress.recentAccuracy')}</p>
                   <p className="text-base font-bold mt-1 text-emerald-400">
                     {summary.recentAccuracy !== null ? `${summary.recentAccuracy}%` : 'N/A'}
                   </p>
@@ -307,7 +310,7 @@ function Progress() {
             {/* 2. Plan Progress Card */}
             {plan ? (
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6">
-                <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">Study Plan Progress</h3>
+                <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">{t('progress.planProgress')}</h3>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-text">{plan.title}</span>
                   <span className="text-sm font-semibold text-text">{summary.completionRate}%</span>
@@ -318,13 +321,13 @@ function Progress() {
                     style={{ width: `${summary.completionRate}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted mt-2">{summary.completedTasks} of {summary.totalTasks} tasks completed</p>
+                <p className="text-xs text-muted mt-2">{t('progress.tasksCompletedRatio', { completed: summary.completedTasks, total: summary.totalTasks })}</p>
               </div>
             ) : (
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 text-center select-none">
-                <h3 className="text-sm font-semibold text-muted mb-2">No active study plan</h3>
+                <h3 className="text-sm font-semibold text-muted mb-2">{t('progress.noActivePlan')}</h3>
                 <Link to="/dashboard" className="text-xs text-primary hover:text-primary-hover font-medium cursor-pointer">
-                  Create a study plan first to track your learning journey.
+                  {t('progress.createPlanToTrack')}
                 </Link>
               </div>
             )}
@@ -333,14 +336,14 @@ function Progress() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Subject Focus */}
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-5">
-                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted mb-3">Subject Focus</h3>
+                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted mb-3">{t('progress.subjectFocus')}</h3>
                 {(() => {
                   if (subjects.length === 0) {
                     return <p className="text-sm text-muted">Building your study history...</p>;
                   }
                   const maxSub = [...subjects].sort((a, b) => b.studyMinutes - a.studyMinutes)[0];
                   if (!maxSub || maxSub.studyMinutes === 0) {
-                    return <p className="text-sm text-muted">Building your study history...</p>;
+                    return <p className="text-sm text-muted">{t('progress.noActivity')}</p>;
                   }
 
                   const hrs = Math.floor(maxSub.studyMinutes / 60);
@@ -349,9 +352,9 @@ function Progress() {
 
                   return (
                     <div>
-                      <p className="text-sm font-semibold text-text">Most studied</p>
+                      <p className="text-sm font-semibold text-text">{t('progress.mostStudied')}</p>
                       <p className="text-xl font-bold text-primary mt-1">{maxSub.subject}</p>
-                      <p className="text-xs text-muted mt-1">{timeLabel} studied</p>
+                      <p className="text-xs text-muted mt-1">{t('progress.timeStudied', { time: timeLabel })}</p>
                     </div>
                   );
                 })()}
@@ -359,17 +362,17 @@ function Progress() {
 
               {/* Learning Consistency */}
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-5">
-                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted mb-3">Learning Consistency</h3>
+                <h3 className="text-xs font-semibold text-text uppercase tracking-wider text-muted mb-3">{t('progress.learningConsistency')}</h3>
                 {(() => {
                   if (!plan || !plan.startDate || activity.length === 0) {
-                    return <p className="text-sm text-muted">Building your learning history...</p>;
+                    return <p className="text-sm text-muted">{t('progress.noActivity')}</p>;
                   }
 
                   const startMs = new Date(plan.startDate).getTime();
                   const diffDays = Math.ceil((Date.now() - startMs) / (1000 * 60 * 60 * 24));
 
                   if (diffDays < 3) {
-                    return <p className="text-sm text-muted">Building your learning history...</p>;
+                    return <p className="text-sm text-muted">{t('progress.noActivity')}</p>;
                   }
 
                   const studyDays = activity.filter(a => a.studyMinutes > 0).length;
@@ -377,9 +380,9 @@ function Progress() {
 
                   return (
                     <div>
-                      <p className="text-sm font-semibold text-text">Activity Ratio</p>
+                      <p className="text-sm font-semibold text-text">{t('progress.activityRatio')}</p>
                       <p className="text-xl font-bold text-emerald-400 mt-1">{consistency}%</p>
-                      <p className="text-xs text-muted mt-1">{studyDays} of {diffDays} days active</p>
+                      <p className="text-xs text-muted mt-1">{t('progress.daysActiveRatio', { active: studyDays, total: diffDays })}</p>
                     </div>
                   );
                 })()}
@@ -388,9 +391,9 @@ function Progress() {
 
             {/* 3. Subject Breakdown Card */}
             <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6">
-              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">Study by Subject</h3>
+              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">{t('progress.studyBySubject')}</h3>
               {subjects.length === 0 ? (
-                <p className="text-sm text-muted/50 py-4">No subject activity recorded yet.</p>
+                <p className="text-sm text-muted/50 py-4">{t('progress.noSubjectActivity')}</p>
               ) : (
                 <div className="space-y-4">
                   {subjects.map((subObj) => {
@@ -411,8 +414,8 @@ function Progress() {
                               style={{ width: `${widthPct}%` }}
                             />
                           </div>
-                          <span className="text-[11px] text-muted w-10 text-right font-medium">
-                            {subObj.completedTasks} done
+                          <span className="text-[11px] text-muted w-12 text-right font-medium">
+                            {t('progress.tasksDoneCount', { count: subObj.completedTasks })}
                           </span>
                         </div>
                       </div>
@@ -426,12 +429,12 @@ function Progress() {
             {knowledgeSubjects && knowledgeSubjects.length > 0 && (
               <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted">Learning Areas</h3>
+                  <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted">{t('progress.learningAreas')}</h3>
                   <Link
                     to="/knowledge"
                     className="text-xs text-primary hover:text-primary-hover font-semibold transition-colors cursor-pointer"
                   >
-                    View map &rarr;
+                    {t('progress.viewMap')}
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -439,8 +442,8 @@ function Progress() {
                     <div key={kb.subject} className="p-3 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col justify-between">
                       <p className="text-xs font-semibold text-text truncate">{kb.subject}</p>
                       <p className="text-[11px] text-muted mt-1">
-                        {kb.topics} topics tracked
-                        {kb.needsReview > 0 && ` (${kb.needsReview} needs review)`}
+                        {t('progress.topicsTracked', { count: kb.topics })}
+                        {kb.needsReview > 0 && ` (${kb.needsReview} ${t('progress.needsReview')})`}
                       </p>
                     </div>
                   ))}
@@ -450,7 +453,7 @@ function Progress() {
 
             {/* 4. Heatmap Activity Grid Chart */}
             <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6">
-              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">Study Activity</h3>
+              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">{t('progress.studyActivity')}</h3>
               
               {/* Activity Grid cells */}
               <div className="flex flex-wrap gap-2 py-2">
@@ -464,7 +467,8 @@ function Progress() {
                     cellBg = 'bg-primary border-primary';
                   }
 
-                  const formattedTip = `${cell.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${cell.minutes} minutes`;
+                  const loc = i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'ru' ? 'ru-RU' : 'en-US';
+                  const formattedTip = `${cell.date.toLocaleDateString(loc, { month: 'short', day: 'numeric' })}: ${cell.minutes} min`;
 
                   return (
                     <div
@@ -481,24 +485,24 @@ function Progress() {
 
               {/* Heatmap Legend */}
               <div className="flex items-center justify-between mt-4 text-[10px] text-muted">
-                <span>30 days ago</span>
+                <span>{t('progress.daysAgo30')}</span>
                 <div className="flex items-center gap-1.5 select-none">
-                  <span>Less</span>
+                  <span>{t('progress.less')}</span>
                   <div className="w-2.5 h-2.5 rounded bg-white/[0.03] border border-white/5" />
                   <div className="w-2.5 h-2.5 rounded bg-primary/20 border border-primary/30" />
                   <div className="w-2.5 h-2.5 rounded bg-primary/50 border border-primary/60" />
                   <div className="w-2.5 h-2.5 rounded bg-primary border border-primary" />
-                  <span>More</span>
+                  <span>{t('progress.more')}</span>
                 </div>
-                <span>Today</span>
+                <span>{t('progress.today')}</span>
               </div>
             </div>
 
             {/* 5. Recent Activity List */}
             <div className="rounded-2xl border border-white/5 bg-[#111827] p-5 md:p-6">
-              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">Recent Activity</h3>
+              <h3 className="text-sm font-semibold text-text uppercase tracking-wider text-muted mb-4">{t('progress.recentActivity')}</h3>
               {summary.recentSessions.length === 0 ? (
-                <p className="text-sm text-muted/50 py-4">No recent study sessions recorded.</p>
+                <p className="text-sm text-muted/50 py-4">{t('progress.noRecentSessions')}</p>
               ) : (
                 <div className="divide-y divide-white/5">
                   {summary.recentSessions.map((session) => (
@@ -509,7 +513,7 @@ function Progress() {
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-text">{session.subject}</p>
-                          <p className="text-xs text-muted mt-0.5">{session.durationMinutes} min studied</p>
+                          <p className="text-xs text-muted mt-0.5">{t('progress.minStudied', { minutes: session.durationMinutes })}</p>
                         </div>
                       </div>
                       <span className="text-xs text-muted font-medium">

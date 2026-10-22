@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   BookOpen,
   Target,
@@ -10,6 +11,10 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
+  Layers,
+  Headphones,
+  FileText,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import studyPlanService from '../services/studyPlan';
@@ -19,29 +24,21 @@ import knowledgeService from '../services/knowledge';
 import ReviewRecommendation from '../components/knowledge/ReviewRecommendation';
 import practiceService from '../services/practice';
 import notificationsService from '../services/notifications';
-
-const GOAL_LABELS = {
-  grades: 'Improve my grades',
-  exam: 'Prepare for an exam',
-  learn: 'Learn a new subject',
-  habit: 'Build a study habit',
-};
-
-const LOADING_STEPS = [
-  'Analyzing your goals',
-  'Planning your study sessions',
-  'Balancing your workload',
-];
+import NextActionCard from '../components/adaptive/NextActionCard';
+import MasteryOverview from '../components/adaptive/MasteryOverview';
+import MistakeReviewModal from '../components/adaptive/MistakeReviewModal';
 
 function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const [plan, setPlan] = useState(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [genStep, setGenStep] = useState(0);
   const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
   
   const [summary, setSummary] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(true);
@@ -51,9 +48,6 @@ function Dashboard() {
 
   const [recommendation, setRecommendation] = useState(null);
   const [loadingRecommendation, setLoadingRecommendation] = useState(true);
-
-  const [coach, setCoach] = useState(null);
-  const [loadingCoach, setLoadingCoach] = useState(true);
 
   const [knowledgeSummary, setKnowledgeSummary] = useState(null);
   const [loadingKnowledge, setLoadingKnowledge] = useState(true);
@@ -65,6 +59,7 @@ function Dashboard() {
 
   const [recentUpdates, setRecentUpdates] = useState([]);
   const [loadingUpdates, setLoadingUpdates] = useState(true);
+  const [mistakeModalOpen, setMistakeModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPractice = async () => {
@@ -77,8 +72,9 @@ function Dashboard() {
         if (histRes.sessions && histRes.sessions.length > 0) {
           setRecentPractice(histRes.sessions[0]);
         }
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load practice summary:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingPractice(false);
       }
@@ -89,8 +85,9 @@ function Dashboard() {
       try {
         const data = await notificationsService.getNotifications();
         setRecentUpdates(data.notifications.slice(0, 3));
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load recent notifications:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingUpdates(false);
       }
@@ -105,8 +102,9 @@ function Dashboard() {
         ]);
         setKnowledgeSummary(sumRes.summary);
         setKnowledgeRecs(recsRes.recommendations);
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load learning summary:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingKnowledge(false);
       }
@@ -116,8 +114,9 @@ function Dashboard() {
       try {
         const data = await progressService.getProgressSummary();
         setSummary(data.summary);
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load progress summary:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingSummary(false);
       }
@@ -127,8 +126,9 @@ function Dashboard() {
       try {
         const data = await studyPlanService.getTodayStudyPlan();
         setTodayDay(data.day);
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load today’s study plan:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingToday(false);
       }
@@ -138,28 +138,17 @@ function Dashboard() {
       try {
         const data = await studyPlanService.getStudyRecommendation();
         setRecommendation(data.recommendation);
-      } catch {
-        // silently fail
+      } catch (err) {
+        console.error('Could not load study recommendation:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingRecommendation(false);
-      }
-    };
-
-    const fetchDailyCoach = async () => {
-      try {
-        const data = await studyPlanService.getDailyCoach();
-        setCoach(data.coach);
-      } catch {
-        // silently fail
-      } finally {
-        setLoadingCoach(false);
       }
     };
 
     fetchSummary();
     fetchTodayTasks();
     fetchRecommendation();
-    fetchDailyCoach();
   }, []);
 
   // Fetch current plan on mount
@@ -168,8 +157,9 @@ function Dashboard() {
       try {
         const data = await studyPlanService.getCurrent();
         setPlan(data.plan);
-      } catch {
-        // silently fail — plan just won't show
+      } catch (err) {
+        console.error('Could not load current study plan:', err.message);
+        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
       } finally {
         setLoadingPlan(false);
       }
@@ -201,33 +191,48 @@ function Dashboard() {
     }
   };
 
-  const goalLabel =
-    user?.goal?.description || GOAL_LABELS[user?.goal?.type] || 'Not set';
+  const getGoalLabel = (goal) => {
+    if (goal?.description) return goal.description;
+    if (goal?.type) return t(`dashboard.goals.${goal.type}`, { defaultValue: goal.type });
+    return t('dashboard.notSet');
+  };
+
+  const goalLabel = getGoalLabel(user?.goal);
 
   const studyTime = user?.dailyStudyMinutes
     ? user.dailyStudyMinutes >= 60
       ? `${Math.floor(user.dailyStudyMinutes / 60)}h${user.dailyStudyMinutes % 60 ? ` ${user.dailyStudyMinutes % 60}min` : ''}`
       : `${user.dailyStudyMinutes} min`
-    : 'Not set';
+    : t('dashboard.notSet');
 
+  const localeCode = i18n.language === 'uz' ? 'uz-UZ' : i18n.language === 'ru' ? 'ru-RU' : 'en-US';
   const targetDate = user?.goal?.targetDate
-    ? new Date(user.goal.targetDate).toLocaleDateString('en-US', {
+    ? new Date(user.goal.targetDate).toLocaleDateString(localeCode, {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
       })
     : null;
 
+  const currentHour = new Date().getHours();
+  const greetingKey = currentHour < 12 ? 'greetingMorning' : currentHour < 18 ? 'greetingAfternoon' : 'greetingEvening';
+
   return (
     <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto min-w-0">
         {/* Greeting */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-text mb-2">
-            Good morning, {user?.name?.split(' ')[0] || 'there'} 👋
+            {t(`dashboard.${greetingKey}`, { name: user?.name?.split(' ')[0] || user?.name || '' })}
           </h1>
-          <p className="text-muted">Your learning profile is ready.</p>
+          <p className="text-muted">{t('dashboard.profileReady')}</p>
         </div>
+
+        {loadError && (
+          <div role="status" className="mb-5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-200">
+            {loadError}
+          </div>
+        )}
 
         <AdaptationBanner plan={plan} />
 
@@ -239,7 +244,7 @@ function Dashboard() {
                 <Target className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted mb-0.5">Goal</p>
+                <p className="text-xs text-muted mb-0.5">{t('dashboard.goal')}</p>
                 <p className="text-sm font-medium text-text">{goalLabel}</p>
               </div>
             </div>
@@ -249,7 +254,7 @@ function Dashboard() {
                 <Clock className="w-5 h-5 text-sky-400" />
               </div>
               <div>
-                <p className="text-xs text-muted mb-0.5">Daily study time</p>
+                <p className="text-xs text-muted mb-0.5">{t('dashboard.dailyStudyTime')}</p>
                 <p className="text-sm font-medium text-text">{studyTime}</p>
               </div>
             </div>
@@ -259,7 +264,7 @@ function Dashboard() {
                 <BookOpen className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Subjects</p>
+                <p className="text-xs text-muted mb-1">{t('dashboard.subjects')}</p>
                 {user?.subjects?.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {user.subjects.map((s) => (
@@ -269,7 +274,7 @@ function Dashboard() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm font-medium text-text">Not set</p>
+                  <p className="text-sm font-medium text-text">{t('dashboard.notSet')}</p>
                 )}
               </div>
             </div>
@@ -280,17 +285,85 @@ function Dashboard() {
                   <CalendarDays className="w-5 h-5 text-orange-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted mb-0.5">Target</p>
+                  <p className="text-xs text-muted mb-0.5">{t('dashboard.target')}</p>
                   <p className="text-sm font-medium text-text">{targetDate}</p>
                 </div>
               </div>
             )}
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                <Brain className="w-5 h-5 text-violet-400" />
+              </div>
+              <div>
+                <p className="text-xs text-muted mb-0.5">{t('dashboard.currentLevel')}</p>
+                <p className="text-sm font-medium text-text capitalize">{user?.level || t('dashboard.notSet')}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-rose-500/10 flex items-center justify-center shrink-0">
+                <BookOpen className="w-5 h-5 text-rose-400" />
+              </div>
+              <div>
+                <p className="text-xs text-muted mb-1">{t('dashboard.focusTopics')}</p>
+                {user?.weakTopics?.length ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {user.weakTopics.map((topic) => (
+                      <span key={topic} className="px-2 py-0.5 text-xs font-medium rounded-full bg-white/5 border border-subtle text-text">
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                ) : <p className="text-sm font-medium text-text">{t('dashboard.noFocusTopics')}</p>}
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
+                <CalendarDays className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div>
+                <p className="text-xs text-muted mb-0.5">{t('dashboard.studySchedule')}</p>
+                <p className="text-sm font-medium text-text">
+                  {user?.studySchedule?.preferredDays?.length
+                    ? user.studySchedule.preferredDays.map((day) => day.slice(0, 3)).join(', ')
+                    : t('dashboard.flexibleDays')} · {user?.studySchedule?.preferredTime || 'anytime'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <p className="text-xs text-muted mb-0.5">{t('dashboard.learningLanguage')}</p>
+                <p className="text-sm font-medium text-text">
+                  {{ en: 'English', ru: 'Русский', uz: "O'zbekcha" }[user?.preferredLanguage] || 'English'}
+                </p>
+              </div>
+            </div>
+            <div className="sm:col-span-2 flex justify-end">
+              <Link to="/profile" className="text-xs font-semibold text-primary hover:text-primary-hover">
+                {t('dashboard.editProfile')}
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Adaptive Intelligence — Next Best Action */}
+        <div className="mb-5 space-y-3">
+          <NextActionCard />
+          <div className="flex justify-end">
+            <button
+              onClick={() => setMistakeModalOpen(true)}
+              className="flex items-center gap-1.5 text-xs text-muted hover:text-text transition-colors cursor-pointer bg-white/[0.02] border border-white/5 px-3 py-1.5 rounded-xl hover:bg-white/[0.04]"
+            >
+              <span>{t('dashboard.reviewPastMistakes')}</span>
+            </button>
           </div>
         </div>
 
         {/* Today's Learning Card */}
         <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5">
-          <h3 className="text-base font-semibold text-text mb-4 font-sans tracking-wide">Today&apos;s Learning</h3>
+          <h3 className="text-base font-semibold text-text mb-4 font-sans tracking-wide">{t('dashboard.todayLearning')}</h3>
           {loadingSummary ? (
             <div className="flex items-center justify-center py-4">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
@@ -298,71 +371,66 @@ function Dashboard() {
           ) : summary && (summary.todayStudyMinutes > 0 || summary.todayCompletedTasks > 0) ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-2xl font-bold text-text">{summary.todayStudyMinutes} min studied</p>
-                <p className="text-sm text-muted">{summary.todayCompletedTasks} tasks completed today</p>
+                <p className="text-2xl font-bold text-text">{t('dashboard.minStudied', { count: summary.todayStudyMinutes })}</p>
+                <p className="text-sm text-muted">{t('dashboard.tasksCompletedCount', { count: summary.todayCompletedTasks })}</p>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/10 border border-orange-500/20">
                 <span className="text-lg">🔥</span>
                 <div>
-                  <p className="text-xs text-muted leading-none">Streak</p>
-                  <p className="text-sm font-semibold text-orange-400 mt-1">{summary.currentStreak} day streak</p>
+                  <p className="text-xs text-muted leading-none">{t('dashboard.streak')}</p>
+                  <p className="text-sm font-semibold text-orange-400 mt-1">{t('dashboard.dayStreak', { count: summary.currentStreak })}</p>
                 </div>
               </div>
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted">You haven&apos;t started studying today.</p>
+                <p className="text-sm text-muted">{t('dashboard.notStartedToday')}</p>
               </div>
               <Link
                 to="/study-plan"
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-hover transition-colors cursor-pointer"
               >
-                Start today&apos;s first task &rarr;
+                {t('dashboard.startFirstTask')}
               </Link>
             </div>
           )}
         </div>
 
-        {/* AI Daily Coach Card */}
+        {/* Topic Mastery Overview */}
+        <div className="mb-5">
+          <MasteryOverview />
+        </div>
+
+        {/* Deterministic study focus */}
         <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5">
-          <h3 className="text-base font-semibold text-text mb-4">AI Coach</h3>
-          {loadingCoach ? (
+          <h3 className="text-base font-semibold text-text mb-4">{t('dashboard.studyFocus')}</h3>
+          {loadingRecommendation ? (
             <div className="flex items-center justify-center py-4">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
-              <span className="text-xs text-muted ml-2">Loading advice...</span>
+              <span className="text-xs text-muted ml-2">{t('dashboard.loadingPlan')}</span>
             </div>
-          ) : coach ? (
+          ) : recommendation ? (
             <div className="space-y-4">
               <p className="text-sm text-text italic leading-relaxed font-medium">
-                &ldquo;{coach.message}&rdquo;
+                {recommendation.message}
               </p>
               <div className="flex items-center justify-between gap-3">
-                <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded ${
-                  coach.priority === 'high'
-                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                    : coach.priority === 'low'
-                      ? 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
-                      : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-                }`}>
-                  {coach.priority} priority
+                <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  {recommendation.title}
                 </span>
                 <button
                   onClick={() => {
-                    navigate('/mentor', {
-                      state: {
-                        prefillMessage: `Hello Mentor! The Daily Coach suggested: "${coach.message}". Can you help me study this subject?`,
-                      }
-                    });
+                    navigate('/study-plan');
                   }}
                   className="px-3 py-1.5 text-xs font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer"
                 >
-                  Open Mentor
+                  {t('dashboard.viewStudyPlan')}
                 </button>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-muted">AI Coach advice is currently unavailable.</p>
+            <p className="text-xs text-muted">{t('dashboard.noPlanFocus')}</p>
           )}
         </div>
 
@@ -371,10 +439,10 @@ function Dashboard() {
           <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5 mb-5">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">⚠️</span>
-              <h4 className="text-sm font-semibold text-rose-400">You have unfinished tasks</h4>
+              <h4 className="text-sm font-semibold text-rose-400">{t('dashboard.unfinishedTasks')}</h4>
             </div>
             <p className="text-xs text-muted mb-4">
-              {recommendation.tasks.length} task(s) from previous days are still incomplete. Let&apos;s catch up!
+              {t('dashboard.unfinishedTasksDesc', { count: recommendation.tasks.length })}
             </p>
             <div className="space-y-3">
               {recommendation.tasks.slice(0, 2).map((task) => (
@@ -392,7 +460,7 @@ function Dashboard() {
                     }}
                     className="px-2.5 py-1 text-xs font-semibold rounded bg-rose-500 hover:bg-rose-600 text-white transition-all cursor-pointer shrink-0"
                   >
-                    Study now
+                    {t('dashboard.studyNow')}
                   </button>
                 </div>
               ))}
@@ -405,11 +473,11 @@ function Dashboard() {
           <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5 space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-base font-semibold text-text mb-1">Learning Map</h3>
-                <p className="text-sm text-muted">{knowledgeSummary.totalTopics} topics tracked</p>
+                <h3 className="text-base font-semibold text-text mb-1">{t('dashboard.learningMap')}</h3>
+                <p className="text-sm text-muted">{t('dashboard.topicsTracked', { count: knowledgeSummary.totalTopics })}</p>
                 {knowledgeSummary.needsReview > 0 && (
                   <p className="text-xs text-rose-400 mt-2 font-semibold">
-                    ⚠️ {knowledgeSummary.needsReview} {knowledgeSummary.needsReview === 1 ? 'topic' : 'topics'} may need review
+                    {t('dashboard.topicsNeedReview', { count: knowledgeSummary.needsReview })}
                   </p>
                 )}
               </div>
@@ -417,7 +485,7 @@ function Dashboard() {
                 to="/knowledge"
                 className="px-3 py-1.5 text-xs font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer"
               >
-                View Learning Map
+                {t('dashboard.viewLearningMap')}
               </Link>
             </div>
           </div>
@@ -425,7 +493,7 @@ function Dashboard() {
 
         {/* Smart Practice Card */}
         <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5 space-y-4">
-          <h3 className="text-base font-semibold text-text">Smart Practice</h3>
+          <h3 className="text-base font-semibold text-text">{t('dashboard.smartPractice')}</h3>
           {loadingPractice ? (
             <div className="flex items-center justify-center py-2">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
@@ -435,7 +503,7 @@ function Dashboard() {
               {practiceRec ? (
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-wide">Recommended Topic</span>
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-wide">{t('dashboard.recommendedTopic')}</span>
                     <h4 className="text-sm font-bold text-text mt-0.5">{practiceRec.topic}</h4>
                     <p className="text-xs text-muted text-left leading-relaxed">{practiceRec.reason}</p>
                   </div>
@@ -443,18 +511,18 @@ function Dashboard() {
                     onClick={() => navigate(`/practice?subject=${encodeURIComponent(practiceRec.subject)}&topic=${encodeURIComponent(practiceRec.topic)}`)}
                     className="px-3.5 py-1.5 text-xs font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer shrink-0 text-center"
                   >
-                    Start Practice
+                    {t('dashboard.startPractice')}
                   </button>
                 </div>
               ) : (
-                <p className="text-xs text-muted">No specific practice recommendation yet. Choose a topic from your study plan.</p>
+                <p className="text-xs text-muted">{t('dashboard.noPracticeRec')}</p>
               )}
 
               {recentPractice && (
                 <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
-                  <span className="text-muted">Last practice:</span>
+                  <span className="text-muted">{t('dashboard.lastPractice')}</span>
                   <span className="font-semibold text-text">
-                    {recentPractice.subject} &middot; {recentPractice.accuracy}% accuracy
+                    {recentPractice.subject} &middot; {t('dashboard.accuracyValue', { accuracy: recentPractice.accuracy })}
                   </span>
                 </div>
               )}
@@ -465,12 +533,12 @@ function Dashboard() {
         {/* Recent updates feed Card */}
         <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5 space-y-4">
           <div className="flex items-center justify-between select-none">
-            <h3 className="text-base font-semibold text-text">Recent Updates</h3>
+            <h3 className="text-base font-semibold text-text">{t('dashboard.recentUpdates')}</h3>
             <Link
               to="/notifications"
               className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
             >
-              View all
+              {t('dashboard.viewAll')}
             </Link>
           </div>
           {loadingUpdates ? (
@@ -478,7 +546,7 @@ function Dashboard() {
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
             </div>
           ) : recentUpdates.length === 0 ? (
-            <p className="text-xs text-muted select-none">You&apos;re all caught up. No recent updates.</p>
+            <p className="text-xs text-muted select-none">{t('dashboard.allCaughtUp')}</p>
           ) : (
             <div className="space-y-3">
               {recentUpdates.map((notif) => (
@@ -511,7 +579,7 @@ function Dashboard() {
 
         {/* Today's Tasks Card */}
         <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mb-5">
-          <h3 className="text-base font-semibold text-text mb-4">Today&apos;s Tasks</h3>
+          <h3 className="text-base font-semibold text-text mb-4">{t('dashboard.todayTasks')}</h3>
           {loadingToday ? (
             <div className="flex items-center justify-center py-4">
               <Loader2 className="w-5 h-5 text-primary animate-spin" />
@@ -543,7 +611,7 @@ function Dashboard() {
                         }}
                         className="px-2.5 py-1 text-[11px] font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer"
                       >
-                        Start studying
+                        {t('dashboard.startStudying')}
                       </button>
                     )}
                     <span className="text-xs text-muted min-w-[45px] text-right">{task.duration} min</span>
@@ -552,16 +620,16 @@ function Dashboard() {
               ))}
             </div>
           ) : plan ? (
-            <p className="text-sm text-muted">You&apos;re all caught up 🎉 No study tasks scheduled for today.</p>
+            <p className="text-sm text-muted">{t('dashboard.noTasksScheduled')}</p>
           ) : (
             <div className="text-center py-4">
-              <p className="text-sm text-muted mb-4">Your learning journey starts here. Create your personalized study plan.</p>
+              <p className="text-sm text-muted mb-4">{t('dashboard.journeyStartsHere')}</p>
               <button
                 onClick={handleGenerate}
                 disabled={generating}
                 className="px-4 py-2 text-xs font-semibold rounded bg-primary hover:bg-primary-hover text-white transition-all cursor-pointer"
               >
-                Create Study Plan
+                {t('dashboard.createPlan')}
               </button>
             </div>
           )}
@@ -581,10 +649,14 @@ function Dashboard() {
                 <Sparkles className="w-7 h-7 text-primary animate-pulse" />
               </div>
               <h3 className="text-lg font-semibold text-text mb-2">
-                Creating your personalized plan...
+                {t('dashboard.loadingPlan')}
               </h3>
               <div className="space-y-2 mt-6 max-w-xs mx-auto">
-                {LOADING_STEPS.map((step, i) => (
+                {[
+                  t('dashboard.loadingGoals'),
+                  t('dashboard.loadingSessions'),
+                  t('dashboard.balancingWorkload'),
+                ].map((step, i) => (
                   <div
                     key={step}
                     className={`flex items-center gap-2.5 px-4 py-2 rounded-lg transition-all duration-500 ${
@@ -615,24 +687,24 @@ function Dashboard() {
                   <CalendarDays className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-text mb-1">Your study plan</h3>
+                  <h3 className="text-base font-semibold text-text mb-1">{t('dashboard.yourPlan')}</h3>
                   <p className="text-sm font-medium text-text mb-1">{plan.title}</p>
                   <p className="text-sm text-muted leading-relaxed mb-4">{plan.summary}</p>
                   <div className="flex flex-wrap items-center gap-3 text-xs text-muted mb-4">
                     <span className="flex items-center gap-1">
                       <CalendarDays className="w-3.5 h-3.5" />
-                      {plan.totalDays} days
+                      {t('dashboard.daysCount', { count: plan.totalDays })}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
-                      {plan.dailyMinutes} min/day
+                      {t('dashboard.minPerDay', { count: plan.dailyMinutes })}
                     </span>
                   </div>
                   <Link
                     to="/study-plan"
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all shadow-lg shadow-primary/20"
                   >
-                    Open study plan
+                    {t('dashboard.openPlan')}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -646,10 +718,10 @@ function Dashboard() {
               </div>
               <div className="flex-1">
                 <h3 className="text-base font-semibold text-text mb-1">
-                  Your personalized study plan
+                  {t('dashboard.personalizedPlan')}
                 </h3>
                 <p className="text-sm text-muted leading-relaxed mb-4">
-                  Create a plan based on your goals, subjects and available study time.
+                  {t('dashboard.createPlanDesc')}
                 </p>
 
                 {error && (
@@ -664,11 +736,68 @@ function Dashboard() {
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-primary/20"
                 >
                   <Sparkles className="w-4 h-4" />
-                  Create my study plan
+                  {t('dashboard.createMyPlan')}
                 </button>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Smart Study Toolkit Section */}
+        <div className="rounded-2xl border border-subtle bg-card p-5 md:p-6 mt-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-semibold text-text flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span>{t('dashboard.toolkit.title')}</span>
+            </h3>
+            <span className="text-xs text-muted">{t('dashboard.toolkit.subtitle')}</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Link
+              to="/flashcards"
+              className="p-3.5 rounded-xl bg-dark/60 hover:bg-white/5 border border-subtle hover:border-primary/40 transition-all flex flex-col items-center text-center group"
+            >
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-2">
+                <Layers className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-text mb-0.5">{t('nav.flashcards')}</span>
+              <span className="text-[10px] text-muted">{t('dashboard.toolkit.spacedRepetition')}</span>
+            </Link>
+
+            <Link
+              to="/focus"
+              className="p-3.5 rounded-xl bg-dark/60 hover:bg-white/5 border border-subtle hover:border-sky-500/40 transition-all flex flex-col items-center text-center group"
+            >
+              <div className="w-9 h-9 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform mb-2">
+                <Headphones className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-text mb-0.5">{t('nav.focusRoom')}</span>
+              <span className="text-[10px] text-muted">{t('dashboard.toolkit.pomodoro')}</span>
+            </Link>
+
+            <Link
+              to="/smart-notes"
+              className="p-3.5 rounded-xl bg-dark/60 hover:bg-white/5 border border-subtle hover:border-purple-500/40 transition-all flex flex-col items-center text-center group"
+            >
+              <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform mb-2">
+                <FileText className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-text mb-0.5">{t('nav.smartNotes')}</span>
+              <span className="text-[10px] text-muted">{t('dashboard.toolkit.aiSummarizer')}</span>
+            </Link>
+
+            <Link
+              to="/leaderboard"
+              className="p-3.5 rounded-xl bg-dark/60 hover:bg-white/5 border border-subtle hover:border-amber-500/40 transition-all flex flex-col items-center text-center group"
+            >
+              <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform mb-2">
+                <Trophy className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-text mb-0.5">{t('nav.leaderboard')}</span>
+              <span className="text-[10px] text-muted">{t('dashboard.toolkit.rankings')}</span>
+            </Link>
+          </div>
         </div>
 
         {/* AI Mentor Card */}
@@ -678,19 +807,25 @@ function Dashboard() {
               <Brain className="w-6 h-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="text-base font-semibold text-text mb-1">AI Mentor</h3>
+              <h3 className="text-base font-semibold text-text mb-1">{t('dashboard.mentorCard.title')}</h3>
               <p className="text-sm text-muted leading-relaxed mb-4">
-                Need help understanding something? Ask your personal AI Mentor about today&apos;s study topics.
+                {t('dashboard.mentorCard.desc')}
               </p>
               <Link
                 to="/mentor"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-all shadow-lg shadow-primary/20"
               >
-                Ask AI Mentor &rarr;
+                {t('dashboard.mentorCard.ask')}
               </Link>
             </div>
           </div>
         </div>
+
+        {/* Mistake Review Modal */}
+        <MistakeReviewModal
+          isOpen={mistakeModalOpen}
+          onClose={() => setMistakeModalOpen(false)}
+        />
       </div>
     </div>
   );
