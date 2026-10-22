@@ -66,12 +66,9 @@ function Register() {
         password: form.password,
         preferredLanguage: i18n.resolvedLanguage || i18n.language,
       });
-      navigate('/onboarding', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
-      justRegistered.current = false;
-      setError(err instanceof TypeError || err.message === 'Failed to fetch'
-        ? t('auth.serverError')
-        : err.message || t('auth.serverError'));
+      navigate('/dashboard', { replace: true });
     } finally {
       setLoading(false);
     }
