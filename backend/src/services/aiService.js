@@ -25,6 +25,7 @@ function getClient() {
     }
     _openai = new OpenAI({
       apiKey: key,
+      baseURL: process.env.AI_BASE_URL || undefined,
       timeout: 20000, // 20-second explicit upstream timeout
       maxRetries: 2,
     });
@@ -269,28 +270,91 @@ export async function generateMentorResponse({
       console.error('Failed to log AI usage:', e.message);
     }
 
-    if (isSocratic) {
-      return `### Guided Exploration: ${topic}
+    const qLower = (question || '').toLowerCase();
+    const isUz =
+      user?.preferredLanguage === 'uz' ||
+      /[a-z]?[o'g'shchq]/i.test(question) ||
+      /\b(salom|assalomu|qanday|nima|uchun|nega|tushuntir|misol|dasturlash|reja|yechish|yordam)\b/i.test(qLower);
+    const isRu =
+      user?.preferredLanguage === 'ru' ||
+      /[а-яё]/i.test(question);
 
-Great question about "${question}". Instead of jumping straight to the end result, let's break this down together.
+    if (isUz) {
+      if (isSocratic) {
+        return `### 🎯 Yo'naltiruvchi Tahlil: ${topic}
 
-**Hint:** Think about the fundamental definition of this concept. What happens at the initial step before any changes occur?
+**"${question}"** bo'yicha ajoyib savol! Keling, tayyor javobni birdaniga ko'rish o'rniga, mantiqiy ketma-ketlikda birga tahlil qilamiz:
 
-**Your Turn:** What do you think the first step should be when analyzing this problem?`;
+💡 **Kichik eslatma (Hint):** ${topic} mavzusida avvalo masala yoki vazifaning boshlang'ich shartlarini ajratib olish muhimdir.
+
+🤔 **Sizning fikringiz:** Ushbu muammoni yechishda eng birinchi bo'lib qaysi qadam yoki qoidani qo'llagan bo'lardingiz?`;
+      }
+
+      return `### 📚 Mavzu Tushuntirishi: ${topic}
+
+**"${question}"** savolingizni asosiy qismlarga ajratib ko'rib chiqamiz:
+
+1. **Asosiy Mohiyat:**
+   ${topic} mavzusida bu tushuncha nazariy va amaliy jihatdan eng muhim poydevor hisoblanadi.
+
+2. **Bosqichma-bosqich Mantiq:**
+   - **1-qadam:** Berilgan shart va asosiy parametrlarni aniqlang.
+   - **2-qadam:** Ushbu mavzuga tegishli asosiy formula, sintaksis yoki mantiqiy qoidani qo'llang.
+   - **3-qadam:** Olingan natijani tekshirib, xatoliklar yoki chekka holatlar (edge cases) mavjud emasligiga ishonch hosil qiling.
+
+3. **Amaliy Maslahat:**
+   Nazariyani mustahkamlash uchun **"Amaliyot" (Practice)** bo'limida bir nechta mashq ishlab ko'ring!
+
+❓ **O'zlashtirishni tekshirish:** Mavzu bo'yicha biron qismida tushunarsiz joy qoldimi yoki misol keltiraymi?`;
     }
 
-    return `### Explanation: ${topic}
+    if (isRu) {
+      if (isSocratic) {
+        return `### 🎯 Направляющий анализ: ${topic}
+
+Отличный вопрос по теме **«${question}»**! Давайте разберём его пошагово вместе:
+
+💡 **Подсказка:** Вспомните базовое определение понятия ${topic}. С чего логичнее всего начать решение?
+
+🤔 **Как вы думаете:** Каким должен быть первый практический шаг при анализе этой задачи?`;
+      }
+
+      return `### 📚 Объяснение концепта: ${topic}
+
+Разберём вопрос **«${question}»** по шагам:
+
+1. **Суть концепта:** В рамках ${topic} это одно из базовых правил, на котором строятся более сложные темы.
+2. **Алгоритм понимания:**
+   - Выделите исходные данные и ключевые условия.
+   - Примените базовое правило или математическую/программную логику.
+   - Проверьте граничные условия и результат.
+3. **Рекомендация:** Закрепите этот материал решением тестов во вкладке «Практика».
+
+❓ **Проверка понимания:** Всё ли понятно в этом объяснении, или привести наглядный пример?`;
+    }
+
+    if (isSocratic) {
+      return `### 🎯 Guided Exploration: ${topic}
+
+Great question about **"${question}"**. Instead of jumping straight to the final answer, let's break this down together.
+
+💡 **Hint:** Think about the fundamental definition of ${topic}. What happens at the initial stage before any changes occur?
+
+🤔 **Your Turn:** What do you think the first logical step should be when analyzing this problem?`;
+    }
+
+    return `### 📚 Conceptual Breakdown: ${topic}
 
 Let's break down **"${question}"** step-by-step:
 
-1. **Foundational Concept:** In ${topic}, we start by identifying the core variables and standard formulas.
-2. **Step-by-Step Reasoning:**
+1. **Foundational Concept:** In ${topic}, we begin by identifying the core variables and defining rules.
+2. **Step-by-Step Logic:**
    - First, isolate the known terms from the unknown targets.
-   - Second, apply the primary rule governing this interaction.
-   - Third, verify the boundary conditions.
-3. **Example:** Consider a simple case where $x = 10$. Applying the rule yields a predictable, consistent result.
+   - Second, apply the governing principle or formula.
+   - Third, verify boundary conditions and edge cases.
+3. **Next Steps:** Reinforce this knowledge with hands-on practice in the **Practice** tab!
 
-**Check your understanding:** Would you like to try a quick practice question on this concept?`;
+❓ **Check your understanding:** Would you like a concrete example or a quick practice quiz on this topic?`;
   }
 
   const model = process.env.AI_MODEL || 'gpt-4o-mini';
