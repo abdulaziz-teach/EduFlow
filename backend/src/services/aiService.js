@@ -13,22 +13,71 @@ export const aiCircuitBreaker = getCircuitBreaker('openai-service', {
 
 // Lazy-init: the server should start even if no key is configured yet.
 let _openai;
+let _cachedKey;
+
+export function getProviderConfig(key) {
+  if (!key) return { baseURL: undefined, defaultModel: 'gpt-4o-mini' };
+
+  if (process.env.AI_BASE_URL) {
+    return {
+      baseURL: process.env.AI_BASE_URL,
+      defaultModel: process.env.AI_MODEL || 'gpt-4o-mini',
+    };
+  }
+
+  const cleanKey = String(key).trim();
+
+  // Auto-detect Groq
+  if (cleanKey.startsWith('gsk_')) {
+    return {
+      baseURL: 'https://api.groq.com/openai/v1',
+      defaultModel: process.env.AI_MODEL || 'llama-3.3-70b-versatile',
+    };
+  }
+
+  // Auto-detect OpenRouter
+  if (cleanKey.startsWith('sk-or-')) {
+    return {
+      baseURL: 'https://openrouter.ai/api/v1',
+      defaultModel: process.env.AI_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
+    };
+  }
+
+  // Auto-detect Google Gemini (OpenAI compatibility endpoint)
+  if (cleanKey.startsWith('AIzaSy')) {
+    return {
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+      defaultModel: process.env.AI_MODEL || 'gemini-1.5-flash',
+    };
+  }
+
+  // Default OpenAI
+  return {
+    baseURL: undefined,
+    defaultModel: process.env.AI_MODEL || 'gpt-4o-mini',
+  };
+}
+
 function getApiKey() {
   return process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
 }
 
 function getClient() {
-  if (!_openai) {
-    const key = getApiKey();
-    if (!key) {
-      throw new Error('AI_API_KEY or OPENAI_API_KEY environment variable is not set');
-    }
+  const key = getApiKey();
+  if (!key) {
+    throw new Error('AI_API_KEY or OPENAI_API_KEY environment variable is not set');
+  }
+
+  const cleanKey = String(key).trim();
+  if (!_openai || _cachedKey !== cleanKey) {
+    const { baseURL } = getProviderConfig(cleanKey);
     _openai = new OpenAI({
-      apiKey: key,
-      baseURL: process.env.AI_BASE_URL || undefined,
-      timeout: 20000, // 20-second explicit upstream timeout
-      maxRetries: 2,
+      apiKey: cleanKey,
+      baseURL,
+      timeout: 15000, // 15-second upstream timeout
+      maxRetries: 1,
     });
+    _cachedKey = cleanKey;
   }
   return _openai;
 }
@@ -227,70 +276,28 @@ export async function generateStudyPlanAI({ goal, subjects, dailyMinutes, totalD
  * - Educational context injection
  * - Operational usage logging
  */
-export async function generateMentorResponse({
-  user,
-  conversation,
-  messages = [],
-  question,
-  mode = 'explain',
-  learningContext = null,
-}) {
-  const startTime = Date.now();
-  const apiKey = getApiKey();
-  const isSocratic = mode === 'socratic';
+export function generateSmartMockResponse({ question, topic = 'Mavzu', user = null, isSocratic = false }) {
+  const qLower = (question || '').toLowerCase();
+  const isUz =
+    user?.preferredLanguage === 'uz' ||
+    /[a-z]?[o'g'shchq]/i.test(question) ||
+    /\b(salom|assalomu|qanday|nima|uchun|nega|tushuntir|misol|dasturlash|reja|yechish|yordam|rahmat)\b/i.test(qLower);
+  const isRu =
+    user?.preferredLanguage === 'ru' ||
+    /[а-яё]/i.test(question);
 
-  // Fallback mock if key is a placeholder or not provided
-  if (shouldUseMockAI(apiKey)) {
-    // Simulated AI latency for realistic load testing (test-only, gated by env)
-    if (process.env.MOCK_AI_LATENCY_MS) {
-      const delayMs = parseInt(process.env.MOCK_AI_LATENCY_MS, 10);
-      if (delayMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
-    }
-
-    const topic = conversation?.subject || user?.subjects?.[0] || 'your topic';
-    const latency = Date.now() - startTime;
-
-    // Log operational usage asynchronously
-    try {
-      if (user?._id) {
-        await AIUsageLog.create({
-          userId: user._id,
-          action: 'chat',
-          mode: isSocratic ? 'socratic' : 'explain',
-          model: 'mock-mentor-2.0',
-          promptTokensEstimate: 120,
-          completionTokensEstimate: 150,
-          latencyMs: latency,
-          success: true,
-        });
-      }
-    } catch (e) {
-      console.error('Failed to log AI usage:', e.message);
-    }
-
-    const qLower = (question || '').toLowerCase();
-    const isUz =
-      user?.preferredLanguage === 'uz' ||
-      /[a-z]?[o'g'shchq]/i.test(question) ||
-      /\b(salom|assalomu|qanday|nima|uchun|nega|tushuntir|misol|dasturlash|reja|yechish|yordam)\b/i.test(qLower);
-    const isRu =
-      user?.preferredLanguage === 'ru' ||
-      /[а-яё]/i.test(question);
-
-    if (isUz) {
-      if (isSocratic) {
-        return `### 🎯 Yo'naltiruvchi Tahlil: ${topic}
+  if (isUz) {
+    if (isSocratic) {
+      return `### 🎯 Yo'naltiruvchi Tahlil: ${topic}
 
 **"${question}"** bo'yicha ajoyib savol! Keling, tayyor javobni birdaniga ko'rish o'rniga, mantiqiy ketma-ketlikda birga tahlil qilamiz:
 
 💡 **Kichik eslatma (Hint):** ${topic} mavzusida avvalo masala yoki vazifaning boshlang'ich shartlarini ajratib olish muhimdir.
 
 🤔 **Sizning fikringiz:** Ushbu muammoni yechishda eng birinchi bo'lib qaysi qadam yoki qoidani qo'llagan bo'lardingiz?`;
-      }
+    }
 
-      return `### 📚 Mavzu Tushuntirishi: ${topic}
+    return `### 📚 Mavzu Tushuntirishi: ${topic}
 
 **"${question}"** savolingizni asosiy qismlarga ajratib ko'rib chiqamiz:
 
@@ -306,20 +313,20 @@ export async function generateMentorResponse({
    Nazariyani mustahkamlash uchun **"Amaliyot" (Practice)** bo'limida bir nechta mashq ishlab ko'ring!
 
 ❓ **O'zlashtirishni tekshirish:** Mavzu bo'yicha biron qismida tushunarsiz joy qoldimi yoki misol keltiraymi?`;
-    }
+  }
 
-    if (isRu) {
-      if (isSocratic) {
-        return `### 🎯 Направляющий анализ: ${topic}
+  if (isRu) {
+    if (isSocratic) {
+      return `### 🎯 Направляющий анализ: ${topic}
 
 Отличный вопрос по теме **«${question}»**! Давайте разберём его пошагово вместе:
 
 💡 **Подсказка:** Вспомните базовое определение понятия ${topic}. С чего логичнее всего начать решение?
 
 🤔 **Как вы думаете:** Каким должен быть первый практический шаг при анализе этой задачи?`;
-      }
+    }
 
-      return `### 📚 Объяснение концепта: ${topic}
+    return `### 📚 Объяснение концепта: ${topic}
 
 Разберём вопрос **«${question}»** по шагам:
 
@@ -331,19 +338,19 @@ export async function generateMentorResponse({
 3. **Рекомендация:** Закрепите этот материал решением тестов во вкладке «Практика».
 
 ❓ **Проверка понимания:** Всё ли понятно в этом объяснении, или привести наглядный пример?`;
-    }
+  }
 
-    if (isSocratic) {
-      return `### 🎯 Guided Exploration: ${topic}
+  if (isSocratic) {
+    return `### 🎯 Guided Exploration: ${topic}
 
 Great question about **"${question}"**. Instead of jumping straight to the final answer, let's break this down together.
 
 💡 **Hint:** Think about the fundamental definition of ${topic}. What happens at the initial stage before any changes occur?
 
 🤔 **Your Turn:** What do you think the first logical step should be when analyzing this problem?`;
-    }
+  }
 
-    return `### 📚 Conceptual Breakdown: ${topic}
+  return `### 📚 Conceptual Breakdown: ${topic}
 
 Let's break down **"${question}"** step-by-step:
 
@@ -355,9 +362,28 @@ Let's break down **"${question}"** step-by-step:
 3. **Next Steps:** Reinforce this knowledge with hands-on practice in the **Practice** tab!
 
 ❓ **Check your understanding:** Would you like a concrete example or a quick practice quiz on this topic?`;
+}
+
+export async function generateMentorResponse({
+  user,
+  conversation,
+  messages = [],
+  question,
+  mode = 'explain',
+  learningContext = null,
+}) {
+  const startTime = Date.now();
+  const apiKey = getApiKey();
+  const isSocratic = mode === 'socratic';
+  const topic = conversation?.subject || user?.subjects?.[0] || 'Umumiy mavzu';
+
+  // Fallback mock if key is a placeholder or not provided
+  if (shouldUseMockAI(apiKey)) {
+    return generateSmartMockResponse({ question, topic, user, isSocratic });
   }
 
-  const model = process.env.AI_MODEL || 'gpt-4o-mini';
+  const { defaultModel } = getProviderConfig(apiKey);
+  const model = process.env.AI_MODEL || defaultModel;
 
   // 1. Layer 1: System Instructions & Mode
   const modeInstruction = isSocratic ? SOCRATIC_ADDENDUM : EXPLAIN_ADDENDUM;
@@ -425,6 +451,7 @@ Let's break down **"${question}"** step-by-step:
     return reply;
   } catch (error) {
     const latency = Date.now() - startTime;
+    console.warn(`[AI Mentor] Upstream AI request failed (${error.message}). Falling back to Smart Engine...`);
     if (user?._id) {
       await AIUsageLog.create({
         userId: user._id,
@@ -436,7 +463,7 @@ Let's break down **"${question}"** step-by-step:
         errorMessage: error.message,
       });
     }
-    throw error;
+    return generateSmartMockResponse({ question, topic, user, isSocratic });
   }
 }
 
