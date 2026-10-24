@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "npm --prefix backend run start",
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run start:backend\" \"vite\"",
     "dev:frontend": "vite",
     "dev:backend": "npm --prefix backend run dev",

@@ -46,19 +46,31 @@ app.use(requestLogger);
 app.use(helmet());
 
 // CORS — allow configured client origins; development permits local tooling.
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000,http://127.0.0.1:5173')
+const rawClientUrl = process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:3000,http://127.0.0.1:5173';
+const allowedOrigins = rawClientUrl
   .split(',')
-  .map((o) => o.trim());
+  .map((o) => {
+    const trimmed = o.trim();
+    try {
+      return new URL(trimmed).origin;
+    } catch {
+      return trimmed.replace(/\/+$/, '');
+    }
+  });
 
 app.use(
   cors({
     origin: (origin, cb) => {
       // Allow requests with no origin (curl, Postman, mobile apps, server-to-server)
       if (!origin) return cb(null, true);
-      if (process.env.NODE_ENV !== 'production' || allowedOrigins.includes(origin)) {
+      if (
+        process.env.NODE_ENV !== 'production' ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes(origin.replace(/\/+$/, ''))
+      ) {
         return cb(null, true);
       }
-      return cb(new Error('Blocked by CORS policy'));
+      return cb(new Error(`Blocked by CORS policy: origin ${origin} is not in allowedOrigins [${allowedOrigins.join(', ')}]`));
     },
     credentials: true,
   })

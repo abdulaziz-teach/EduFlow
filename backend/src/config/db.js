@@ -11,7 +11,12 @@ let isConnecting = false;
 let memoryServerInstance = null;
 
 export const getMongoUri = () => {
-  const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  const uri =
+    process.env.MONGODB_URI ||
+    process.env.MONGO_URI ||
+    process.env.MONGO_URL ||
+    process.env.MONGODB_URL ||
+    process.env.MONGO_PRIVATE_URL;
   if (!uri) {
     return 'mongodb://localhost:27017/eduflow';
   }

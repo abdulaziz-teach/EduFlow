@@ -141,18 +141,27 @@ export function validateEnv() {
   const errors = [];
   const warnings = [];
 
-  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  const mongoUri =
+    process.env.MONGODB_URI ||
+    process.env.MONGO_URI ||
+    process.env.MONGO_URL ||
+    process.env.MONGODB_URL ||
+    process.env.MONGO_PRIVATE_URL;
   const jwtSecret = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
   const refreshSecret = process.env.JWT_REFRESH_SECRET;
   const clientUrl = process.env.CLIENT_URL;
   const aiApiKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
 
-  // 1. MONGO_URI / MONGODB_URI validation
+  // 1. MONGO_URI / MONGODB_URI / MONGO_URL validation
   if (!mongoUri) {
-    errors.push('MONGODB_URI (or MONGO_URI) is required.');
+    if (isProduction && process.env.ALLOW_IN_MEMORY_DB !== 'true') {
+      errors.push('MONGODB_URI (or MONGO_URL) is required.');
+    } else {
+      warnings.push('MONGODB_URI is not set. In-memory database will be used as fallback.');
+    }
   } else if (isProduction) {
     if (mongoUri.includes('localhost') || mongoUri.includes('127.0.0.1')) {
-      errors.push('MONGODB_URI must point to a production database (e.g. MongoDB Atlas), not localhost.');
+      errors.push('MONGODB_URI must point to a production database (e.g. MongoDB Atlas or Railway MongoDB), not localhost.');
     }
     if (!mongoUri.startsWith('mongodb://') && !mongoUri.startsWith('mongodb+srv://')) {
       errors.push('MONGODB_URI must be a valid MongoDB connection string.');
@@ -207,9 +216,12 @@ export function validateEnv() {
     for (const origin of origins) {
       try {
         const parsed = new URL(origin);
-        if (parsed.protocol !== 'https:' || parsed.origin !== origin) {
-          errors.push('CLIENT_URL in production must contain only HTTPS origins without paths.');
+        if (parsed.protocol !== 'https:') {
+          errors.push('CLIENT_URL in production must use HTTPS origins.');
           break;
+        }
+        if (parsed.pathname && parsed.pathname !== '/') {
+          warnings.push(`CLIENT_URL contains path '${parsed.pathname}'. CORS origin will match base origin '${parsed.origin}'.`);
         }
       } catch {
         errors.push('CLIENT_URL in production must contain valid HTTPS origins.');
