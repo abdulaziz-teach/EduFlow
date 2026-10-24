@@ -1,6 +1,7 @@
 import Conversation from '../models/Conversation.js';
 import Message from '../models/Message.js';
 import AIFeedback from '../models/AIFeedback.js';
+import User from '../models/User.js';
 import * as aiService from '../services/aiService.js';
 import * as learningContextEngine from '../services/learningContextEngine.js';
 import * as aiMemoryService from '../services/aiMemoryService.js';
@@ -28,7 +29,20 @@ function generateTitle(text) {
 export const chat = async (req, res, next) => {
   try {
     const { conversationId, message, subject, mode = 'explain', courseId, lessonId } = req.body;
-    const user = req.user;
+    let user = req.user;
+
+    if (!user) {
+      user = await User.findOneAndUpdate(
+        { email: 'guest@eduflow.app' },
+        {
+          name: 'Guest Student',
+          displayName: 'Guest Student',
+          role: 'user',
+          status: 'active',
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+    }
 
     // 1. Message validations
     if (!message || typeof message !== 'string') {
@@ -270,7 +284,12 @@ export const submitFeedback = async (req, res, next) => {
  */
 export const getConversations = async (req, res, next) => {
   try {
-    const conversations = await Conversation.find({ userId: req.user._id })
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(200).json({ success: true, conversations: [] });
+    }
+
+    const conversations = await Conversation.find({ userId })
       .sort({ updatedAt: -1 })
       .limit(100)
       .lean();
@@ -296,7 +315,16 @@ export const getConversations = async (req, res, next) => {
  */
 export const getConversationById = async (req, res, next) => {
   try {
-    const conversation = await Conversation.findOne({ _id: req.params.id, userId: req.user._id }).lean();
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(200).json({
+        success: true,
+        conversation: { id: req.params.id, title: 'Chat', subject: 'General' },
+        messages: [],
+      });
+    }
+
+    const conversation = await Conversation.findOne({ _id: req.params.id, userId }).lean();
 
     if (!conversation) {
       return res.status(404).json({

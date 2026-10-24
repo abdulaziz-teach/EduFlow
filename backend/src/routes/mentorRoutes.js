@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import protect from '../middleware/authMiddleware.js';
+import { optionalAuth } from '../middleware/authMiddleware.js';
 import { aiChatLimiter } from '../middleware/aiRateLimiter.js';
 import {
   chat,
@@ -11,8 +11,8 @@ import {
 
 const router = Router();
 
-// Protect all mentor routes with JWT authentication
-router.use(protect);
+// Allow both logged-in and guest users to chat with the AI mentor
+router.use(optionalAuth);
 
 router.post('/chat', aiChatLimiter, chat);
 router.post('/feedback', submitFeedback);

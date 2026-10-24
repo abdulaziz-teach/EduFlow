@@ -20,8 +20,25 @@ function saveStoredConversations(convs) {
 }
 
 function generateSmartAnswer(message, subject) {
-  const lower = (message || '').toLowerCase();
+  const cleanMsg = (message || '').trim();
+  const lower = cleanMsg.toLowerCase();
   const currentLang = localStorage.getItem('eduflow_language') || 'uz';
+
+  // 1. Direct arithmetic calculation (e.g. 2+2, 15*4, 100/5)
+  const mathClean = cleanMsg.replace(/[=?]/g, '').trim();
+  const mathMatch = mathClean.match(/^(\d+(?:\.\d+)?)\s*([\+\-\*\/xX÷])\s*(\d+(?:\.\d+)?)$/);
+  if (mathMatch) {
+    const a = parseFloat(mathMatch[1]);
+    const op = mathMatch[2].replace(/[xX]/, '*').replace('÷', '/');
+    const b = parseFloat(mathMatch[3]);
+    let result = 0;
+    if (op === '+') result = a + b;
+    else if (op === '-') result = a - b;
+    else if (op === '*') result = a * b;
+    else if (op === '/') result = b !== 0 ? a / b : 'nolga bo\'lish mumkin emas';
+
+    return `### 🧮 Hisoblash natijasi:\n\n**${a} ${op} ${b} = ${result}**\n\nJavob: **${result}**. Yana qanday savolingiz yoki misolingiz bor?`;
+  }
 
   if (currentLang === 'uz' || /[a-z]?[o'g'shchq]/i.test(message) || /\b(salom|assalomu|qanday|nima|uchun|nega|tushuntir|misol)\b/i.test(lower)) {
     if (lower.includes('salom') || lower.includes('assalomu')) {
