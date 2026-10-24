@@ -39,6 +39,7 @@
     "express-rate-limit": "^7.4.1",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb-memory-server": "^11.3.0",
     "mongoose": "^8.8.3",
     "openai": "^7.8.0",
     "stripe": "^22.6.1"
