@@ -67,15 +67,17 @@ function Mentor() {
     setLoadingList(true);
     try {
       const data = await mentorService.getConversations();
-      setConversations(data.conversations);
+      const list = Array.isArray(data?.conversations) ? data.conversations : [];
+      setConversations(list);
 
       if (selectId) {
         loadConversation(selectId);
-      } else if (data.conversations.length > 0 && !activeConv) {
-        loadConversation(data.conversations[0].id);
+      } else if (list.length > 0 && !activeConv) {
+        loadConversation(list[0].id);
       }
     } catch (err) {
       console.error('Failed to load conversations:', err.message);
+      setConversations([]);
     } finally {
       setLoadingList(false);
     }
@@ -90,7 +92,7 @@ function Mentor() {
       .then((res) => {
         if (res?.profile) {
           setLearnerProfile(res.profile);
-          if (res.profile.enrolledCoursesSummary) {
+          if (Array.isArray(res.profile.enrolledCoursesSummary)) {
             setEnrolledCourses(res.profile.enrolledCoursesSummary);
           }
         }
@@ -118,15 +120,17 @@ function Mentor() {
 
   // 4. Load specific conversation messages
   const loadConversation = async (id) => {
+    if (!id) return;
     setLoadingChat(true);
     setError('');
     try {
       const data = await mentorService.getConversation(id);
-      setActiveConv(data.conversation);
-      setMessages(data.messages);
-      setSelectedSubject(data.conversation.subject || '');
+      setActiveConv(data?.conversation || null);
+      setMessages(Array.isArray(data?.messages) ? data.messages : []);
+      setSelectedSubject(data?.conversation?.subject || '');
     } catch (err) {
       setError('Could not load conversation history. Please try again.');
+      setMessages([]);
     } finally {
       setLoadingChat(false);
     }
@@ -151,7 +155,7 @@ function Mentor() {
       content: textToSend,
       createdAt: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, tempUserMsg]);
+    setMessages((prev) => [...(Array.isArray(prev) ? prev : []), tempUserMsg]);
 
     try {
       const res = await mentorService.sendMessage(
@@ -162,17 +166,19 @@ function Mentor() {
         selectedCourseId || null
       );
 
-      setMessages((prev) => [...prev, res.message]);
+      if (res?.message) {
+        setMessages((prev) => [...(Array.isArray(prev) ? prev : []).filter((m) => m.id !== tempUserMsg.id), tempUserMsg, res.message]);
+      }
 
-      if (!activeConv) {
+      if (!activeConv && res?.conversation) {
         setActiveConv(res.conversation);
         await fetchConversations(res.conversation.id);
       } else {
         const listData = await mentorService.getConversations();
-        setConversations(listData.conversations);
+        setConversations(Array.isArray(listData?.conversations) ? listData.conversations : []);
       }
     } catch (err) {
-      setMessages((prev) => prev.filter((m) => m.id !== tempUserMsg.id));
+      setMessages((prev) => (Array.isArray(prev) ? prev : []).filter((m) => m.id !== tempUserMsg.id));
       if (!retryText) {
         setInputMessage(textToSend);
       }
@@ -319,10 +325,10 @@ function Mentor() {
                 <div className="w-4 h-4 bg-white/10 rounded" />
               </div>
             ))
-          ) : conversations.length === 0 ? (
+          ) : (conversations || []).length === 0 ? (
             <p className="text-center text-xs text-muted/50 py-8 px-4">{t('mentor.noChats')}</p>
           ) : (
-            conversations.map((conv) => (
+            (conversations || []).map((conv) => (
               <button
                 key={conv.id}
                 onClick={() => {
@@ -474,7 +480,7 @@ function Mentor() {
                 </div>
               ))}
             </div>
-          ) : !activeConv && messages.length === 0 ? (
+          ) : !activeConv && (!messages || messages.length === 0) ? (
             <div className="max-w-md mx-auto text-center py-12 md:py-16">
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
                 <Brain className="w-8 h-8 text-primary" />
@@ -517,7 +523,7 @@ function Mentor() {
             </div>
           ) : (
             <div className="max-w-2xl mx-auto space-y-4">
-              {messages.map((msg) => {
+              {(messages || []).map((msg) => {
                 const isUser = msg.role === 'user';
                 return (
                   <div
@@ -541,7 +547,7 @@ function Mentor() {
                             </div>
                           )}
                           <div className="prose prose-invert max-w-none prose-sm">
-                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                            <ReactMarkdown>{msg.content || ''}</ReactMarkdown>
                           </div>
                         </div>
                       )}
