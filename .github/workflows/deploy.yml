@@ -36,6 +36,7 @@ jobs:
       - name: Build frontend
         run: npm run build
         env:
+          VITE_BASE_PATH: /EduFlow/
           VITE_API_URL: ${{ secrets.VITE_API_URL || vars.VITE_API_URL || '/api' }}
 
       - name: Setup Pages

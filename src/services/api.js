@@ -1,4 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const API_URL =
+  import.meta.env.VITE_API_URL || (isLocalhost ? 'http://localhost:5000/api' : '/api');
 
 const DEFAULT_TIMEOUT_MS = 15000;
 const MAX_GET_RETRIES = 2;
@@ -156,15 +161,20 @@ async function request(endpoint, options = {}) {
           throw new Error('Received an invalid JSON payload from the server.');
         }
       } else {
-        const textBody = await res.text();
-        if (res.status === 404) {
-          throw new Error(`API endpoint not found (${endpoint}).`);
-        }
-        throw new Error('Unable to reach EduFlow backend server.');
+        await res.text();
+        const err = new Error(
+          res.status === 404
+            ? `API endpoint not found (${endpoint}).`
+            : 'Unable to reach EduFlow backend server.'
+        );
+        err.noRetry = true;
+        throw err;
       }
 
       if (!res.ok) {
-        throw new Error(data.message || data.error || `Request failed with status ${res.status}`);
+        const err = new Error(data.message || data.error || `Request failed with status ${res.status}`);
+        err.noRetry = res.status < 500;
+        throw err;
       }
 
       return data;
@@ -176,7 +186,7 @@ async function request(endpoint, options = {}) {
       }
 
       // Retry idempotent GET requests on transient network drops
-      if (isIdempotent && attempt < maxAttempts) {
+      if (isIdempotent && !err.noRetry && attempt < maxAttempts) {
         await sleep(500 * Math.pow(2, attempt - 1));
         continue;
       }
