@@ -98,6 +98,18 @@ export const CURRICULUM_TAXONOMY = {
     'Investments & Stock Market': { prerequisites: ['Financial Literacy'], description: 'Stocks, bonds, diversification, and risk-return profile.' },
     'Entrepreneurship & Startups': { prerequisites: ['Microeconomics Basics'], description: 'Business plans, revenue models, scaling, and market validation.' },
   },
+  Geography: {
+    'Continents & Oceans': { prerequisites: [], description: 'Seven continents, five oceans, hemispheres, and world globe mapping.' },
+    'Geography of Uzbekistan': { prerequisites: ['Continents & Oceans'], description: 'Topography, regions, Aral Sea basin, and natural borders.' },
+    'Lithosphere & Earth Relief': { prerequisites: ['Continents & Oceans'], description: 'Tectonic plates, mountains, seismic zones, and volcanoes.' },
+    'Atmosphere & Climate': { prerequisites: ['Continents & Oceans'], description: 'Troposphere, pressure zones, winds, precipitation, and global climate belts.' },
+    'Hydrosphere: Rivers & Lakes': { prerequisites: ['Atmosphere & Climate'], description: 'Water cycle, river systems, lakes, underground waters, and glaciers.' },
+    'Economic Geography': { prerequisites: ['Continents & Oceans'], description: 'Global industries, agriculture, transport hubs, and trade routes.' },
+    'Population & Demographics': { prerequisites: ['Economic Geography'], description: 'Population density, urbanization, migration, and age pyramids.' },
+    'Natural Zones & Biomes': { prerequisites: ['Atmosphere & Climate'], description: 'Tundras, taigas, deserts, savannas, and biodiversity hotspots.' },
+    'Cartography & Maps': { prerequisites: ['Continents & Oceans'], description: 'Topographic signs, scales, coordinates (latitude/longitude), and projections.' },
+    'Mineral Resources & Geology': { prerequisites: ['Lithosphere & Earth Relief'], description: 'Ores, fossil fuels, precious metals, and sustainable resource management.' },
+  },
 };
 
 /**

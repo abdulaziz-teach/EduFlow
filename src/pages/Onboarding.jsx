@@ -46,7 +46,7 @@ const SUBJECTS = [
   'Chemistry',
   'History',
   'Economics',
-  'Psychology',
+  'Geography',
   'Other',
 ];
 
@@ -120,7 +120,7 @@ const SUBJECT_TRANSLATION_KEYS = {
   Chemistry: 'chemistry',
   History: 'history',
   Economics: 'economics',
-  Psychology: 'psychology',
+  Geography: 'geography',
   Other: 'other',
 };
 
