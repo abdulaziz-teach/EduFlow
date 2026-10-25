@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Sparkles, ChevronRight, BookOpen, Code2, Binary, Languages, Zap, FlaskConical, Dna } from 'lucide-react';
+import { Loader2, Sparkles, ChevronRight, BookOpen, Code2, Binary, Languages, Zap, FlaskConical, Dna, TrendingUp } from 'lucide-react';
 import studyPlanService from '../../services/studyPlan';
 import knowledgeService from '../../services/knowledge';
 import { useAuth } from '../../context/AuthContext';
@@ -14,6 +14,7 @@ const ICON_MAP = {
   FlaskConical,
   Dna,
   BookOpen,
+  TrendingUp,
 };
 
 function PracticeSetup({ recommendation, onStart }) {

@@ -21,6 +21,11 @@ function getFallbackUser() {
     onboardingComplete: true,
     subjects: ['Computer Science', 'Mathematics', 'English', 'Physics'],
     learningGoal: 'exam',
+    goal: {
+      type: 'exam',
+      description: 'exam',
+    },
+    goalType: 'exam',
     studyStreak: 7,
     dailyMinutes: 45,
     role: 'student',
@@ -123,7 +128,23 @@ const auth = {
     try {
       return await api.post('/users/me/onboarding', data);
     } catch (err) {
-      const user = { ...getFallbackUser(), ...data, onboardingComplete: true };
+      const gType = data.goalType || 'exam';
+      const user = {
+        ...getFallbackUser(),
+        ...data,
+        goal: {
+          type: gType,
+          description: data.goalDescription || gType,
+          ...(data.targetDate ? { targetDate: data.targetDate } : {}),
+        },
+        goalType: gType,
+        goalDescription: data.goalDescription || '',
+        studySchedule: {
+          preferredDays: data.preferredDays || [],
+          preferredTime: data.preferredTime || 'anytime',
+        },
+        onboardingComplete: true,
+      };
       saveFallbackUser(user);
       return { success: true, user };
     }

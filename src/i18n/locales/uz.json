@@ -223,6 +223,13 @@
     "draftSyncError": "Javoblaringiz ushbu qurilmada saqlandi, aloqa tiklangach sinxronlanadi."
   },
   "dashboard": {
+    "loadError": "Boshqaruv panelining ba'zi ma'lumotlarini yuklab bo'lmadi. Internet ulanishingizni tekshirib, sahifani yangilang.",
+    "goals": {
+      "exam": "Imtihonga tayyorgarlik",
+      "grades": "Baholarni yaxshilash",
+      "learn": "Yangi narsalarni o'rganish",
+      "habit": "Muntazam o'qish odati"
+    },
     "welcome": "Xush kelibsiz",
     "streakDays": "{{count}} kunlik seriya",
     "coachTitle": "Kunlik yo'riqchi",

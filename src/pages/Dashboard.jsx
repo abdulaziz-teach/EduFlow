@@ -62,21 +62,24 @@ function Dashboard() {
   const [mistakeModalOpen, setMistakeModalOpen] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPractice = async () => {
       try {
-        const [recRes, histRes] = await Promise.all([
+        const [recRes, histRes] = await Promise.allSettled([
           practiceService.getRecommendation(),
-          practiceService.getHistory()
+          practiceService.getHistory(),
         ]);
-        setPracticeRec(recRes.recommendation);
-        if (histRes.sessions && histRes.sessions.length > 0) {
-          setRecentPractice(histRes.sessions[0]);
+        if (!isMounted) return;
+        if (recRes.status === 'fulfilled' && recRes.value?.recommendation) {
+          setPracticeRec(recRes.value.recommendation);
+        }
+        if (histRes.status === 'fulfilled' && histRes.value?.sessions?.length > 0) {
+          setRecentPractice(histRes.value.sessions[0]);
         }
       } catch (err) {
-        console.error('Could not load practice summary:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load practice summary:', err?.message);
       } finally {
-        setLoadingPractice(false);
+        if (isMounted) setLoadingPractice(false);
       }
     };
     fetchPractice();
@@ -84,87 +87,105 @@ function Dashboard() {
     const fetchUpdates = async () => {
       try {
         const data = await notificationsService.getNotifications();
-        setRecentUpdates(data.notifications.slice(0, 3));
+        if (isMounted && data?.notifications) {
+          setRecentUpdates(data.notifications.slice(0, 3));
+        }
       } catch (err) {
-        console.error('Could not load recent notifications:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load recent notifications:', err?.message);
       } finally {
-        setLoadingUpdates(false);
+        if (isMounted) setLoadingUpdates(false);
       }
     };
     fetchUpdates();
 
     const fetchKnowledge = async () => {
       try {
-        const [sumRes, recsRes] = await Promise.all([
+        const [sumRes, recsRes] = await Promise.allSettled([
           knowledgeService.getSummary(),
-          knowledgeService.getRecommendations()
+          knowledgeService.getRecommendations(),
         ]);
-        setKnowledgeSummary(sumRes.summary);
-        setKnowledgeRecs(recsRes.recommendations);
+        if (!isMounted) return;
+        if (sumRes.status === 'fulfilled' && sumRes.value?.summary) {
+          setKnowledgeSummary(sumRes.value.summary);
+        }
+        if (recsRes.status === 'fulfilled' && recsRes.value?.recommendations) {
+          setKnowledgeRecs(recsRes.value.recommendations);
+        }
       } catch (err) {
-        console.error('Could not load learning summary:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load learning summary:', err?.message);
       } finally {
-        setLoadingKnowledge(false);
+        if (isMounted) setLoadingKnowledge(false);
       }
     };
     fetchKnowledge();
+
     const fetchSummary = async () => {
       try {
         const data = await progressService.getProgressSummary();
-        setSummary(data.summary);
+        if (isMounted && data?.summary) {
+          setSummary(data.summary);
+        }
       } catch (err) {
-        console.error('Could not load progress summary:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load progress summary:', err?.message);
       } finally {
-        setLoadingSummary(false);
+        if (isMounted) setLoadingSummary(false);
       }
     };
 
     const fetchTodayTasks = async () => {
       try {
         const data = await studyPlanService.getTodayStudyPlan();
-        setTodayDay(data.day);
+        if (isMounted) {
+          setTodayDay(data?.day || data?.today || null);
+        }
       } catch (err) {
-        console.error('Could not load today’s study plan:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load today’s study plan:', err?.message);
       } finally {
-        setLoadingToday(false);
+        if (isMounted) setLoadingToday(false);
       }
     };
 
     const fetchRecommendation = async () => {
       try {
         const data = await studyPlanService.getStudyRecommendation();
-        setRecommendation(data.recommendation);
+        if (isMounted && data?.recommendation) {
+          setRecommendation(data.recommendation);
+        }
       } catch (err) {
-        console.error('Could not load study recommendation:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load study recommendation:', err?.message);
       } finally {
-        setLoadingRecommendation(false);
+        if (isMounted) setLoadingRecommendation(false);
       }
     };
 
     fetchSummary();
     fetchTodayTasks();
     fetchRecommendation();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Fetch current plan on mount
   useEffect(() => {
+    let isMounted = true;
     const fetchPlan = async () => {
       try {
         const data = await studyPlanService.getCurrent();
-        setPlan(data.plan);
+        if (isMounted && data?.plan) {
+          setPlan(data.plan);
+        }
       } catch (err) {
-        console.error('Could not load current study plan:', err.message);
-        setLoadError('Some dashboard data could not be loaded. Check your connection and refresh.');
+        console.warn('Could not load current study plan:', err?.message);
       } finally {
-        setLoadingPlan(false);
+        if (isMounted) setLoadingPlan(false);
       }
     };
     fetchPlan();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Animate loading steps while generating
@@ -191,13 +212,28 @@ function Dashboard() {
     }
   };
 
-  const getGoalLabel = (goal) => {
-    if (goal?.description) return goal.description;
-    if (goal?.type) return t(`dashboard.goals.${goal.type}`, { defaultValue: goal.type });
+  const getGoalLabel = (goal, userObj) => {
+    const rawType = goal?.type || userObj?.goalType || userObj?.learningGoal || (typeof goal === 'string' ? goal : null);
+    const customDesc = goal?.description || userObj?.goalDescription;
+
+    if (customDesc && customDesc.trim() && !['exam', 'grades', 'learn', 'habit'].includes(customDesc.trim())) {
+      return customDesc.trim();
+    }
+
+    if (rawType) {
+      const translated = t(`onboarding.goals.${rawType}.label`, { defaultValue: '' });
+      if (translated) return translated;
+      const dashTranslated = t(`dashboard.goals.${rawType}`, { defaultValue: '' });
+      if (dashTranslated) return dashTranslated;
+      return rawType;
+    }
+
+    if (customDesc && customDesc.trim()) return customDesc.trim();
+
     return t('dashboard.notSet');
   };
 
-  const goalLabel = getGoalLabel(user?.goal);
+  const goalLabel = getGoalLabel(user?.goal, user);
 
   const studyTime = user?.dailyStudyMinutes
     ? user.dailyStudyMinutes >= 60
@@ -229,8 +265,14 @@ function Dashboard() {
         </div>
 
         {loadError && (
-          <div role="status" className="mb-5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-200">
-            {loadError}
+          <div role="status" className="mb-5 flex items-center justify-between rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-200">
+            <span>{t('dashboard.loadError', { defaultValue: loadError })}</span>
+            <button
+              onClick={() => setLoadError('')}
+              className="ml-3 text-xs text-amber-300 hover:text-amber-100 cursor-pointer font-bold px-2 py-0.5 rounded hover:bg-amber-500/20"
+            >
+              ✕
+            </button>
           </div>
         )}
 

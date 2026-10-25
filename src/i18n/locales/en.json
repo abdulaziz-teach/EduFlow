@@ -223,6 +223,13 @@
     "draftSyncError": "Your answers are saved on this device. They will sync when the connection returns."
   },
   "dashboard": {
+    "loadError": "Some dashboard data could not be loaded. Check your connection and refresh.",
+    "goals": {
+      "exam": "Exam Preparation",
+      "grades": "Improve Grades",
+      "learn": "Learn New Things",
+      "habit": "Build a Study Habit"
+    },
     "welcome": "Welcome back",
     "streakDays": "{{count}} Day Streak",
     "coachTitle": "Daily Study Coach",

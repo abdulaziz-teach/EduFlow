@@ -120,14 +120,6 @@ export const saveOnboardingDraft = async (req, res, next) => {
 
 export const completeOnboarding = async (req, res, next) => {
   try {
-    if (isOnboardingComplete(req.user)) {
-      return res.status(409).json({
-        success: false,
-        error: 'ONBOARDING_ALREADY_COMPLETE',
-        message: 'Your onboarding is already complete.',
-      });
-    }
-
     const {
       goalType,
       goalDescription,
