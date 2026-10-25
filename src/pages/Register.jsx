@@ -60,15 +60,20 @@ function Register() {
     setLoading(true);
     justRegistered.current = true;
     try {
-      await register({
+      const data = await register({
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
         preferredLanguage: i18n.resolvedLanguage || i18n.language,
       });
-      navigate('/dashboard', { replace: true });
+      // New registered user should immediately see onboarding questions!
+      if (data?.user?.onboardingComplete) {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/onboarding', { replace: true });
+      }
     } catch (err) {
-      navigate('/dashboard', { replace: true });
+      setError(err.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }

@@ -50,10 +50,13 @@ function Login() {
     setLoading(true);
     try {
       const data = await login({ email: form.email.trim(), password: form.password });
-      navigate('/dashboard', { replace: true });
+      if (data?.user && !data.user.onboardingComplete) {
+        navigate('/onboarding', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
-      // In standalone mode, auth.login handles fallbacks, but if an error slips through:
-      navigate('/dashboard', { replace: true });
+      setError(err.message || t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }

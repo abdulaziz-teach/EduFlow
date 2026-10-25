@@ -20,10 +20,6 @@ function ProtectedRoute({ children, onboardingOnly = false }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (onboardingOnly && user.onboardingComplete) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   if (!onboardingOnly && !user.onboardingComplete) {
     return <Navigate to="/onboarding" replace />;
   }

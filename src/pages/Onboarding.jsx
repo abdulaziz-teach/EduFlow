@@ -128,21 +128,22 @@ function Onboarding() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, setAuthenticatedUser } = useAuth();
+  const userId = user?.id || user?._id || 'user';
 
   const [localDraft] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem(`eduflow_onboarding_${user.id}`) || 'null');
+      return JSON.parse(localStorage.getItem(`eduflow_onboarding_${userId}`) || 'null');
     } catch {
       return null;
     }
   });
-  const serverDraftAt = user.onboardingDraftUpdatedAt
+  const serverDraftAt = user?.onboardingDraftUpdatedAt
     ? new Date(user.onboardingDraftUpdatedAt).getTime()
     : 0;
   const localDraftAt = localDraft?.savedAt ? new Date(localDraft.savedAt).getTime() : 0;
   const initialDraft = localDraftAt > serverDraftAt
     ? localDraft
-    : user.onboardingDraft || localDraft || {};
+    : user?.onboardingDraft || localDraft || {};
 
   const [step, setStep] = useState(() => Math.min(initialDraft.step || 0, STEPS.length - 1));
   const [saving, setSaving] = useState(false);
@@ -152,20 +153,20 @@ function Onboarding() {
   const [answers, setAnswers] = useState(() => {
     const draft = initialDraft;
     return {
-      goalType: draft.goalType || user.goal?.type || '',
-      goalDescription: draft.goalDescription || user.goal?.description || '',
-      subjects: draft.subjects || user.subjects || [],
-      level: draft.level || user.level || 'intermediate',
-      weakTopics: draft.weakTopics || user.weakTopics || [],
-      dailyStudyMinutes: draft.dailyStudyMinutes ?? user.dailyStudyMinutes ?? null,
-      learningStyle: draft.learningStyle || user.learningStyle || 'mixed',
-      targetDate: draft.targetDate || (user.goal?.targetDate
+      goalType: draft.goalType || user?.goal?.type || '',
+      goalDescription: draft.goalDescription || user?.goal?.description || '',
+      subjects: draft.subjects || user?.subjects || [],
+      level: draft.level || user?.level || 'intermediate',
+      weakTopics: draft.weakTopics || user?.weakTopics || [],
+      dailyStudyMinutes: draft.dailyStudyMinutes ?? user?.dailyStudyMinutes ?? null,
+      learningStyle: draft.learningStyle || user?.learningStyle || 'mixed',
+      targetDate: draft.targetDate || (user?.goal?.targetDate
         ? new Date(user.goal.targetDate).toISOString().slice(0, 10)
         : ''),
-      preferredDays: draft.preferredDays || user.studySchedule?.preferredDays || [],
-      preferredTime: draft.preferredTime || user.studySchedule?.preferredTime || 'anytime',
-      preferredLanguage: draft.preferredLanguage || user.preferredLanguage || 'en',
-      age: draft.age ?? user.age ?? '',
+      preferredDays: draft.preferredDays || user?.studySchedule?.preferredDays || [],
+      preferredTime: draft.preferredTime || user?.studySchedule?.preferredTime || 'anytime',
+      preferredLanguage: draft.preferredLanguage || user?.preferredLanguage || 'en',
+      age: draft.age ?? user?.age ?? '',
     };
   });
   const { goalType, subjects, level, weakTopics, dailyStudyMinutes, learningStyle, age,
@@ -195,7 +196,7 @@ function Onboarding() {
   const saveDraft = async (nextStep = step) => {
     const draft = { ...answers, step: nextStep, savedAt: new Date().toISOString() };
     try {
-      localStorage.setItem(`eduflow_onboarding_${user.id}`, JSON.stringify(draft));
+      localStorage.setItem(`eduflow_onboarding_${userId}`, JSON.stringify(draft));
     } catch (storageError) {
       console.error('Could not save onboarding draft in this browser:', storageError.message);
     }
@@ -215,7 +216,7 @@ function Onboarding() {
       });
     }, 500);
     return () => clearTimeout(saveTimer.current);
-  }, [answers, step, user.id]);
+  }, [answers, step, userId]);
 
   useEffect(() => () => clearTimeout(saveTimer.current), []);
 
@@ -250,7 +251,7 @@ function Onboarding() {
       });
       if (!result.user) throw new Error('The saved learning profile could not be loaded.');
       setAuthenticatedUser(result.user);
-      localStorage.removeItem(`eduflow_onboarding_${user.id}`);
+      localStorage.removeItem(`eduflow_onboarding_${userId}`);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || t('onboarding.saveError'));
