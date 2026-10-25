@@ -477,38 +477,46 @@ function Dashboard() {
         </div>
 
         {/* Overdue Alert Card */}
-        {!loadingRecommendation && recommendation && recommendation.type === 'catch_up' && (
-          <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5 mb-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">⚠️</span>
-              <h4 className="text-sm font-semibold text-rose-400">{t('dashboard.unfinishedTasks')}</h4>
-            </div>
-            <p className="text-xs text-muted mb-4">
-              {t('dashboard.unfinishedTasksDesc', { count: recommendation.tasks.length })}
-            </p>
-            <div className="space-y-3">
-              {recommendation.tasks.slice(0, 2).map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between gap-3 p-3 rounded-xl border border-subtle bg-white/[0.02]"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-text">{task.title}</p>
-                    <p className="text-xs text-muted mt-1">{task.subject} &middot; {task.duration} min</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      navigate('/study-plan', { state: { startTaskId: task.id, filter: 'Overdue' } });
-                    }}
-                    className="px-2.5 py-1 text-xs font-semibold rounded bg-rose-500 hover:bg-rose-600 text-white transition-all cursor-pointer shrink-0"
+        {!loadingRecommendation && recommendation && recommendation.type === 'catch_up' && (() => {
+          const allowed = user?.subjects || [];
+          const safeTasks = allowed.length
+            ? (recommendation.tasks || []).filter((t) => allowed.some((s) => s.toLowerCase() === t.subject?.toLowerCase()))
+            : (recommendation.tasks || []);
+          if (!safeTasks.length) return null;
+
+          return (
+            <div className="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-5 mb-5">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">⚠️</span>
+                <h4 className="text-sm font-semibold text-rose-400">{t('dashboard.unfinishedTasks')}</h4>
+              </div>
+              <p className="text-xs text-muted mb-4">
+                {t('dashboard.unfinishedTasksDesc', { count: safeTasks.length })}
+              </p>
+              <div className="space-y-3">
+                {safeTasks.slice(0, 2).map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center justify-between gap-3 p-3 rounded-xl border border-subtle bg-white/[0.02]"
                   >
-                    {t('dashboard.studyNow')}
-                  </button>
-                </div>
-              ))}
+                    <div>
+                      <p className="text-sm font-medium text-text">{task.title}</p>
+                      <p className="text-xs text-muted mt-1">{task.subject} &middot; {task.duration} min</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigate('/study-plan', { state: { startTaskId: task.id, filter: 'Overdue' } });
+                      }}
+                      className="px-2.5 py-1 text-xs font-semibold rounded bg-rose-500 hover:bg-rose-600 text-white transition-all cursor-pointer shrink-0"
+                    >
+                      {t('dashboard.studyNow')}
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Learning Map Overview Card */}
         {knowledgeSummary && (

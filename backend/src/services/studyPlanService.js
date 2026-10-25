@@ -108,51 +108,47 @@ export function buildRuleBasedPlan(user, options = {}) {
   const topicFor = (index) => (weakTopics.length
     ? weakTopics[index % weakTopics.length]
     : subjects[index % subjects.length]);
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const planDays = [];
-  for (let offset = 0; offset < availableDays; offset += 1) {
-    const date = new Date(startDate);
-    date.setUTCDate(date.getUTCDate() + offset);
-    const dayName = dayNames[date.getUTCDay()];
-    if (preferredDays.length && !preferredDays.includes(dayName)) continue;
+  let dayOffset = 0;
 
-    const subject = subjects[planDays.length % subjects.length];
-    const topic = topicFor(planDays.length);
-    const tasks = [];
-    let remaining = plannedMinutes;
-    let session = 0;
-    while (remaining > 0) {
-      const duration = Math.min(maxSessionMinutes, remaining);
-      const types = level === 'revision'
-        ? ['revision', 'quiz']
-        : user.learningStyle === 'practice'
-          ? ['practice', 'quiz']
-          : user.learningStyle === 'theory'
-            ? ['learning', 'revision']
-            : user.learningStyle === 'flashcards'
-              ? ['revision', 'quiz']
-              : level === 'beginner'
-                ? ['learning', 'practice']
-                : ['learning', 'practice', 'quiz'];
-      const type = types[session % types.length];
-      tasks.push({
-        title: copy.task[type](topic, levelLabel),
-        subject,
-        duration,
-        type,
-        completed: false,
+  // Har bir tanlangan fandan aynan 6 tadan darslik rejalashtiriladi
+  subjects.forEach((subject) => {
+    for (let lessonIndex = 0; lessonIndex < 6; lessonIndex += 1) {
+      const lessonNumber = lessonIndex + 1;
+      const date = new Date(startDate);
+      date.setUTCDate(date.getUTCDate() + dayOffset);
+      dayOffset += 1;
+
+      const topic = weakTopics.length
+        ? weakTopics[lessonIndex % weakTopics.length]
+        : `${lessonNumber}-mavzu`;
+
+      const lessonTitle = `${subject}: ${lessonNumber}-dars - ${topic}`;
+      const practiceTitle = `${subject}: ${lessonNumber}-dars amaliy mashqlari`;
+
+      planDays.push({
+        dayNumber: planDays.length + 1,
+        date,
+        focus: copy.focus(subject, topic),
+        tasks: [
+          {
+            title: lessonTitle,
+            subject,
+            duration: Math.min(30, plannedMinutes || 25),
+            type: lessonIndex === 0 ? 'learning' : lessonIndex === 5 ? 'quiz' : 'practice',
+            completed: false,
+          },
+          {
+            title: practiceTitle,
+            subject,
+            duration: Math.min(20, plannedMinutes || 20),
+            type: 'practice',
+            completed: false,
+          },
+        ],
       });
-      remaining -= duration;
-      session += 1;
     }
-
-    planDays.push({
-      dayNumber: planDays.length + 1,
-      date,
-      focus: copy.focus(subject, topic),
-      tasks,
-    });
-  }
+  });
   if (!planDays.length && subjects.length && plannedMinutes > 0) {
     const subject = subjects[0];
     const topic = topicFor(0);

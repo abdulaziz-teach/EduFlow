@@ -13,9 +13,10 @@ import {
   ArrowLeft,
   Download,
 } from 'lucide-react';
-import studyPlanService from '../services/studyPlan';
+import studyPlanService, { buildClientStudyPlan } from '../services/studyPlan';
 import studySessionService from '../services/studySession';
 import AdaptPlanButton from '../components/study-plan/AdaptPlanButton';
+import { useAuth } from '../context/AuthContext';
 
 const TYPE_COLORS = {
   learning: 'bg-primary/10 text-primary',
@@ -30,6 +31,7 @@ function StudyPlan() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -57,8 +59,22 @@ function StudyPlan() {
 
   const fetchPlan = useCallback(async () => {
     try {
+      const userSubjs = user?.subjects || [];
       const data = await studyPlanService.getCurrent();
-      setPlan(data.plan);
+      let currentPlan = data?.plan;
+
+      if (userSubjs.length > 0 && currentPlan?.days) {
+        const planSubjs = [...new Set(currentPlan.days.flatMap((d) => d.tasks.map((t) => t.subject)))];
+        const hasUnwanted = planSubjs.some((s) => !userSubjs.some((u) => u.toLowerCase() === s.toLowerCase()));
+        const isMissingChosen = userSubjs.some((u) => !planSubjs.some((s) => s.toLowerCase() === u.toLowerCase()));
+
+        if (hasUnwanted || isMissingChosen) {
+          // Re-generate fresh plan strictly for chosen subjects with 6 lessons each
+          currentPlan = buildClientStudyPlan(userSubjs);
+        }
+      }
+
+      setPlan(currentPlan);
 
       // Recover active session
       const sessData = await studySessionService.getActiveSession();
@@ -68,7 +84,7 @@ function StudyPlan() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.subjects]);
 
   useEffect(() => {
     fetchPlan();
@@ -187,6 +203,10 @@ function StudyPlan() {
 
     if (!plan || !plan.days) return categories;
 
+    const allowedSubjects = (Array.isArray(user?.subjects) && user.subjects.length > 0)
+      ? user.subjects.map((s) => s.toLowerCase())
+      : null;
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -195,6 +215,11 @@ function StudyPlan() {
       dayDate.setHours(0, 0, 0, 0);
 
       day.tasks.forEach((task) => {
+        // Faqat foydalanuvchi tanlagan fanlarning darslari chiqadi
+        if (allowedSubjects && task.subject && !allowedSubjects.includes(task.subject.toLowerCase())) {
+          return;
+        }
+
         const taskWithMeta = {
           ...task,
           dayDate: day.date,
@@ -374,9 +399,21 @@ function StudyPlan() {
 
         {/* Category Filters Tabs */}
         <div className="flex w-full min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-white/[0.04] scrollbar-none select-none">
-          {['All', 'Today', 'Upcoming', 'Completed', 'Overdue'].map((tab) => {
+          {['All', 'Today', 'Upcoming', 'Overdue', 'Completed'].map((tab) => {
+            const isUz = i18n.language === 'uz';
+            const isRu = i18n.language === 'ru';
+            const tabName = tab === 'All'
+              ? (isUz ? 'Barchasi' : isRu ? 'Все' : 'All')
+              : tab === 'Today'
+              ? (isUz ? 'Bugungi' : isRu ? 'Сегодня' : 'Today')
+              : tab === 'Upcoming'
+              ? (isUz ? 'Kutilayotgan' : isRu ? 'Предстоящие' : 'Upcoming')
+              : tab === 'Overdue'
+              ? (isUz ? 'Kechikkan' : isRu ? 'Просроченные' : 'Overdue')
+              : (isUz ? 'Bajarilgan' : isRu ? 'Завершённые' : 'Completed');
+
             const count = tab === 'All'
-              ? totalTasks
+              ? Object.values(categorizedTasks).reduce((sum, list) => sum + list.length, 0)
               : categorizedTasks[tab]?.length || 0;
 
             return (
@@ -389,7 +426,7 @@ function StudyPlan() {
                     : 'bg-white/5 border border-subtle text-muted hover:text-text hover:bg-white/10'
                 }`}
               >
-                {tab} ({count})
+                {tabName} ({count})
               </button>
             );
           })}
@@ -398,8 +435,10 @@ function StudyPlan() {
         {/* Categorized Tasks List */}
         <div className="space-y-8">
           {(() => {
+            const isUz = i18n.language === 'uz';
+            const isRu = i18n.language === 'ru';
             const groupsToRender = filter === 'All'
-              ? ['Overdue', 'Today', 'Upcoming', 'Completed']
+              ? ['Today', 'Upcoming', 'Overdue', 'Completed']
               : [filter];
 
             const TYPE_BORDER_COLORS = {
@@ -410,10 +449,30 @@ function StudyPlan() {
             };
 
             const CATEGORY_DETAILS = {
-              Overdue: { title: 'Overdue Tasks', desc: 'Incomplete tasks from previous days.', color: 'text-rose-400', icon: '⚠️' },
-              Today: { title: 'Today\'s Work', desc: 'Planned tasks for today. Focus on consistency!', color: 'text-primary', icon: '📅' },
-              Upcoming: { title: 'Upcoming Roadmap', desc: 'Work planned for future dates.', color: 'text-muted', icon: '🚀' },
-              Completed: { title: 'Completed Items', desc: 'Great job staying on track!', color: 'text-emerald-400', icon: '✓' },
+              Today: {
+                title: isUz ? 'Bugungi vazifalar' : isRu ? 'Задачи на сегодня' : "Today's Work",
+                desc: isUz ? "Bugun uchun rejalashtirilgan mashg'ulotlar." : isRu ? 'Запланированные занятия на сегодня.' : 'Planned tasks for today. Focus on consistency!',
+                color: 'text-primary',
+                icon: '📅',
+              },
+              Upcoming: {
+                title: isUz ? 'Kutilayotgan reja' : isRu ? 'Предстоящий план' : 'Upcoming Roadmap',
+                desc: isUz ? 'Kelgusi kunlar uchun rejalashtirilgan darslar.' : isRu ? 'Занятия, запланированные на следующие дни.' : 'Work planned for future dates.',
+                color: 'text-muted',
+                icon: '🚀',
+              },
+              Overdue: {
+                title: isUz ? 'Kechikkan vazifalar' : isRu ? 'Просроченные задачи' : 'Overdue Tasks',
+                desc: isUz ? 'Oldingi kunlardan qolgan vazifalar.' : isRu ? 'Невыполненные задачи за предыдущие дни.' : 'Incomplete tasks from previous days.',
+                color: 'text-rose-400',
+                icon: '⚠️',
+              },
+              Completed: {
+                title: isUz ? 'Bajarilgan darslar' : isRu ? 'Выполненные занятия' : 'Completed Items',
+                desc: isUz ? 'Ajoyib natija! Darslar muvaffaqiyatli yakunlandi.' : isRu ? 'Отличный результат! Занятия завершены.' : 'Great job staying on track!',
+                color: 'text-emerald-400',
+                icon: '✓',
+              },
             };
 
             let renderedAny = false;
