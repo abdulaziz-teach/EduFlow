@@ -15,7 +15,7 @@ const onboardingDraftSchema = new mongoose.Schema(
     preferredDays: { type: [String], default: [] },
     preferredTime: { type: String, default: 'anytime' },
     preferredLanguage: { type: String, default: 'en' },
-    age: { type: Number, min: 5, max: 100, default: null },
+    age: { type: Number, min: 6, max: 30, default: null },
   },
   { _id: false }
 );
@@ -58,8 +58,8 @@ const userSchema = new mongoose.Schema(
     },
     age: {
       type: Number,
-      min: 5,
-      max: 100,
+      min: 6,
+      max: 30,
       default: null,
     },
     // FIND-05: 'passwordHash' stores bcrypt hash (salt 12) with select: false

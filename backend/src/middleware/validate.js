@@ -71,8 +71,8 @@ export const validateProfileUpdate = (body) => {
 
   if (body.age !== undefined &&
       body.age !== null &&
-      (!Number.isInteger(body.age) || body.age < 5 || body.age > 100)) {
-    errors.push('Age must be a whole number between 5 and 100');
+      (!Number.isInteger(body.age) || body.age < 6 || body.age > 30)) {
+    errors.push('Age must be a whole number between 6 and 30');
   }
 
   if (body.name !== undefined) {
@@ -146,8 +146,8 @@ export const validateOnboardingDraft = (body) => {
     errors.push('Onboarding step must be between 0 and 7');
   }
   if (body.age !== undefined && body.age !== null &&
-      (!Number.isInteger(body.age) || body.age < 5 || body.age > 100)) {
-    errors.push('Age must be a whole number between 5 and 100');
+      (!Number.isInteger(body.age) || body.age < 6 || body.age > 30)) {
+    errors.push('Age must be a whole number between 6 and 30');
   }
   if (body.goalType !== undefined && body.goalType !== '' && !VALID_GOALS.includes(body.goalType)) {
     errors.push('Learning goal is invalid');
@@ -191,8 +191,8 @@ export const validateOnboardingDraft = (body) => {
 
 export const validateOnboarding = (body) => {
   const errors = validateOnboardingDraft(body);
-  if (!Number.isInteger(body.age) || body.age < 5 || body.age > 100) {
-    errors.push('Enter an age between 5 and 100');
+  if (!Number.isInteger(body.age) || body.age < 6 || body.age > 30) {
+    errors.push('Enter an age between 6 and 30');
   }
   if (!VALID_GOALS.includes(body.goalType)) errors.push('Select a learning goal');
   if (!isStringList(body.subjects, 10, 100) || body.subjects.length === 0) {

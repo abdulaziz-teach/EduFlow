@@ -49,7 +49,7 @@ export const generatePlan = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         message: error.message === 'INVALID_AGE'
-          ? 'Age must be a whole number between 5 and 100.'
+          ? 'Age must be a whole number between 6 and 30.'
           : 'Please complete your study profile before creating a study plan.',
       });
     }

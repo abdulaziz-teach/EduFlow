@@ -233,7 +233,7 @@ function Onboarding() {
       case 5:
         return preferredDays.length > 0;
       case 7:
-        return Number.isInteger(Number(age)) && Number(age) >= 5 && Number(age) <= 100;
+        return Number.isInteger(Number(age)) && Number(age) >= 6 && Number(age) <= 30;
       default:
         return true;
     }
@@ -685,8 +685,8 @@ function Onboarding() {
                 id="onboarding-age"
                 type="number"
                 inputMode="numeric"
-                min="5"
-                max="100"
+                min="6"
+                max="30"
                 step="1"
                 required
                 value={age}
@@ -695,7 +695,7 @@ function Onboarding() {
                 className="w-full min-h-12 px-4 py-3 rounded-xl bg-dark border border-subtle text-text outline-none focus:border-primary focus:ring-1 focus:ring-primary/30"
               />
               <p id="onboarding-age-help" className="text-xs text-muted mt-2">{t('onboarding.ageHelp')}</p>
-              {!!age && (!Number.isInteger(Number(age)) || Number(age) < 5 || Number(age) > 100) && (
+              {!!age && (!Number.isInteger(Number(age)) || Number(age) < 6 || Number(age) > 30) && (
                 <p role="alert" className="text-sm text-red-400 mt-2">{t('onboarding.ageInvalid')}</p>
               )}
             </div>

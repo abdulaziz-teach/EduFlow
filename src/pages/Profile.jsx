@@ -126,7 +126,7 @@ function Profile() {
       setError(t('auth.fillAllFields'));
       return;
     }
-    if (form.age !== '' && (!Number.isInteger(Number(form.age)) || Number(form.age) < 5 || Number(form.age) > 100)) {
+    if (form.age !== '' && (!Number.isInteger(Number(form.age)) || Number(form.age) < 6 || Number(form.age) > 30)) {
       setError(t('profile.ageInvalid'));
       return;
     }
@@ -268,8 +268,8 @@ function Profile() {
                   id="profile-age"
                   type="number"
                   inputMode="numeric"
-                  min="5"
-                  max="100"
+                  min="6"
+                  max="30"
                   step="1"
                   value={form.age}
                   onChange={(event) => setForm((current) => ({ ...current, age: event.target.value }))}

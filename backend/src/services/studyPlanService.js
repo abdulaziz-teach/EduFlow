@@ -56,7 +56,7 @@ export function buildRuleBasedPlan(user, options = {}) {
     throw new Error('STUDY_PROFILE_INCOMPLETE');
   }
   if (user.age !== undefined && user.age !== null &&
-      (!Number.isInteger(user.age) || user.age < 5 || user.age > 100)) {
+      (!Number.isInteger(user.age) || user.age < 6 || user.age > 30)) {
     throw new Error('INVALID_AGE');
   }
 
