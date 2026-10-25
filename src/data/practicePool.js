@@ -945,6 +945,459 @@ export const PRACTICE_QUESTIONS = [
       },
     },
   },
+  // ==========================================
+  // GEOGRAPHY QUESTIONS
+  // ==========================================
+  {
+    id: 'geo_ocean_1',
+    subject: 'Geography',
+    topic: 'Continents & Oceans',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Yer yuzidagi eng katta va eng chuqur okean qaysi?',
+        options: ['Tinch okeani', 'Atlantika okeani', 'Hind okeani', 'Shimoliy Muz okeani'],
+        correctAnswer: 'Tinch okeani',
+        explanation: 'Tinch okeani maydoni bo‘yicha Yer yuzidagi eng ulkan va eng chuqur (Mariana botig‘i 11 022 m) okean hisoblanadi.',
+      },
+      ru: {
+        question: 'Какой океан на Земле является самым большим и глубоким?',
+        options: ['Тихий океан', 'Атлантический океан', 'Индийский океан', 'Северный Ледовитый океан'],
+        correctAnswer: 'Тихий океан',
+        explanation: 'Тихий океан занимает наибольшую площадь и имеет максимальную глубину (Марианский жёлоб).',
+      },
+      en: {
+        question: 'Which ocean on Earth is the largest and deepest?',
+        options: ['Pacific Ocean', 'Atlantic Ocean', 'Indian Ocean', 'Arctic Ocean'],
+        correctAnswer: 'Pacific Ocean',
+        explanation: 'The Pacific Ocean is both the largest and deepest of Earth\'s oceanic divisions, containing the Mariana Trench.',
+      },
+    },
+  },
+  {
+    id: 'geo_uzb_1',
+    subject: 'Geography',
+    topic: 'Geography of Uzbekistan',
+    type: 'true_false',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'O‘zbekiston dunyoda dengizga chiqish uchun kamida ikkita davlat hududidan o‘tish talab etiladigan (doubly landlocked) kam sonli davlatlardan biridir.',
+        options: ['To‘g‘ri', 'Noto‘g‘ri'],
+        correctAnswer: 'To‘g‘ri',
+        explanation: 'O‘zbekiston va Lixtenshteyn dunyodagi faqat ikkita "qo‘shaloq quruqlik ichidagi" (doubly landlocked) davlat hisoblanadi.',
+      },
+      ru: {
+        question: 'Узбекистан является одним из двух государств мира, не имеющих выхода к морю и граничащих исключительно со странами, также не имеющими выхода к морю.',
+        options: ['Верно', 'Неверно'],
+        correctAnswer: 'Верно',
+        explanation: 'Узбекистан и Лихтенштейн — единственные в мире два государства, изолированные от мирового океана двумя границами.',
+      },
+      en: {
+        question: 'Uzbekistan is one of only two doubly landlocked countries in the world.',
+        options: ['True', 'False'],
+        correctAnswer: 'True',
+        explanation: 'Uzbekistan and Liechtenstein are the only two doubly landlocked countries globally, surrounded entirely by other landlocked states.',
+      },
+    },
+  },
+  {
+    id: 'geo_mountain_1',
+    subject: 'Geography',
+    topic: 'Lithosphere & Earth Relief',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Yer yuzidagi eng baland cho‘qqi (Everest / Jomolungma) qaysi tog‘ tizmasida joylashgan?',
+        options: ['Himoloy tog‘lari', 'Alp tog‘lari', 'And tog‘lari', 'Kavkaz tog‘lari'],
+        correctAnswer: 'Himoloy tog‘lari',
+        explanation: 'Everest (8848 metr) Osiyo qit\'asidagi Himoloy tog‘ tizmasida, Nepal va Xitoy chegarasida joylashgan.',
+      },
+      ru: {
+        question: 'В какой горной системе находится высочайшая вершина планеты Эверест (Джомолунгма)?',
+        options: ['Гималаи', 'Альпы', 'Анды', 'Кавказ'],
+        correctAnswer: 'Гималаи',
+        explanation: 'Эверест (8848 м) расположен в Гималаях на границе Непала и Китая.',
+      },
+      en: {
+        question: 'In which mountain range is Mount Everest (Chomolungma) located?',
+        options: ['Himalayas', 'Alps', 'Andes', 'Caucasus'],
+        correctAnswer: 'Himalayas',
+        explanation: 'Mount Everest (8,848 m) is situated in the Mahalangur Himal sub-range of the Himalayas on the border of Nepal and China.',
+      },
+    },
+  },
+  {
+    id: 'geo_river_1',
+    subject: 'Geography',
+    topic: 'Hydrosphere: Rivers & Lakes',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'O‘rta Osiyodagi eng sersuv va eng uzun asosiy daryolar qaysilar?',
+        options: ['Amudaryo va Sirdaryo', 'Volga va Dnepr', 'Irtish va Ob', 'Nil va Kongo'],
+        correctAnswer: 'Amudaryo va Sirdaryo',
+        explanation: 'Amudaryo va Sirdaryo O‘rta Osiyo mintaqasining asosiy hayot manbai va eng yirik transchegaraviy daryolari hisoblanadi.',
+      },
+      ru: {
+        question: 'Какие две реки являются главными водными артериями Средней Азии?',
+        options: ['Амударья и Сырдарья', 'Волга и Днепр', 'Иртыш и Обь', 'Нил и Конго'],
+        correctAnswer: 'Амударья и Сырдарья',
+        explanation: 'Амударья и Сырдарья — крупнейшие реки Средней Азии, впадающие в бассейн Аральского моря.',
+      },
+      en: {
+        question: 'Which two rivers serve as the primary historic water arteries of Central Asia?',
+        options: ['Amu Darya and Syr Darya', 'Volga and Dnieper', 'Irtysh and Ob', 'Nile and Congo'],
+        correctAnswer: 'Amu Darya and Syr Darya',
+        explanation: 'The Amu Darya and Syr Darya are the two principal rivers forming the historical Aral Sea drainage basin.',
+      },
+    },
+  },
+  // ==========================================
+  // ECONOMICS QUESTIONS
+  // ==========================================
+  {
+    id: 'econ_demand_1',
+    subject: 'Economics',
+    topic: 'Supply and Demand',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Bozorda mahsulotga bo‘lgan talab keskin oshsa, lekin taklif hajmi o‘zgarmay qolsa, narx qanday o‘zgaradi?',
+        options: ['Narx oshadi', 'Narx pasayadi', 'Narx mutlaqo o‘zgarmaydi', 'Taklif darhol nolga tushadi'],
+        correctAnswer: 'Narx oshadi',
+        explanation: 'Talab va taklif qonuniga ko‘ra, xaridorlar talabi taklifdan ortib ketganda tanqislik vujudga keladi va narx ko‘tariladi.',
+      },
+      ru: {
+        question: 'Как изменится цена товара на рынке при резком росте спроса и неизменном предложении?',
+        options: ['Цена вырастет', 'Цена упадет', 'Цена останется прежней', 'Спрос обнулится'],
+        correctAnswer: 'Цена вырастет',
+        explanation: 'Согласно закону спроса и предложения, при превышении спроса над предложением возникает дефицит, стимулирующий рост цен.',
+      },
+      en: {
+        question: 'What happens to the market price of a good when demand surges while supply remains fixed?',
+        options: ['Price increases', 'Price decreases', 'Price stays constant', 'Supply falls to zero'],
+        correctAnswer: 'Price increases',
+        explanation: 'According to the law of supply and demand, excess demand creates a shortage, exerting upward pressure on market prices.',
+      },
+    },
+  },
+  {
+    id: 'econ_gdp_1',
+    subject: 'Economics',
+    topic: 'Macroeconomics & GDP',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'Mamlakat hududida bir yil davomida ishlab chiqarilgan barcha yakuniy tovar va xizmatlar qiymati nima deb ataladi?',
+        options: ['Yalpi Ichki Mahsulot (YaIM)', 'Inflyatsiya ko‘rsatkichi', 'Davlat byudjeti kamomadi', 'Tashqi savdo aylanmasi'],
+        correctAnswer: 'Yalpi Ichki Mahsulot (YaIM)',
+        explanation: 'YaIM (GDP) ma\'lum muddat davomida mamlakat iqtisodiyotida yaratilgan yakuniy mahsulotlar umumiy bozor qiymatini ifodalaydi.',
+      },
+      ru: {
+        question: 'Как называется общая рыночная стоимость всех конечных товаров и услуг, произведенных в стране за год?',
+        options: ['Валовой внутренний продукт (ВВП)', 'Уровень инфляции', 'Бюджетный дефицит', 'Торговый баланс'],
+        correctAnswer: 'Валовой внутренний продукт (ВВП)',
+        explanation: 'ВВП — фундаментальный макроэкономический показатель совокупного объема национального производства.',
+      },
+      en: {
+        question: 'What term describes the total monetary value of all finished goods and services produced within a country over a year?',
+        options: ['Gross Domestic Product (GDP)', 'Inflation Rate', 'Fiscal Deficit', 'Trade Balance'],
+        correctAnswer: 'Gross Domestic Product (GDP)',
+        explanation: 'GDP is the core macroeconomic gauge measuring the market output produced within national boundaries in a given period.',
+      },
+    },
+  },
+  // ==========================================
+  // MATHEMATICS QUESTIONS
+  // ==========================================
+  {
+    id: 'math_pyth_1',
+    subject: 'Mathematics',
+    topic: 'Geometry',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'To‘g‘ri burchakli uchburchakning katetlari 6 sm va 8 sm bo‘lsa, gipotenuzasi necha sm?',
+        options: ['10 sm', '12 sm', '14 sm', '16 sm'],
+        correctAnswer: '10 sm',
+        explanation: 'Pifagor teoremasi: c² = a² + b² = 6² + 8² = 36 + 64 = 100, demak c = √100 = 10 sm.',
+      },
+      ru: {
+        question: 'Катеты прямоугольного треугольника равны 6 см и 8 см. Чему равна гипотенуза?',
+        options: ['10 см', '12 см', '14 см', '16 см'],
+        correctAnswer: '10 см',
+        explanation: 'По теореме Пифагора: c² = 6² + 8² = 36 + 64 = 100, гипотенуза равна 10 см.',
+      },
+      en: {
+        question: 'If the legs of a right triangle are 6 cm and 8 cm, what is the length of the hypotenuse?',
+        options: ['10 cm', '12 cm', '14 cm', '16 cm'],
+        correctAnswer: '10 cm',
+        explanation: 'By the Pythagorean theorem: c² = a² + b² = 36 + 64 = 100, therefore c = 10 cm.',
+      },
+    },
+  },
+  {
+    id: 'math_eq_1',
+    subject: 'Mathematics',
+    topic: 'Equations & Inequalities',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Chiziqli tenglamani yeching: 4x - 8 = 24. x ning qiymati nechaga teng?',
+        options: ['8', '6', '10', '4'],
+        correctAnswer: '8',
+        explanation: '4x = 24 + 8 = 32; x = 32 / 4 = 8.',
+      },
+      ru: {
+        question: 'Решите линейное уравнение: 4x - 8 = 24. Чему равен x?',
+        options: ['8', '6', '10', '4'],
+        correctAnswer: '8',
+        explanation: '4x = 32, следовательно x = 32 / 4 = 8.',
+      },
+      en: {
+        question: 'Solve the linear equation: 4x - 8 = 24. What is the value of x?',
+        options: ['8', '6', '10', '4'],
+        correctAnswer: '8',
+        explanation: '4x = 24 + 8 = 32, so x = 32 / 4 = 8.',
+      },
+    },
+  },
+  // ==========================================
+  // ENGLISH QUESTIONS
+  // ==========================================
+  {
+    id: 'eng_tenses_1',
+    subject: 'English',
+    topic: 'Grammar & Tenses',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Gapni to‘g‘ri to‘ldiring: "He usually ___ coffee in the morning."',
+        options: ['drinks', 'drink', 'drinking', 'drank'],
+        correctAnswer: 'drinks',
+        explanation: 'Present Simple zamonida 3-shaxs birlik (he/she/it) fe\'liga -s qo‘shimchasi qo‘shiladi: drinks.',
+      },
+      ru: {
+        question: 'Вставьте правильную форму глагола: "He usually ___ coffee in the morning."',
+        options: ['drinks', 'drink', 'drinking', 'drank'],
+        correctAnswer: 'drinks',
+        explanation: 'В Present Simple с местоимением he глагол принимает окончание -s: drinks.',
+      },
+      en: {
+        question: 'Choose the correct form: "He usually ___ coffee in the morning."',
+        options: ['drinks', 'drink', 'drinking', 'drank'],
+        correctAnswer: 'drinks',
+        explanation: 'In the simple present tense with a third-person singular subject (he), the verb takes -s: drinks.',
+      },
+    },
+  },
+  {
+    id: 'eng_cond_1',
+    subject: 'English',
+    topic: 'Conditionals',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'To‘g‘ri shart gap tuzilmasini tanlang: "If it rains tomorrow, we ___ at home."',
+        options: ['will stay', 'stayed', 'would stay', 'stay'],
+        correctAnswer: 'will stay',
+        explanation: 'First Conditional qoidasi: If + Present Simple, will + fe\'lning asosiy shakli (Future Simple).',
+      },
+      ru: {
+        question: 'Выберите правильный вариант: "If it rains tomorrow, we ___ at home."',
+        options: ['will stay', 'stayed', 'would stay', 'stay'],
+        correctAnswer: 'will stay',
+        explanation: 'Правило First Conditional: If + Present Simple, will + глагол.',
+      },
+      en: {
+        question: 'Select the correct form: "If it rains tomorrow, we ___ at home."',
+        options: ['will stay', 'stayed', 'would stay', 'stay'],
+        correctAnswer: 'will stay',
+        explanation: 'First conditional structure requires "will + base verb" in the main clause when predicting real future conditions.',
+      },
+    },
+  },
+  // ==========================================
+  // PHYSICS QUESTIONS
+  // ==========================================
+  {
+    id: 'phys_ohm_1',
+    subject: 'Physics',
+    topic: 'Electric Circuits',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Zanjir qismidagi Om qonunining to‘g‘ri formulasini ko‘rsating:',
+        options: ['I = U / R', 'U = I / R', 'R = I * U', 'I = U * R'],
+        correctAnswer: 'I = U / R',
+        explanation: 'Om qonuniga ko‘ra, tok kuchi (I) kuchlanishga (U) to‘g‘ri, qarshilikka (R) teskari mutanosibdir: I = U / R.',
+      },
+      ru: {
+        question: 'Укажите формулу закона Ома для участка цепи:',
+        options: ['I = U / R', 'U = I / R', 'R = I * U', 'I = U * R'],
+        correctAnswer: 'I = U / R',
+        explanation: 'Закон Ома гласит, что сила тока прямо пропорциональна напряжению и обратно пропорциональна сопротивлению: I = U / R.',
+      },
+      en: {
+        question: 'Which formula represents Ohm\'s Law for an electric circuit segment?',
+        options: ['I = U / R', 'U = I / R', 'R = I * U', 'I = U * R'],
+        correctAnswer: 'I = U / R',
+        explanation: 'Ohm\'s Law states that current (I) is directly proportional to voltage (U) and inversely proportional to resistance (R): I = U / R.',
+      },
+    },
+  },
+  {
+    id: 'phys_newt_1',
+    subject: 'Physics',
+    topic: 'Newton\'s Laws',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Nyutonning ikkinchi qonuni formulasini aniqlang:',
+        options: ['F = m * a', 'E = m * c²', 'p = m * v', 'A = F * s'],
+        correctAnswer: 'F = m * a',
+        explanation: 'Nyutonning 2-qonuni bo‘yicha kuch (F) jism massasi (m) va uning tezlanishi (a) ko‘paytmasiga teng.',
+      },
+      ru: {
+        question: 'Укажите формулу второго закона Ньютона:',
+        options: ['F = m * a', 'E = m * c²', 'p = m * v', 'A = F * s'],
+        correctAnswer: 'F = m * a',
+        explanation: 'Второй закон Ньютона связывает силу с массой и ускорением: F = m * a.',
+      },
+      en: {
+        question: 'Identify the formula for Newton\'s Second Law of Motion:',
+        options: ['F = m * a', 'E = m * c²', 'p = m * v', 'A = F * s'],
+        correctAnswer: 'F = m * a',
+        explanation: 'Newton\'s second law defines force as the product of mass and acceleration: F = m * a.',
+      },
+    },
+  },
+  // ==========================================
+  // CHEMISTRY QUESTIONS
+  // ==========================================
+  {
+    id: 'chem_water_1',
+    subject: 'Chemistry',
+    topic: 'Chemical Bonds',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'Suv molekulasining kimyoviy formulasini ko‘rsating:',
+        options: ['H₂O', 'CO₂', 'NaCl', 'H₂SO₄'],
+        correctAnswer: 'H₂O',
+        explanation: 'Suv 2 ta vodorod va 1 ta kislorod atomidan tashkil topgan kovalent qutbli moddadir: H₂O.',
+      },
+      ru: {
+        question: 'Какова химическая формула воды?',
+        options: ['H₂O', 'CO₂', 'NaCl', 'H₂SO₄'],
+        correctAnswer: 'H₂O',
+        explanation: 'Молекула воды состоит из двух атомов водорода и одного атома кислорода: H₂O.',
+      },
+      en: {
+        question: 'What is the chemical formula of water?',
+        options: ['H₂O', 'CO₂', 'NaCl', 'H₂SO₄'],
+        correctAnswer: 'H₂O',
+        explanation: 'A molecule of water consists of two hydrogen atoms bonded to one oxygen atom: H₂O.',
+      },
+    },
+  },
+  {
+    id: 'chem_ph_1',
+    subject: 'Chemistry',
+    topic: 'Acids, Bases & Salts',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'Neytral eritmada (masalan, sof distillangan suvda) pH qiymati nechaga teng?',
+        options: ['7', '0', '14', '1'],
+        correctAnswer: '7',
+        explanation: 'pH shkalasida 7 neytral muhitni, 7 dan kichigi kislotali, 7 dan kattasi esa ishqoriy muhitni ifodalaydi.',
+      },
+      ru: {
+        question: 'Чему равен показатель pH для нейтрального раствора (чистой воды)?',
+        options: ['7', '0', '14', '1'],
+        correctAnswer: '7',
+        explanation: 'Значение pH = 7 соответствует нейтральной среде, ниже 7 — кислой, выше 7 — щелочной.',
+      },
+      en: {
+        question: 'What is the pH value of a neutral aqueous solution at room temperature?',
+        options: ['7', '0', '14', '1'],
+        correctAnswer: '7',
+        explanation: 'A pH of 7 is neutral; solutions with pH < 7 are acidic, while those with pH > 7 are basic.',
+      },
+    },
+  },
+  // ==========================================
+  // BIOLOGY QUESTIONS
+  // ==========================================
+  {
+    id: 'bio_photo_1',
+    subject: 'Biology',
+    topic: 'Photosynthesis',
+    type: 'multiple_choice',
+    difficulty: 'easy',
+    translations: {
+      uz: {
+        question: 'O‘simliklarda quyosh nuri yordamida organik modda va kislorod hosil bo‘lish jarayoni nima deb ataladi?',
+        options: ['Fotosintez', 'Transpiratsiya', 'Glikoliz', 'Fermentatsiya'],
+        correctAnswer: 'Fotosintez',
+        explanation: 'Xloroplastlarda xlorofill pigmenti vositasida yorug‘lik energiyasi hisobiga organik moddalar sintezlanishi fotosintez deyiladi.',
+      },
+      ru: {
+        question: 'Как называется процесс образования органических веществ и кислорода на свету у растений?',
+        options: ['Фотосинтез', 'Транспирация', 'Гликолиз', 'Ферментация'],
+        correctAnswer: 'Фотосинтез',
+        explanation: 'Фотосинтез — превращение световой энергии в энергию химических связей с выделением кислорода.',
+      },
+      en: {
+        question: 'What is the process by which green plants synthesize organic compounds and release oxygen using sunlight?',
+        options: ['Photosynthesis', 'Transpiration', 'Glycolysis', 'Fermentation'],
+        correctAnswer: 'Photosynthesis',
+        explanation: 'Photosynthesis converts light energy into chemical energy, producing carbohydrates and oxygen from water and CO2.',
+      },
+    },
+  },
+  {
+    id: 'bio_dna_1',
+    subject: 'Biology',
+    topic: 'DNA & Genetics',
+    type: 'multiple_choice',
+    difficulty: 'medium',
+    translations: {
+      uz: {
+        question: 'Organizmning irsiy axborotini saqlovchi va avloddan-avlodga yetkazuvchi asosiy qo‘sh spiral molekula nima?',
+        options: ['DNK', 'Ribosoma', 'Insulin', 'Gemoglobin'],
+        correctAnswer: 'DNK',
+        explanation: 'Dezoksiribonuklein kislota (DNK) tirik organizmlarning irsiy dasturini o‘zida saqlovchi makromolekuladir.',
+      },
+      ru: {
+        question: 'Какая двухцепочечная молекула хранит генетическую информацию живых организмов?',
+        options: ['ДНК', 'Рибосома', 'Инсулин', 'Гемоглобин'],
+        correctAnswer: 'ДНК',
+        explanation: 'ДНК (дезоксирибонуклеиновая кислота) обеспечивает хранение и передачу генетической программы развития.',
+      },
+      en: {
+        question: 'Which double-helical molecule stores the genetic instructions for living organisms?',
+        options: ['DNA', 'Ribosome', 'Insulin', 'Hemoglobin'],
+        correctAnswer: 'DNA',
+        explanation: 'Deoxyribonucleic acid (DNA) carries hereditary genetic instructions utilized in development and function.',
+      },
+    },
+  },
 ];
 
 /**
