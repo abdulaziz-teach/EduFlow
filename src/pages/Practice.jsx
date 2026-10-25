@@ -180,15 +180,7 @@ function Practice() {
               total={activeSession.questions.length}
             />
 
-            <QuestionCard
-              question={activeSession.questions[currentQuestionIndex]}
-              currentNumber={currentQuestionIndex + 1}
-              totalQuestions={activeSession.questions.length}
-              submitting={submittingAnswer}
-              onSubmit={handleSubmitAnswer}
-              isAnswered={!!answerFeedback}
-            />
-
+            {/* Top feedback banner: To'g'ri / Noto'g'ri va tushuntirish tepada chiqadi */}
             {answerFeedback && (
               <AnswerFeedback
                 feedback={answerFeedback}
@@ -196,6 +188,16 @@ function Practice() {
                 isLast={currentQuestionIndex === activeSession.questions.length - 1}
               />
             )}
+
+            <QuestionCard
+              question={activeSession.questions[currentQuestionIndex]}
+              currentNumber={currentQuestionIndex + 1}
+              totalQuestions={activeSession.questions.length}
+              submitting={submittingAnswer}
+              onSubmit={handleSubmitAnswer}
+              isAnswered={!!answerFeedback}
+              feedback={answerFeedback}
+            />
           </div>
         ) : (
           /* Setup Selection and History screen */

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 
-function QuestionCard({ question, currentNumber, totalQuestions, submitting, onSubmit, isAnswered }) {
+function QuestionCard({ question, currentNumber, totalQuestions, submitting, onSubmit, isAnswered, feedback }) {
   const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState('');
   const [shortAnswerText, setShortAnswerText] = useState('');
@@ -30,6 +30,23 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
       return !shortAnswerText.trim();
     }
     return !selectedOption;
+  };
+
+  const getOptionStyle = (opt) => {
+    if (!isAnswered) {
+      return selectedOption === opt
+        ? 'bg-primary/10 border-primary text-primary shadow shadow-primary/10'
+        : 'border-white/5 bg-white/[0.01] text-text hover:bg-white/[0.03]';
+    }
+    if (feedback) {
+      if (String(opt).trim().toLowerCase() === String(feedback.correctAnswer).trim().toLowerCase()) {
+        return 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold';
+      }
+      if (selectedOption === opt && !feedback.correct) {
+        return 'bg-rose-500/20 border-rose-500 text-rose-300 line-through';
+      }
+    }
+    return 'border-white/5 bg-white/[0.01] text-muted opacity-40';
   };
 
   return (
@@ -61,11 +78,7 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
                 type="button"
                 disabled={isAnswered}
                 onClick={() => setSelectedOption(opt)}
-                className={`w-full p-4 rounded-xl border text-left text-sm font-semibold transition-all cursor-pointer ${
-                  selectedOption === opt
-                    ? 'bg-primary/10 border-primary text-primary shadow shadow-primary/10'
-                    : 'border-white/5 bg-white/[0.01] text-text hover:bg-white/[0.03]'
-                } disabled:opacity-50`}
+                className={`w-full p-4 rounded-xl border text-left text-sm font-semibold transition-all cursor-pointer ${getOptionStyle(opt)} disabled:cursor-not-allowed`}
               >
                 {opt}
               </button>
@@ -81,11 +94,7 @@ function QuestionCard({ question, currentNumber, totalQuestions, submitting, onS
                 type="button"
                 disabled={isAnswered}
                 onClick={() => setSelectedOption(opt)}
-                className={`py-4 rounded-xl border text-center text-sm font-bold transition-all cursor-pointer ${
-                  selectedOption === opt
-                    ? 'bg-primary/10 border-primary text-primary'
-                    : 'border-white/5 bg-white/[0.01] text-text hover:bg-white/[0.03]'
-                } disabled:opacity-50`}
+                className={`py-4 rounded-xl border text-center text-sm font-bold transition-all cursor-pointer ${getOptionStyle(opt)} disabled:cursor-not-allowed`}
               >
                 {opt}
               </button>

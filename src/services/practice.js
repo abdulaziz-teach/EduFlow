@@ -169,13 +169,32 @@ export const createPracticeSession = async (data) => {
   }
 };
 
-export const quickStartPracticeSession = async (lang = 'uz') => {
+function getUserPreferredSubject() {
   try {
-    return await api.post('/practice/quick-start', { language: lang });
+    const raw = localStorage.getItem('eduflow_local_user');
+    if (raw) {
+      const u = JSON.parse(raw);
+      if (Array.isArray(u.subjects) && u.subjects.length > 0) {
+        return u.subjects[0];
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return 'Mathematics';
+}
+
+export const quickStartPracticeSession = async (lang = 'uz') => {
+  const chosenSubj = getUserPreferredSubject();
+  const cfg = SUBJECTS_CONFIG.find((c) => c.id.toLowerCase() === chosenSubj.toLowerCase());
+  const chosenTopic = cfg?.topics?.[lang]?.[0] || `${chosenSubj} 1-dars`;
+
+  try {
+    return await api.post('/practice/quick-start', { language: lang, subject: chosenSubj });
   } catch (err) {
     return createLocalPracticeSession({
-      subject: 'Computer Science',
-      topic: 'JavaScript Basics',
+      subject: chosenSubj,
+      topic: chosenTopic,
       difficulty: 'medium',
       count: 5,
       language: lang,
@@ -200,16 +219,32 @@ export const completePracticeSession = async (sessionId) => {
 };
 
 export const getPracticeRecommendation = async () => {
+  const chosenSubj = getUserPreferredSubject();
+  const cfg = SUBJECTS_CONFIG.find((c) => c.id.toLowerCase() === chosenSubj.toLowerCase());
+  const chosenTopic = cfg?.topics?.uz?.[0] || `${chosenSubj} 1-dars`;
+
   try {
-    return await api.get('/practice/recommendation');
+    const res = await api.get('/practice/recommendation');
+    if (res?.recommendation?.subject) {
+      return res;
+    }
+    return {
+      success: true,
+      recommendation: {
+        subject: chosenSubj,
+        topic: chosenTopic,
+        difficulty: 'medium',
+        reason: 'O‘quv profilingiz uchun tavsiya etildi.',
+      },
+    };
   } catch (err) {
     return {
       success: true,
       recommendation: {
-        subject: 'Computer Science',
-        topic: 'JavaScript Basics',
+        subject: chosenSubj,
+        topic: chosenTopic,
         difficulty: 'medium',
-        reason: 'Recommended for rapid practice and mastery in core coding.',
+        reason: 'O‘quv profilingiz uchun tavsiya etildi.',
       },
     };
   }
