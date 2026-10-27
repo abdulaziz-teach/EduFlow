@@ -78,16 +78,21 @@ const auth = {
     try {
       return await api.post('/auth/login', { email, password });
     } catch (err) {
-      console.warn('Backend unavailable, activating instant standalone session:', err.message);
-      let user = getFallbackUser();
-      if (email) {
-        user.email = email;
-        user.name = email.split('@')[0] || user.name;
-        saveFallbackUser(user);
+      if (email === 'demo@eduflow.uz') {
+        console.warn('Backend unavailable, activating local demo mode session:', err.message);
+        const demoUser = getFallbackUser();
+        demoUser.email = 'demo@eduflow.uz';
+        demoUser.name = 'Demo Talaba';
+        demoUser.role = 'student';
+        demoUser.onboardingComplete = true;
+        demoUser.isLocalDemo = true;
+        saveFallbackUser(demoUser);
+        const demoToken = 'demo_local_session_' + Date.now();
+        localStorage.setItem(TOKEN_KEY, demoToken);
+        localStorage.setItem('eduflow_is_demo', 'true');
+        return { success: true, token: demoToken, user: demoUser, isLocalDemo: true };
       }
-      const fakeToken = 'mock_jwt_token_' + Date.now();
-      localStorage.setItem(TOKEN_KEY, fakeToken);
-      return { success: true, token: fakeToken, user };
+      throw err;
     }
   },
 
@@ -168,6 +173,7 @@ const auth = {
     } finally {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(LOCAL_USER_KEY);
+      localStorage.removeItem('eduflow_is_demo');
     }
     return { success: true };
   },

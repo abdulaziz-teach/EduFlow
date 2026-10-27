@@ -5,7 +5,7 @@ import { GraduationCap, Loader2, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
-  const { login, user, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, loginWithDemo, user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const currentLang = ['uz', 'ru', 'en'].includes(i18n.language) ? i18n.language : 'uz';
@@ -27,11 +27,16 @@ function Login() {
 
   const handleDemoLogin = async () => {
     setLoading(true);
+    setError('');
     try {
-      const data = await login({ email: 'demo@eduflow.uz', password: 'password123' });
+      if (typeof loginWithDemo === 'function') {
+        await loginWithDemo();
+      } else {
+        await login({ email: 'demo@eduflow.uz', password: 'password123' });
+      }
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      navigate('/dashboard', { replace: true });
+      setError(err.message || t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -139,12 +144,12 @@ function Login() {
                 value={form.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full pl-4 pr-11 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                className="w-full pl-4 pr-12 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text transition-colors p-1 rounded-md cursor-pointer"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted hover:text-text transition-colors cursor-pointer rounded-r-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

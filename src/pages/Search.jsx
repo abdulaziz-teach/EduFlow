@@ -160,13 +160,13 @@ export default function Search() {
         {/* Global Search Input Form */}
         <form onSubmit={handleSearchSubmit} className="relative mt-4">
           <div className="flex items-center bg-[#151922] border border-white/10 rounded-2xl p-2 shadow-xl focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-            <SearchIcon className="w-5 h-5 text-muted ml-3 shrink-0" />
+            <SearchIcon className="w-5 h-5 text-muted ml-2 sm:ml-3 shrink-0" />
             <input
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="e.g. Python for data science, React hooks, or 'learn backend beginner'..."
-              className="flex-1 bg-transparent px-3 py-2 text-text placeholder:text-muted/60 text-sm sm:text-base outline-none"
+              className="flex-1 min-w-0 bg-transparent px-2.5 sm:px-3 py-2 text-text placeholder:text-muted/60 text-sm sm:text-base outline-none"
             />
             {inputVal && (
               <button
@@ -175,12 +175,12 @@ export default function Search() {
                   setInputVal('');
                   updateParam('q', '');
                 }}
-                className="p-1.5 text-muted hover:text-text rounded-lg hover:bg-white/5 mr-1"
+                className="p-1.5 text-muted hover:text-text rounded-lg hover:bg-white/5 mr-1 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
-            <Button type="submit" size="sm" className="px-5 shrink-0">
+            <Button type="submit" size="sm" className="px-3.5 sm:px-5 shrink-0">
               Search
             </Button>
           </div>

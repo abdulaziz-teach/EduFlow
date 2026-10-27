@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, ArrowRight, BookOpen, Layers, CheckCircle2, RotateCcw, AlertTriangle } from 'lucide-react';
 import adaptiveService from '../../services/adaptive';
 
@@ -7,6 +8,8 @@ export default function NextActionCard({ onActionComplete }) {
   const [action, setAction] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const currentLang = ['uz', 'ru', 'en'].includes(i18n.language) ? i18n.language : 'uz';
 
   const fetchAction = async () => {
     try {
@@ -15,7 +18,7 @@ export default function NextActionCard({ onActionComplete }) {
         setAction(res.action);
       }
     } catch (err) {
-      console.error('Failed to fetch Next Best Action:', err.message);
+      console.warn('Next Best Action fallback active:', err.message);
     } finally {
       setLoading(false);
     }
@@ -41,7 +44,7 @@ export default function NextActionCard({ onActionComplete }) {
     if (action.actionPayload?.route) {
       navigate(action.actionPayload.route);
     } else {
-      navigate('/practice');
+      navigate('/study-plan');
     }
     if (onActionComplete) onActionComplete();
   };
@@ -49,11 +52,23 @@ export default function NextActionCard({ onActionComplete }) {
   const getDifficultyBadge = (diff) => {
     switch (diff) {
       case 'hard':
-        return <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">Challenging</span>;
+        return (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">
+            {currentLang === 'uz' ? 'Murakkab' : currentLang === 'ru' ? 'Сложный' : 'Challenging'}
+          </span>
+        );
       case 'easy':
-        return <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Foundational</span>;
+        return (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+            {currentLang === 'uz' ? 'Boshlang‘ich' : currentLang === 'ru' ? 'Базовый' : 'Foundational'}
+          </span>
+        );
       default:
-        return <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">Balanced</span>;
+        return (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">
+            {currentLang === 'uz' ? 'Muvozanatli' : currentLang === 'ru' ? 'Сбалансированный' : 'Balanced'}
+          </span>
+        );
     }
   };
 
@@ -72,6 +87,20 @@ export default function NextActionCard({ onActionComplete }) {
     }
   };
 
+  // Honest truth-in-labeling: clarifies live AI engine vs offline/local recommendation
+  const badgeLabel = action.isFallback
+    ? t('dashboard.nextAction.demoBadge', {
+        defaultValue:
+          currentLang === 'uz'
+            ? '⚡ Demo Tavsiya (Offline)'
+            : currentLang === 'ru'
+            ? '⚡ Демо-режим (Офлайн)'
+            : '⚡ Demo Mode (Offline)',
+      })
+    : t('dashboard.nextAction.liveBadge', {
+        defaultValue: 'Adaptive Intelligence • Next Best Action',
+      });
+
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#111827] to-[#161f33] border border-primary/20 p-5 md:p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between">
@@ -81,7 +110,7 @@ export default function NextActionCard({ onActionComplete }) {
           </span>
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-primary">
-              Adaptive Intelligence • Next Best Action
+              {badgeLabel}
             </span>
             <h3 className="text-base md:text-lg font-bold text-text">{action.title}</h3>
           </div>
@@ -89,12 +118,12 @@ export default function NextActionCard({ onActionComplete }) {
         {getDifficultyBadge(action.recommendedDifficulty)}
       </div>
 
-      <p className="text-xs md:text-sm text-muted leading-relaxed">
+      <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
         {action.subtitle}
       </p>
 
       {/* Rationale callout */}
-      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-muted/90 flex items-start gap-2">
+      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-[11px] text-slate-300 flex items-start gap-2">
         <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
         <span>{action.reason}</span>
       </div>
@@ -104,7 +133,7 @@ export default function NextActionCard({ onActionComplete }) {
           onClick={handleExecute}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-semibold shadow-lg shadow-primary/20 transition-all cursor-pointer"
         >
-          {action.ctaText || 'Continue'}
+          {action.ctaText || (currentLang === 'uz' ? 'Davom etish' : currentLang === 'ru' ? 'Продолжить' : 'Continue')}
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>

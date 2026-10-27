@@ -16,10 +16,14 @@ function CTASection() {
             <h2 className="text-3xl md:text-4xl font-bold text-text mb-4">
               {t('landing.ctaTitle')}
             </h2>
-            <p className="text-muted text-lg leading-relaxed max-w-md mx-auto mb-8">
+            <p className="text-slate-300 text-lg leading-relaxed max-w-md mx-auto mb-8">
               {t('landing.ctaSubtitle')}
             </p>
-            <Button to="/register" size="lg">
+            <Button
+              to="/register"
+              size="lg"
+              className="!bg-[#5851E8] hover:!bg-[#4F46E5] text-white shadow-lg shadow-indigo-500/25"
+            >
               {t('landing.ctaButton')}
               <ArrowRight className="w-4 h-4 ml-1.5" />
             </Button>

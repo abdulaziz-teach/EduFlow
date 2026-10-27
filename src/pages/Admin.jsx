@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import {
   Shield,
   Users,
@@ -48,6 +49,12 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Admin() {
   const { user } = useAuth();
+
+  // Component-level Security Guard: Only authenticated users with admin role can access Admin panel
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', message: '' });

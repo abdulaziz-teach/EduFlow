@@ -15,6 +15,34 @@ import LoadingScreen from '../components/ui/LoadingScreen';
 import { getLeaderboard } from '../services/leaderboardService';
 import { useAuth } from '../context/AuthContext';
 
+// Safe extraction helper functions supporting backend structure, mock structure, and missing fields
+export const getStudentName = (s) => {
+  if (!s) return 'Talaba';
+  return s.name || s.user?.name || s.displayName || s.username || 'Talaba';
+};
+
+export const getStudentXP = (s) => {
+  if (!s) return 0;
+  return s.xp ?? s.points ?? s.score ?? 0;
+};
+
+export const getStudentMinutes = (s) => {
+  if (!s) return 0;
+  if (typeof s.totalStudyMinutes === 'number') return s.totalStudyMinutes;
+  if (typeof s.studyHours === 'number') return Math.round(s.studyHours * 60);
+  return 0;
+};
+
+export const getStudentStreak = (s) => {
+  if (!s) return 0;
+  return s.streak ?? 0;
+};
+
+export const getStudentInitials = (s) => {
+  const name = getStudentName(s);
+  return (name || 'TA').trim().slice(0, 2).toUpperCase();
+};
+
 export default function Leaderboard() {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
@@ -29,8 +57,26 @@ export default function Leaderboard() {
       try {
         setLoading(true);
         const data = await getLeaderboard();
-        setLeaderboard(data.leaderboard || []);
-        setCurrentUserRank(data.currentUserRank);
+        const list = Array.isArray(data?.leaderboard) ? data.leaderboard : [];
+        setLeaderboard(list);
+
+        // Normalize currentUserRank whether it's a number, an object, or null
+        let userRank = null;
+        if (typeof data?.currentUserRank === 'number') {
+          const found = list.find((s) => s.rank === data.currentUserRank);
+          userRank = found
+            ? { ...found, rank: data.currentUserRank }
+            : {
+                rank: data.currentUserRank,
+                name: currentUser?.displayName || currentUser?.name || 'Talaba',
+                xp: 0,
+                streak: 0,
+                totalStudyMinutes: 0,
+              };
+        } else if (data?.currentUserRank && typeof data.currentUserRank === 'object') {
+          userRank = data.currentUserRank;
+        }
+        setCurrentUserRank(userRank);
       } catch (err) {
         setError(err.message || 'Failed to load leaderboard');
       } finally {
@@ -38,7 +84,7 @@ export default function Leaderboard() {
       }
     }
     loadData();
-  }, []);
+  }, [currentUser]);
 
   if (loading) return <LoadingScreen />;
 
@@ -66,28 +112,30 @@ export default function Leaderboard() {
         <div className="bg-gradient-to-r from-primary/20 via-card to-accent/20 border border-primary/40 rounded-3xl p-5 mb-10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-lg shadow-md shadow-primary/30">
-              #{currentUserRank.rank}
+              #{currentUserRank.rank || 1}
             </div>
             <div>
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">
                 Your Current Standing
               </span>
-              <h3 className="text-lg font-bold text-text">{currentUserRank.name} (You)</h3>
+              <h3 className="text-lg font-bold text-text">
+                {getStudentName(currentUserRank)} (You)
+              </h3>
             </div>
           </div>
 
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-1.5 font-bold text-accent">
               <Sparkles className="w-4 h-4" />
-              <span>{currentUserRank.xp} XP</span>
+              <span>{getStudentXP(currentUserRank)} XP</span>
             </div>
             <div className="flex items-center gap-1.5 font-bold text-amber-400">
               <Flame className="w-4 h-4" />
-              <span>{currentUserRank.streak}d streak</span>
+              <span>{getStudentStreak(currentUserRank)}d streak</span>
             </div>
             <div className="flex items-center gap-1.5 text-muted font-medium">
               <Clock className="w-4 h-4" />
-              <span>{currentUserRank.totalStudyMinutes} mins</span>
+              <span>{getStudentMinutes(currentUserRank)} mins</span>
             </div>
           </div>
         </div>
@@ -106,18 +154,18 @@ export default function Leaderboard() {
                 </span>
               </div>
               <h3 className="text-base font-bold text-text mb-1 truncate w-full">
-                {top3[1].name}
+                {getStudentName(top3[1])}
               </h3>
               <div className="flex items-center gap-1 text-accent font-extrabold text-sm mb-2">
                 <Sparkles className="w-4 h-4" />
-                <span>{top3[1].xp} XP</span>
+                <span>{getStudentXP(top3[1])} XP</span>
               </div>
               <div className="flex items-center gap-4 text-xs text-muted border-t border-subtle pt-3 w-full justify-center">
                 <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                  <Flame className="w-3.5 h-3.5" /> {top3[1].streak}d
+                  <Flame className="w-3.5 h-3.5" /> {getStudentStreak(top3[1])}d
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> {top3[1].totalStudyMinutes}m
+                  <Clock className="w-3.5 h-3.5" /> {getStudentMinutes(top3[1])}m
                 </span>
               </div>
             </div>
@@ -134,18 +182,18 @@ export default function Leaderboard() {
                 </span>
               </div>
               <h3 className="text-lg font-extrabold text-text mb-1 truncate w-full">
-                {top3[0].name}
+                {getStudentName(top3[0])}
               </h3>
               <div className="flex items-center gap-1 text-accent font-black text-lg mb-3">
                 <Sparkles className="w-5 h-5" />
-                <span>{top3[0].xp} XP</span>
+                <span>{getStudentXP(top3[0])} XP</span>
               </div>
               <div className="flex items-center gap-5 text-xs text-muted border-t border-amber-500/20 pt-4 w-full justify-center">
                 <span className="flex items-center gap-1 text-amber-400 font-bold">
-                  <Flame className="w-4 h-4" /> {top3[0].streak}d streak
+                  <Flame className="w-4 h-4" /> {getStudentStreak(top3[0])}d streak
                 </span>
                 <span className="flex items-center gap-1 font-semibold text-text">
-                  <Clock className="w-4 h-4 text-primary" /> {top3[0].totalStudyMinutes}m
+                  <Clock className="w-4 h-4 text-primary" /> {getStudentMinutes(top3[0])}m
                 </span>
               </div>
             </div>
@@ -161,18 +209,18 @@ export default function Leaderboard() {
                 </span>
               </div>
               <h3 className="text-base font-bold text-text mb-1 truncate w-full">
-                {top3[2].name}
+                {getStudentName(top3[2])}
               </h3>
               <div className="flex items-center gap-1 text-accent font-extrabold text-sm mb-2">
                 <Sparkles className="w-4 h-4" />
-                <span>{top3[2].xp} XP</span>
+                <span>{getStudentXP(top3[2])} XP</span>
               </div>
               <div className="flex items-center gap-4 text-xs text-muted border-t border-subtle pt-3 w-full justify-center">
                 <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                  <Flame className="w-3.5 h-3.5" /> {top3[2].streak}d
+                  <Flame className="w-3.5 h-3.5" /> {getStudentStreak(top3[2])}d
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> {top3[2].totalStudyMinutes}m
+                  <Clock className="w-3.5 h-3.5" /> {getStudentMinutes(top3[2])}m
                 </span>
               </div>
             </div>
@@ -192,58 +240,80 @@ export default function Leaderboard() {
           </span>
         </div>
 
-        <div className="divide-y divide-subtle">
-          {leaderboard.map((student) => (
-            <div
-              key={student.id}
-              className={`p-4 sm:px-6 flex items-center justify-between gap-4 transition-colors ${
-                student.isCurrentUser
-                  ? 'bg-primary/10 font-bold'
-                  : 'hover:bg-white/5'
-              }`}
-            >
-              {/* Rank & Name */}
-              <div className="flex items-center gap-4 min-w-0">
-                <span
-                  className={`w-7 text-center text-sm font-black ${
-                    student.rank === 1
-                      ? 'text-amber-400'
-                      : student.rank === 2
-                      ? 'text-slate-300'
-                      : student.rank === 3
-                      ? 'text-amber-600'
-                      : 'text-muted'
+        {leaderboard.length === 0 ? (
+          <div className="p-12 text-center text-muted">
+            <Trophy className="w-12 h-12 mx-auto mb-3 opacity-30 text-primary" />
+            <p className="text-base font-semibold text-text">Hozircha reyting ma'lumotlari mavjud emas</p>
+            <p className="text-xs text-muted mt-1">Darslarni boshlang va reytingda birinchi bo'ling!</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-subtle">
+            {leaderboard.map((student, idx) => {
+              const studentName = getStudentName(student);
+              const studentXP = getStudentXP(student);
+              const studentMinutes = getStudentMinutes(student);
+              const studentStreak = getStudentStreak(student);
+              const studentInitials = getStudentInitials(student);
+              const studentRank = student.rank ?? (idx + 1);
+              const isCurrentUser = Boolean(
+                student.isCurrentUser ||
+                (currentUserRank && currentUserRank.id && student.id === currentUserRank.id) ||
+                (currentUserRank && studentRank === currentUserRank.rank && !student.isCurrentUser && currentUserRank.isCurrentUser)
+              );
+
+              return (
+                <div
+                  key={student.id || student._id || `rank-${studentRank}-${idx}`}
+                  className={`p-4 sm:px-6 flex items-center justify-between gap-4 transition-colors ${
+                    isCurrentUser
+                      ? 'bg-primary/10 font-bold'
+                      : 'hover:bg-white/5'
                   }`}
                 >
-                  #{student.rank}
-                </span>
-
-                <div className="w-9 h-9 rounded-xl bg-dark/60 border border-subtle flex items-center justify-center text-text font-bold text-xs uppercase shrink-0">
-                  {student.name.substring(0, 2)}
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-text truncate">
-                    {student.name} {student.isCurrentUser && <span className="text-primary font-bold">(You)</span>}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs text-muted">
-                    <span className="flex items-center gap-1 text-amber-400">
-                      <Flame className="w-3 h-3" /> {student.streak}d streak
+                  {/* Rank & Name */}
+                  <div className="flex items-center gap-4 min-w-0">
+                    <span
+                      className={`w-7 text-center text-sm font-black ${
+                        studentRank === 1
+                          ? 'text-amber-400'
+                          : studentRank === 2
+                          ? 'text-slate-300'
+                          : studentRank === 3
+                          ? 'text-amber-600'
+                          : 'text-muted'
+                      }`}
+                    >
+                      #{studentRank}
                     </span>
-                    <span>•</span>
-                    <span>{student.totalStudyMinutes} mins studied</span>
+
+                    <div className="w-9 h-9 rounded-xl bg-dark/60 border border-subtle flex items-center justify-center text-text font-bold text-xs uppercase shrink-0">
+                      {studentInitials}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-text truncate">
+                        {studentName} {isCurrentUser && <span className="text-primary font-bold">(You)</span>}
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-muted">
+                        <span className="flex items-center gap-1 text-amber-400">
+                          <Flame className="w-3 h-3" /> {studentStreak}d streak
+                        </span>
+                        <span>•</span>
+                        <span>{studentMinutes} mins studied</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* XP Score */}
+                  <div className="flex items-center gap-1.5 text-accent font-black text-sm shrink-0">
+                    <Sparkles className="w-4 h-4" />
+                    <span>{studentXP} XP</span>
                   </div>
                 </div>
-              </div>
-
-              {/* XP Score */}
-              <div className="flex items-center gap-1.5 text-accent font-black text-sm shrink-0">
-                <Sparkles className="w-4 h-4" />
-                <span>{student.xp} XP</span>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

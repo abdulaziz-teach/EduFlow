@@ -15,6 +15,15 @@ let refreshPromise;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function refreshAccessToken() {
+  const currentToken = typeof window !== 'undefined' ? localStorage.getItem('eduflow_token') : null;
+  const isLocalDemo = Boolean(
+    currentToken?.startsWith('demo_local_session_') ||
+    (typeof window !== 'undefined' && localStorage.getItem('eduflow_is_demo') === 'true')
+  );
+  if (isLocalDemo) {
+    return currentToken;
+  }
+
   if (!refreshPromise) {
     refreshPromise = (async () => {
       const options = {
@@ -65,7 +74,11 @@ async function refreshAccessToken() {
  * - Parses JSON responses and normalizes error structures
  */
 async function request(endpoint, options = {}) {
-  const token = localStorage.getItem('eduflow_token');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('eduflow_token') : null;
+  const isLocalDemo = Boolean(
+    token?.startsWith('demo_local_session_') ||
+    (typeof window !== 'undefined' && localStorage.getItem('eduflow_is_demo') === 'true')
+  );
   const method = (options.method || 'GET').toUpperCase();
   const timeoutMs = options.timeoutMs || (endpoint.includes('/mentor/') ? 30000 : DEFAULT_TIMEOUT_MS);
 
@@ -74,7 +87,8 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  if (token) {
+  // Attach real JWT to server requests; do not pass mock/demo tokens as real server credentials
+  if (token && !isLocalDemo) {
     headers.Authorization = `Bearer ${token}`;
   }
 
@@ -124,6 +138,9 @@ async function request(endpoint, options = {}) {
       }
 
       if (res?.status === 401 && token && !endpoint.startsWith('/auth/')) {
+        if (isLocalDemo) {
+          throw new Error('This action is not available in offline demo mode.');
+        }
         const refreshedToken = await refreshAccessToken();
         headers.Authorization = `Bearer ${refreshedToken}`;
 

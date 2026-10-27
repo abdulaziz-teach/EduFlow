@@ -312,7 +312,7 @@ export default function FocusRoom() {
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-6 border-b border-subtle pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 border-b border-subtle pb-4">
         <div>
           <div className="flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-wider mb-1">
             <Clock className="w-4 h-4" />
@@ -323,11 +323,11 @@ export default function FocusRoom() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
           <select
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
-            className="bg-card border border-subtle rounded-xl px-3 py-1.5 text-xs text-text focus:outline-none focus:border-primary"
+            className="bg-card border border-subtle rounded-xl px-2.5 sm:px-3 py-1.5 text-xs text-text focus:outline-none focus:border-primary max-w-[200px] truncate"
           >
             {(user?.subjects && user.subjects.length > 0 ? user.subjects : ['General Study']).map(
               (subj) => (
@@ -340,7 +340,7 @@ export default function FocusRoom() {
 
           <button
             onClick={toggleFullscreen}
-            className="p-2 text-muted hover:text-text bg-card border border-subtle rounded-xl transition-colors"
+            className="p-2 text-muted hover:text-text bg-card border border-subtle rounded-xl transition-colors shrink-0"
             title={isFullscreen ? 'Exit Fullscreen' : 'Zen Fullscreen'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -354,7 +354,7 @@ export default function FocusRoom() {
           <button
             key={mode.key}
             onClick={() => handleModeChange(mode)}
-            className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
               activeMode.key === mode.key
                 ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-105'
                 : 'bg-card text-muted hover:text-text border border-subtle'
@@ -403,7 +403,7 @@ export default function FocusRoom() {
 
         {/* Success Alert */}
         {sessionSuccessMsg && (
-          <div className="mt-6 flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 rounded-2xl animate-in fade-in">
+          <div className="mt-6 flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 rounded-xl animate-in fade-in">
             <CheckCircle className="w-4 h-4" />
             <span>{sessionSuccessMsg}</span>
           </div>
@@ -413,7 +413,7 @@ export default function FocusRoom() {
         <div className="flex items-center gap-4 mt-8">
           <button
             onClick={handleReset}
-            className="p-3.5 rounded-2xl bg-card hover:bg-white/5 border border-subtle text-muted hover:text-text transition-all"
+            className="p-3.5 rounded-xl bg-card hover:bg-white/5 border border-subtle text-muted hover:text-text transition-all"
             title="Reset"
           >
             <RotateCcw className="w-5 h-5" />
@@ -422,7 +422,7 @@ export default function FocusRoom() {
           <Button
             onClick={handleTogglePlay}
             size="lg"
-            className="px-8 py-3.5 text-base flex items-center gap-2 rounded-2xl shadow-xl shadow-primary/20"
+            className="px-8 py-3.5 text-base flex items-center gap-2 rounded-xl shadow-xl shadow-primary/20"
           >
             {isRunning ? (
               <>
@@ -440,7 +440,7 @@ export default function FocusRoom() {
       </div>
 
       {/* Ambient Soundscape Bar */}
-      <div className="mt-8 bg-card border border-subtle rounded-3xl p-5 max-w-2xl mx-auto w-full">
+      <div className="mt-8 bg-card border border-subtle rounded-2xl p-5 max-w-2xl mx-auto w-full">
         <div className="flex items-center justify-between mb-3 text-xs text-muted font-semibold">
           <div className="flex items-center gap-1.5 text-text">
             <Headphones className="w-4 h-4 text-primary" />

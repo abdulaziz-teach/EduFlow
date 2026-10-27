@@ -1,5 +1,12 @@
-function SectionHeading({ label, title, description, align = 'center' }) {
+function SectionHeading({
+  label,
+  title,
+  description,
+  align = 'center',
+  descriptionClassName = '',
+}) {
   const alignment = align === 'center' ? 'text-center mx-auto' : 'text-left';
+  const descColor = descriptionClassName || 'text-muted';
 
   return (
     <div className={`max-w-2xl mb-12 md:mb-16 ${alignment}`}>
@@ -12,7 +19,7 @@ function SectionHeading({ label, title, description, align = 'center' }) {
         {title}
       </h2>
       {description && (
-        <p className="text-muted text-lg leading-relaxed">{description}</p>
+        <p className={`text-lg leading-relaxed ${descColor}`}>{description}</p>
       )}
     </div>
   );

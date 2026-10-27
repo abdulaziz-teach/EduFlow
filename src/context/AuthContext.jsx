@@ -54,6 +54,22 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const init = async () => {
       if (token) {
+        // If this is a local demo session, restore directly from local storage
+        const isDemo = token.startsWith('demo_local_session_') || localStorage.getItem('eduflow_is_demo') === 'true';
+        if (isDemo) {
+          const stored = localStorage.getItem('eduflow_local_user');
+          if (stored) {
+            try {
+              const parsedUser = JSON.parse(stored);
+              setUser(parsedUser);
+              syncLanguage(parsedUser);
+              setLoading(false);
+              return;
+            } catch {
+              // Ignore invalid JSON and continue
+            }
+          }
+        }
         await refreshUser().catch(() => {});
       }
       setLoading(false);
@@ -81,6 +97,46 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  /** Log in using 1-Click Demo account with guaranteed offline fallback */
+  const loginWithDemo = async () => {
+    try {
+      const data = await authService.login({ email: 'demo@eduflow.uz', password: 'password123' });
+      localStorage.setItem('eduflow_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+      syncLanguage(data.user);
+      return data;
+    } catch {
+      // Fallback: Activate explicit Local Demo Mode
+      const demoUser = {
+        _id: 'user_demo_local_' + Date.now(),
+        name: 'Demo Talaba',
+        email: 'demo@eduflow.uz',
+        preferredLanguage: localStorage.getItem('eduflow_language') || 'uz',
+        role: 'student',
+        onboardingComplete: true,
+        isLocalDemo: true,
+        subjects: ['Computer Science', 'Mathematics', 'English'],
+        studyStreak: 7,
+        dailyMinutes: 45,
+        stats: {
+          totalStudyMinutes: 320,
+          quizzesTaken: 12,
+          accuracy: 88,
+        },
+        createdAt: new Date().toISOString(),
+      };
+      const demoToken = 'demo_local_session_' + Date.now();
+      localStorage.setItem('eduflow_token', demoToken);
+      localStorage.setItem('eduflow_local_user', JSON.stringify(demoUser));
+      localStorage.setItem('eduflow_is_demo', 'true');
+      setToken(demoToken);
+      setUser(demoUser);
+      syncLanguage(demoUser);
+      return { success: true, token: demoToken, user: demoUser, isLocalDemo: true };
+    }
+  };
+
   /** Log out — revoke server session, clear refresh cookie, and reset local state */
   const logout = async () => {
     try {
@@ -89,17 +145,23 @@ export function AuthProvider({ children }) {
       console.warn('Server logout failed:', error);
     } finally {
       localStorage.removeItem('eduflow_token');
+      localStorage.removeItem('eduflow_local_user');
+      localStorage.removeItem('eduflow_is_demo');
       setToken(null);
       setUser(null);
     }
   };
+
+  const isLocalDemo = Boolean(user?.isLocalDemo || token?.startsWith('demo_local_session_'));
 
   const value = {
     user,
     token,
     loading,
     isAuthenticated,
+    isLocalDemo,
     login,
+    loginWithDemo,
     register,
     logout,
     refreshUser,

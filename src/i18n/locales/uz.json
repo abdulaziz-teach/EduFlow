@@ -223,6 +223,10 @@
     "draftSyncError": "Javoblaringiz ushbu qurilmada saqlandi, aloqa tiklangach sinxronlanadi."
   },
   "dashboard": {
+    "nextAction": {
+      "demoBadge": "⚡ Demo Tavsiya (Offline)",
+      "liveBadge": "Adaptive Intelligence • Next Best Action"
+    },
     "loadError": "Boshqaruv panelining ba'zi ma'lumotlarini yuklab bo'lmadi. Internet ulanishingizni tekshirib, sahifani yangilang.",
     "goals": {
       "exam": "Imtihonga tayyorgarlik",
@@ -607,6 +611,9 @@
     "heroTitle1": "Istalgan fanni mukammal o'rganing",
     "heroTitle2": "Shaxsiy AI Yo'riqchi bilan",
     "heroSubtitle": "EduFlow moslashuvchan o'quv rejalarini tuzadi, aqlli testlar bilan bilimlaringizni sinaydi va maqsadlaringizga bosqichma-bosqich yo'naltiradi.",
+    "trustBadge1": "Kognitiv fan asosida",
+    "trustBadge2": "O'zbek, Rus va Ingliz tilida",
+    "trustBadge3": "24/7 Shaxsiy AI yordamchi",
     "getStarted": "Bepul boshlash",
     "seeHowItWorks": "Qanday ishlashini ko'rish",
     "featuresTitle": "Muvaffaqiyat uchun barcha imkoniyatlar",
@@ -620,7 +627,24 @@
       "mentorTitle": "AI Mentor",
       "mentorDesc": "Tayyor javoblar o‘rniga savollar bering, tushuntirishlar oling va bosqichma-bosqich o‘rganing.",
       "progressTitle": "O‘sishni kuzatish",
-      "progressDesc": "Nimalarni bajarganingizni, qayerda o‘sayotganingizni va qaysi fanlarga e'tibor kerakligini ko‘ring."
+      "progressDesc": "Nimalarni bajarganingizni, qayerda o‘sayotganingizni va qaysi fanlarga e'tibor kerakligini ko‘ring.",
+      "heroBadge": "Asosiy modul",
+      "todaySchedule": "Bugungi kun tartibi",
+      "completedBadge": "2/4 bajarildi",
+      "scheduledHours": "4.5 soat rejalashtirilgan",
+      "streakDays": "3 kun uzluksiz",
+      "mentorQuestion": "Pifagor teoremasi qanday qo‘llaniladi?",
+      "mentorAnswer": "To‘g‘ri burchakli uchburchakda katetlar kvadratlari yig‘indisi gipotenuza kvadratiga teng: a² + b² = c².",
+      "mathSubject": "Matematika",
+      "englishSubject": "Ingliz tili",
+      "physicsSubject": "Fizika",
+      "allSubjects": "Barchasi",
+      "task1": "Kvadrat tenglamalar",
+      "task2": "Esse yozish amaliyoti",
+      "task3": "Nyuton qonunlari",
+      "task4": "Takrorlash va test",
+      "weeklyTime": "6s 42d bu hafta",
+      "tasksCount": "38 ta vazifa"
     },
     "howItWorks": {
       "title": "EduFlow qanday ishlaydi",
@@ -635,20 +659,93 @@
     "mentorShowcase": {
       "title": "Shunchaki javoblar emas, bosqichma-bosqich yo‘l-yo‘riq",
       "subtitle": "EduFlow AI Mentori sizga mavzuni haqiqatdan tushunib yetishingiz uchun masalalarni bosqichma-bosqich o‘rgatadi.",
-      "tryAsking": "Savol berib ko‘ring",
-      "askMentor": "AI Mentordan so‘rash"
+      "tryAsking": "Tavsiya etilgan savollar (bosib sinab ko‘ring):",
+      "askMentor": "AI Mentordan so‘rash",
+      "demoBadge": "Interaktiv Demo Ssenariy",
+      "typing": "AI Mentor javob yozmoqda...",
+      "resetChat": "Suhbatni qayta boshlash",
+      "inputPlaceholderDemo": "Savol berish uchun yuqoridagi variantlardan birini bosing (Demo)...",
+      "dialogue": {
+        "q1": "Kvadrat tenglama formulasini ko‘rsating",
+        "a1": "Kvadrat tenglama ildizlari formulasi:\n\nx = (-b ± √(b² - 4ac)) / 2a\n\nBu yerda D = b² - 4ac diskriminant deyiladi. Agar D > 0 bo‘lsa — 2 ta haqiqiy ildiz, D = 0 bo‘lsa — 1 ta ildiz, D < 0 bo‘lsa — haqiqiy ildiz mavjud emas.",
+        "q2": "Yana bitta misol bilan tushuntiring",
+        "a2": "Albatta! Keling, x² - 4x - 5 = 0 tenglamasini qaraymiz.\n\nKo‘paytmasi -5 va yig‘indisi -4 bo‘lgan sonlar: -5 va 1.\nDemak: (x - 5)(x + 1) = 0.\nYechimlar: x = 5 yoki x = -1.",
+        "q3": "To‘la kvadratga ajratish qachon qulay?",
+        "a3": "To‘la kvadratga ajratish usuli x oldidagi koeffitsiyent juft va a = 1 bo‘lganda juda qulay ishlaydi.\n\nMasalan, x² + 6x + 2 = 0 tenglamasida:\n(x + 3)² - 9 + 2 = 0  =>  (x + 3)² = 7  =>  x = -3 ± √7."
+      }
     },
     "progressShowcase": {
       "title": "O‘sishingizning aniq manzarasi",
-      "subtitle": "O‘qish ketma-ketligini, bajarilgan vazifalarni va har bir fan bo‘yicha natijalaringizni kuzating."
+      "subtitle": "O‘qish ketma-ketligini, bajarilgan vazifalarni va har bir fan bo‘yicha natijalaringizni kuzating.",
+      "demoBadge": "Interaktiv Demo Metrikalar",
+      "demoNotice": "Ushbu ko‘rsatkichlar platforma imkoniyatlarini ko‘rsatuvchi namunaviy demo maʼlumotlardir.",
+      "timeframe": {
+        "weekly": "Haftalik",
+        "monthly": "Oylik",
+        "semester": "Semestr"
+      },
+      "descWeekly": "Oxirgi 7 kunlik o‘quv natijalari",
+      "descMonthly": "Oylik barqaror o‘quv surʼati",
+      "descSemester": "Semestr davomidagi umumiy ko‘rsatkich",
+      "streakUnit": "kun"
     },
     "trust": {
-      "title": "Jiddiy o‘quvchilar uchun yaratilgan",
-      "subtitle": "Kognitiv fanga asoslangan ishonchli o‘qish metodikalari",
+      "title": "Kognitiv fanga asoslangan yondashuv",
+      "subtitle": "Tasdiqlangan o‘quv metodikalari orqali bilimlarni uzoq muddatli xotiraga mustahkamlash",
       "spacedRepetition": "Intervalli takrorlash",
+      "spacedRepetitionDesc": "Materiallarni hisoblangan vaqt oralig‘ida qayta taqdim etish orqali unutilish sur'atini sekinlashtiradi.",
       "activeRecall": "Faol eslash",
+      "activeRecallDesc": "Passiv qayta o‘qish o‘rniga, tushunchalarni mustaqil eslash va savollarga javob berish orqali tushunishni chuqurlashtiradi.",
       "adaptiveDifficulty": "Moslashuvchan murakkablik",
-      "microlearning": "Mikro-o‘qitish"
+      "adaptiveDifficultyDesc": "O‘quvchining joriy natijalariga qarab, topshiriqlar qiyinlik darajasini mutanosib moslashtiradi.",
+      "microlearning": "Mikro-o‘qitish",
+      "microlearningDesc": "Mavzularni qisqa, diqqatni jamlash oson bo‘lgan ixcham bloklarga ajratib o‘rganish."
+    },
+    "storyTheater": {
+      "badge": "Interaktiv Mahsulot Sayri",
+      "title": "EduFlow bilan o‘rganish qanday kechadi?",
+      "subtitle": "Quruq va'dalar emas — 4 ta asosiy bosqichda to‘liq o‘quv tajribasini sinab ko‘ring.",
+      "liveSimulation": "Jonli mahsulot simulyatsiyasi",
+      "interactiveMode": "Interaktiv namoyish rejimi faol",
+      "play": "Avtomatik ijro",
+      "pause": "To‘xtatish",
+      "previous": "Oldingi bosqich",
+      "next": "Keyingi bosqich",
+      "chapter": "Bosqich",
+      "slides": {
+        "plan": {
+          "navTitle": "01. Aqlli Reja",
+          "tag": "Shaxsiy jadval",
+          "title": "Maqsadingiz va bo‘sh vaqtingizga mos dinamik grafik",
+          "desc": "EduFlow kunlik tartibingizni hisobga oladi: darslar, takrorlash va hordiq vaqtlarini aniq taqsimlaydi.",
+          "badge": "Kunlik optimallashgan",
+          "metric": "85% maqsadga yetishish ko‘rsatkichi"
+        },
+        "mentor": {
+          "navTitle": "02. AI Mentor",
+          "tag": "Sokratik muloqot",
+          "title": "Tayyor javob emas — tushunishga undovchi chuqur yo‘l-yo‘riq",
+          "desc": "Murakkab mavzularni oddiy qismlarga ajratib, o‘quvchining mustaqil fikrlashini charxlaydi.",
+          "badge": "24/7 Shaxsiy repetitor",
+          "metric": "Har bir qadamda mustahkamlash"
+        },
+        "practice": {
+          "navTitle": "03. Adaptiv Mashq",
+          "tag": "Active Recall & Spaced Repetition",
+          "title": "Xatolardan o‘rganish va bilimni uzoq xotiraga muhrlash",
+          "desc": "Qiyinchilik darajasi sizning darajangizga moslashadi va zaif nuqtalarni avtomatik kuchaytiradi.",
+          "badge": "Moslashuvchan qiyinlik",
+          "metric": "3x kuchliroq eslab qolish"
+        },
+        "progress": {
+          "navTitle": "04. Shaffof O‘sish",
+          "tag": "Vizual tahlil",
+          "title": "Har bir daqiqa va harakat o‘lchanadigan natija",
+          "desc": "Fanlar balansi, o‘quv sur'ati va ko‘nikmalar xaritasi yutuqlaringizni yaqqol ko‘rsatib turadi.",
+          "badge": "Haqiqiy metrikalar",
+          "metric": "5 kunlik streak & 72% o‘sish"
+        }
+      }
     }
   },
   "footer": {

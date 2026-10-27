@@ -223,6 +223,10 @@
     "draftSyncError": "Your answers are saved on this device. They will sync when the connection returns."
   },
   "dashboard": {
+    "nextAction": {
+      "demoBadge": "⚡ Demo Mode (Offline)",
+      "liveBadge": "Adaptive Intelligence • Next Best Action"
+    },
     "loadError": "Some dashboard data could not be loaded. Check your connection and refresh.",
     "goals": {
       "exam": "Exam Preparation",
@@ -607,6 +611,9 @@
     "heroTitle1": "Master Any Subject with",
     "heroTitle2": "Personalized AI Guidance",
     "heroSubtitle": "EduFlow creates adaptive study plans, tests your understanding with smart quizzes, and coaches you step-by-step to achieve your academic goals.",
+    "trustBadge1": "Cognitive Science-Based",
+    "trustBadge2": "Uzbek, Russian & English",
+    "trustBadge3": "24/7 Personal AI Assistant",
     "getStarted": "Get Started Free",
     "seeHowItWorks": "See How It Works",
     "featuresTitle": "Everything you need to excel",
@@ -620,7 +627,24 @@
       "mentorTitle": "AI Mentor",
       "mentorDesc": "Ask questions, get explanations, and learn step by step instead of simply receiving answers.",
       "progressTitle": "Progress Tracking",
-      "progressDesc": "See what you've completed, where you're improving, and which subjects need more attention."
+      "progressDesc": "See what you've completed, where you're improving, and which subjects need more attention.",
+      "heroBadge": "Core Engine",
+      "todaySchedule": "Today's Schedule",
+      "completedBadge": "2 of 4 done",
+      "scheduledHours": "4.5h scheduled",
+      "streakDays": "3-day streak",
+      "mentorQuestion": "How is the Pythagorean theorem applied?",
+      "mentorAnswer": "In a right triangle, the sum of squares of the legs equals the hypotenuse square: a² + b² = c².",
+      "mathSubject": "Mathematics",
+      "englishSubject": "English",
+      "physicsSubject": "Physics",
+      "allSubjects": "All",
+      "task1": "Quadratic Equations",
+      "task2": "Essay Writing Practice",
+      "task3": "Newton's Laws",
+      "task4": "Review & Practice",
+      "weeklyTime": "6h 42m this week",
+      "tasksCount": "38 tasks"
     },
     "howItWorks": {
       "title": "How EduFlow Works",
@@ -635,20 +659,93 @@
     "mentorShowcase": {
       "title": "Step-by-step guidance, not just answers",
       "subtitle": "EduFlow's AI Mentor coaches you through problems, helping you understand the underlying concepts so you truly learn.",
-      "tryAsking": "Try asking a question",
-      "askMentor": "Ask AI Mentor"
+      "tryAsking": "Suggested questions (click to test):",
+      "askMentor": "Ask AI Mentor",
+      "demoBadge": "Interactive Demo Scenario",
+      "typing": "AI Mentor is typing...",
+      "resetChat": "Reset conversation",
+      "inputPlaceholderDemo": "Click one of the suggested topics above to try (Demo Mode)...",
+      "dialogue": {
+        "q1": "What is the quadratic formula?",
+        "a1": "The quadratic formula gives the solutions to ax² + bx + c = 0:\n\nx = (-b ± √(b² - 4ac)) / 2a\n\nHere, D = b² - 4ac is the discriminant. If D > 0, there are 2 real solutions; if D = 0, there is 1 solution; if D < 0, there are no real roots.",
+        "q2": "Show me another example",
+        "a2": "Certainly! Let's solve x² - 4x - 5 = 0.\n\nWe need two numbers that multiply to -5 and add to -4. Those are -5 and 1.\nSo: (x - 5)(x + 1) = 0.\nSolutions: x = 5 or x = -1.",
+        "q3": "When do I use completing the square?",
+        "a3": "Completing the square is especially clean when the coefficient of x is an even number and a = 1.\n\nFor example, in x² + 6x + 2 = 0:\n(x + 3)² - 9 + 2 = 0  =>  (x + 3)² = 7  =>  x = -3 ± √7."
+      }
     },
     "progressShowcase": {
       "title": "Clear visibility into your growth",
-      "subtitle": "Track your study streaks, view completed tasks, and watch your mastery grow across every subject."
+      "subtitle": "Track your study streaks, view completed tasks, and watch your mastery grow across every subject.",
+      "demoBadge": "Interactive Demo Metrics",
+      "demoNotice": "These metrics are illustrative sample data demonstrating platform visualization capabilities.",
+      "timeframe": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "semester": "Semester"
+      },
+      "descWeekly": "Learning trajectory over the last 7 days",
+      "descMonthly": "Consistent monthly study pace and volume",
+      "descSemester": "Cumulative performance across the semester",
+      "streakUnit": "days"
     },
     "trust": {
-      "title": "Built for serious learners",
-      "subtitle": "Proven study techniques backed by cognitive science",
+      "title": "Grounded in Cognitive Science",
+      "subtitle": "Evidence-based learning techniques designed to anchor knowledge in long-term memory",
       "spacedRepetition": "Spaced Repetition",
+      "spacedRepetitionDesc": "Presents concepts at calculated intervals to counteract the forgetting curve naturally.",
       "activeRecall": "Active Recall",
+      "activeRecallDesc": "Strengthens retrieval pathways through active questioning rather than passive re-reading.",
       "adaptiveDifficulty": "Adaptive Difficulty",
-      "microlearning": "Microlearning"
+      "adaptiveDifficultyDesc": "Calibrates question and task complexity to match your current retention level.",
+      "microlearning": "Microlearning",
+      "microlearningDesc": "Structures study sessions into focused, manageable units to sustain cognitive attention."
+    },
+    "storyTheater": {
+      "badge": "Interactive Product Tour",
+      "title": "How Learning Works with EduFlow",
+      "subtitle": "No vague promises — experience the complete study journey in 4 connected stages.",
+      "liveSimulation": "Live Product Simulation",
+      "interactiveMode": "Interactive simulation mode active",
+      "play": "Auto-play",
+      "pause": "Pause",
+      "previous": "Previous chapter",
+      "next": "Next chapter",
+      "chapter": "Chapter",
+      "slides": {
+        "plan": {
+          "navTitle": "01. Smart Plan",
+          "tag": "Personal Schedule",
+          "title": "A dynamic study timetable matched to your goals and free time",
+          "desc": "EduFlow factors in your daily schedule: balancing classes, deep work, and scheduled breaks without burnout.",
+          "badge": "Daily Optimized",
+          "metric": "85% target completion rate"
+        },
+        "mentor": {
+          "navTitle": "02. AI Mentor",
+          "tag": "Socratic Dialogue",
+          "title": "Not just ready-made answers — deep guidance that builds real understanding",
+          "desc": "Deconstruct complex topics into digestible steps, challenging students to think and master concepts.",
+          "badge": "24/7 Personal Tutor",
+          "metric": "Step-by-step reinforcement"
+        },
+        "practice": {
+          "navTitle": "03. Adaptive Practice",
+          "tag": "Active Recall & Spaced Repetition",
+          "title": "Turn mistakes into milestones with memory-anchoring questions",
+          "desc": "Difficulty dynamically calibrates to your mastery, surfacing vulnerable concepts right before you forget them.",
+          "badge": "Calibrated Difficulty",
+          "metric": "3x stronger long-term retention"
+        },
+        "progress": {
+          "navTitle": "04. Visible Growth",
+          "tag": "Visual Analytics",
+          "title": "Every minute and effort translates into measurable progress",
+          "desc": "Subject distributions, study streaks, and knowledge maps provide instant validation of how far you've come.",
+          "badge": "Verifiable Metrics",
+          "metric": "5-day streak & 72% overall mastery"
+        }
+      }
     }
   },
   "footer": {

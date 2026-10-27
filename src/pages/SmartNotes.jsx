@@ -121,7 +121,7 @@ Overfitting is mitigated using Regularization (L1, L2), Dropout, and Data Augmen
       </div>
 
       {/* Input Section */}
-      <div className="bg-card border border-subtle rounded-3xl p-6 sm:p-8 mb-8 shadow-xl print:hidden">
+      <div className="bg-card border border-subtle rounded-2xl p-6 sm:p-8 mb-8 shadow-xl print:hidden">
         <form onSubmit={handleSummarize} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -160,7 +160,7 @@ Overfitting is mitigated using Regularization (L1, L2), Dropout, and Data Augmen
               placeholder={t('smartNotes.inputPlaceholder')}
               value={notesContent}
               onChange={(e) => setNotesContent(e.target.value)}
-              className="w-full p-4 bg-dark border border-subtle rounded-2xl text-sm text-text focus:outline-none focus:border-primary resize-y font-sans leading-relaxed"
+              className="w-full p-4 bg-dark border border-subtle rounded-xl text-sm text-text focus:outline-none focus:border-primary resize-y font-sans leading-relaxed"
             />
           </div>
 
@@ -224,7 +224,7 @@ Overfitting is mitigated using Regularization (L1, L2), Dropout, and Data Augmen
           )}
 
           {/* Printable Cheatsheet Container */}
-          <div className="bg-card border border-subtle rounded-3xl p-6 sm:p-10 space-y-8 shadow-xl print:bg-white print:text-black print:p-0 print:border-none">
+          <div className="bg-card border border-subtle rounded-2xl p-6 sm:p-10 space-y-8 shadow-xl print:bg-white print:text-black print:p-0 print:border-none">
             {/* Title & Subject */}
             <div className="border-b border-subtle pb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-primary">

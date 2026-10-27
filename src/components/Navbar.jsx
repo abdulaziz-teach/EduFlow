@@ -14,7 +14,7 @@ function Navbar() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout, loading } = useAuth();
+  const { isAuthenticated, user, logout, loading, isLocalDemo } = useAuth();
   const { t } = useTranslation();
   const isLanding = pathname === '/';
 
@@ -256,7 +256,7 @@ function Navbar() {
                 >
                   {t('nav.billing')}
                 </Link>
-                {user?.role && user.role !== 'user' && (
+                {user?.role === 'admin' && (
                   <Link
                     to="/admin"
                     className={`text-sm transition-colors px-2.5 py-1.5 rounded-lg flex items-center gap-1 font-semibold ${
@@ -268,6 +268,16 @@ function Navbar() {
                     <Shield className="w-3.5 h-3.5" />
                     {t('nav.admin')}
                   </Link>
+                )}
+                {isLocalDemo && (
+                  <span
+                    data-testid="local-demo-badge"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 shadow-sm"
+                    title="Lokal demo rejimi: Serverga ulanmagan offline rejim"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    <span>DEMO MODE</span>
+                  </span>
                 )}
                 <NotificationCenter />
                 <LanguageSwitcher className="ml-1" />
@@ -440,7 +450,7 @@ function Navbar() {
                 >
                   {t('nav.billingSubscriptions')}
                 </Link>
-                {user?.role && user.role !== 'user' && (
+                {user?.role === 'admin' && (
                   <Link
                     to="/admin"
                     onClick={() => setIsOpen(false)}
@@ -452,6 +462,12 @@ function Navbar() {
                   >
                     {t('nav.adminOperations')}
                   </Link>
+                )}
+                {isLocalDemo && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold my-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <span>DEMO MODE (Offline)</span>
+                  </div>
                 )}
                 <button
                   onClick={() => { setIsOpen(false); handleLogout(); }}

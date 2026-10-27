@@ -147,12 +147,12 @@ function Register() {
                 value={form.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full pl-4 pr-11 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                className="w-full pl-4 pr-12 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text transition-colors p-1 rounded-md cursor-pointer"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted hover:text-text transition-colors cursor-pointer rounded-r-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -173,12 +173,12 @@ function Register() {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full pl-4 pr-11 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
+                className="w-full pl-4 pr-12 py-2.5 rounded-lg bg-card border border-subtle text-sm text-text placeholder:text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-text transition-colors p-1 rounded-md cursor-pointer"
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted hover:text-text transition-colors cursor-pointer rounded-r-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                 aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
               >
                 {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

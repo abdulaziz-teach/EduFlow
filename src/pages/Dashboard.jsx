@@ -9,6 +9,7 @@ import {
   Brain,
   Sparkles,
   ArrowRight,
+  ChevronRight,
   Loader2,
   CheckCircle2,
   Layers,
@@ -383,8 +384,12 @@ function Dashboard() {
               </div>
             </div>
             <div className="sm:col-span-2 flex justify-end">
-              <Link to="/profile" className="text-xs font-semibold text-primary hover:text-primary-hover">
-                {t('dashboard.editProfile')}
+              <Link
+                to="/profile"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary hover:text-primary-hover transition-colors rounded-lg hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 min-h-[40px]"
+              >
+                <span>{t('dashboard.editProfile')}</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -586,9 +591,10 @@ function Dashboard() {
             <h3 className="text-base font-semibold text-text">{t('dashboard.recentUpdates')}</h3>
             <Link
               to="/notifications"
-              className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-primary hover:text-primary-hover transition-colors rounded-lg hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 min-h-[40px] cursor-pointer"
             >
-              {t('dashboard.viewAll')}
+              <span>{t('dashboard.viewAll')}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           {loadingUpdates ? (
