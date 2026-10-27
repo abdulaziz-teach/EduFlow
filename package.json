@@ -28,7 +28,7 @@
     "test:db": "npm --prefix backend run test:db",
     "drill:backup": "npm --prefix backend run drill:backup",
     "test:all": "npm --prefix backend run test:all",
-    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.html', 'dist/404.html')\"",
+    "build": "vite build && node --input-type=module -e \"import { copyFileSync } from 'node:fs'; copyFileSync('dist/index.html', 'dist/404.html')\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "preview": "vite preview"
